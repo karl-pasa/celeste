@@ -1,0 +1,13 @@
+/vendor
+/node_modules
+/storage/app/certificates
+/storage/logs
+/storage/framework/cache
+/storage/framework/sessions
+/storage/framework/views
+/storage/imports
+/storage/app/calibration
+.env
+.env.*
+!.env.example
+/tests

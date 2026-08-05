@@ -1,0 +1,31 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Preserve the Authorization header. Some Apache builds strip it before PHP
+    # sees it, which would silently break any future API token authentication.
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect trailing slashes if not a folder, so /verify/ and /verify are
+    # not treated as two different URLs.
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send everything that is not a real file or directory to Laravel's front
+    # controller. Without this rule Apache looks for a literal "login" file on
+    # disk, finds nothing, and returns its own 404 before Laravel ever runs.
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# Certificate PDFs and QR images live outside this directory and are served
+# through authenticated controller routes, so nothing here should be listed.
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>

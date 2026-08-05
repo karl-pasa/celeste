@@ -1,0 +1,5 @@
+student_number,first_name,middle_name,last_name,suffix,birth_date,college,program,major,status,year_level,academic_year,semester,date_admitted,date_graduated,latin_honor,general_weighted_average
+2021-00184,Andrea,Bautista,Ramirez,,2003-04-19,College of Computing and Information Sciences,Bachelor of Science in Information Technology,Web and Mobile Development,graduated,4th Year,2025-2026,Second Semester,2021-08-16,2026-06-12,Cum Laude,1.612
+2023-00457,Miguel,Santos,Delos Reyes,,2005-11-02,College of Education,Bachelor of Elementary Education,,enrolled,3rd Year,2026-2027,First Semester,2023-08-14,,,1.884
+2022-00913,Kirsten,Alvarez,Pantaleon,,2004-07-25,College of Business and Management,Bachelor of Science in Business Administration,Financial Management,transferred,3rd Year,2025-2026,First Semester,2022-08-15,,,2.104
+2021-00220,Joshua,Nieva,Villanueva,Jr.,2003-01-30,College of Computing and Information Sciences,Bachelor of Science in Computer Science,,graduated,4th Year,2025-2026,Second Semester,2021-08-16,2026-06-12,,1.945

@@ -195,6 +195,16 @@ class CertificateGenerator
             return $this->storeRendered($certificate, $this->stamper->render($certificate));
         }
 
+        return $this->storeRendered($certificate, $this->buildDompdf($certificate)->output());
+    }
+
+    /**
+     * Build the DomPDF instance for a certificate using its Blade layout.
+     */
+    protected function buildDompdf(Certificate $certificate)
+    {
+        $certificate->loadMissing('studentRecord', 'issuer');
+
         $view = match ($certificate->document_type) {
             Certificate::TYPE_DIPLOMA   => 'pdf.diploma',
             Certificate::TYPE_DISMISSAL => 'pdf.honorable-dismissal',
@@ -206,7 +216,7 @@ class CertificateGenerator
             ? ['a4', 'landscape']
             : ['a4', 'portrait'];
 
-        $pdf = Pdf::loadView($view, [
+        return Pdf::loadView($view, [
             'certificate' => $certificate,
             'student'     => $certificate->studentRecord,
             'payload'     => $certificate->payload,
@@ -218,19 +228,61 @@ class CertificateGenerator
     }
 
     /**
+     * Render and return the PDF bytes, whether or not they can be saved.
+     *
+     * Serverless hosts mount the project read-only, so persisting is a
+     * best-effort step rather than a precondition for serving the document.
+     */
+    public function renderBinary(Certificate $certificate): string
+    {
+        $certificate->loadMissing('studentRecord', 'issuer');
+
+        if ($this->stamper->hasTemplate($certificate->document_type)) {
+            $binary = $this->stamper->render($certificate);
+            $this->storeRendered($certificate, $binary);
+
+            return $binary;
+        }
+
+        $binary = $this->buildDompdf($certificate)->output();
+        $this->storeRendered($certificate, $binary);
+
+        return $binary;
+    }
+
+    /**
      * Persist the rendered bytes and fingerprint the file itself, whichever
      * renderer produced them.
+     *
+     * A write failure is survivable. The PDF is a rendering of the hashed
+     * payload, not the record itself, so it can always be rebuilt — and on a
+     * read-only filesystem it must be. Losing the response over a cache miss
+     * would be the wrong trade.
      */
     protected function storeRendered(Certificate $certificate, string $binary): string
     {
         $path = "certificates/files/{$certificate->verification_token}.pdf";
 
-        Storage::disk('local')->put($path, $binary);
+        $attributes = [];
 
-        $certificate->forceFill([
-            'file_path' => $path,
-            'file_hash' => $this->hasher->hashFile($binary),
-        ])->save();
+        // Fingerprint the file once, at first issuance. Later re-renders after
+        // a template change would otherwise silently replace the fingerprint
+        // that was recorded when the document was issued.
+        if (! $certificate->file_hash) {
+            $attributes['file_hash'] = $this->hasher->hashFile($binary);
+        }
+
+        try {
+            Storage::disk('local')->put($path, $binary);
+            $attributes['file_path'] = $path;
+        } catch (\Throwable $e) {
+            report($e);
+            $path = '';
+        }
+
+        if ($attributes !== []) {
+            $certificate->forceFill($attributes)->save();
+        }
 
         return $path;
     }

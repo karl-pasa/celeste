@@ -8,8 +8,10 @@
  * at the database in vercel.json for the same reason.
  */
 
-if (! is_dir('/tmp/views')) {
-    mkdir('/tmp/views', 0755, true);
+foreach (['/tmp/views', '/tmp/celeste-storage/certificates/files', '/tmp/celeste-storage/certificates/qr'] as $directory) {
+    if (! is_dir($directory)) {
+        mkdir($directory, 0755, true);
+    }
 }
 
 require __DIR__ . '/../public/index.php';

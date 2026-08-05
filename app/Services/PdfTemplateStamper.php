@@ -164,6 +164,9 @@ class PdfTemplateStamper
             '{short_hash}' => $certificate->shortHash(),
             '{verify_url}' => $certificate->verificationUrl(),
             '{date}'       => $certificate->issued_on?->format('F j, Y') ?? '',
+            '{registrar}'  => config('celeste.officials.registrar'),        
+            '{president}'  => config('celeste.officials.president'),       
+            '{institution}'=> config('celeste.institution.name'),           
         ];
 
         foreach ($payload as $key => $value) {

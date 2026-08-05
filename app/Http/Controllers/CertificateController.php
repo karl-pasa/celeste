@@ -94,12 +94,23 @@ class CertificateController extends Controller
      */
     protected function fileFor(Certificate $certificate): string
     {
-        if (! $certificate->file_path || ! Storage::disk('local')->exists($certificate->file_path)) {
-            $this->generator->renderPdf($certificate);
-            $certificate->refresh();
+        // Serve the stored copy when there is one.
+        try {
+            if ($certificate->file_path && Storage::disk('local')->exists($certificate->file_path)) {
+                $binary = Storage::disk('local')->get($certificate->file_path);
+
+                if ($binary !== null && $binary !== '') {
+                    return $binary;
+                }
+            }
+        } catch (\Throwable $e) {
+            report($e);
         }
 
-        return Storage::disk('local')->get($certificate->file_path);
+        // Otherwise rebuild it from the hashed payload. On a read-only host
+        // this is the normal path, not the exception -- the stored file is a
+        // cache, and the record is the source of truth.
+        return $this->generator->renderBinary($certificate);
     }
 
     protected function authorizeAccess(Certificate $certificate, Request $request): void

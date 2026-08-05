@@ -113,19 +113,33 @@ return [
         ],
     ],
 
-    Certificate::TYPE_DISMISSAL => [
+Certificate::TYPE_DISMISSAL => [
         'template'    => storage_path('templates/honorable-dismissal.pdf'),
-        'page'        => 'A4',
-        'orientation' => 'portrait',
+        'page'        => 'Letter',
+        'orientation' => 'landscape',
 
         'fields' => [
-            ['value' => 'full_name',     'x' => 60, 'y' => 92,  'width' => 120, 'style' => 'B', 'size' => 11, 'upper' => true],
-            ['value' => 'student_number','x' => 60, 'y' => 100, 'width' => 120, 'size' => 10],
-            ['value' => 'program',       'x' => 60, 'y' => 110, 'width' => 130, 'size' => 10],
-            ['value' => 'college',       'x' => 60, 'y' => 118, 'width' => 130, 'size' => 10],
-            ['value' => 'date_admitted', 'x' => 60, 'y' => 126, 'width' => 60,  'size' => 10],
-            ['type'  => 'qr',            'x' => 20, 'y' => 240, 'size' => 24],
-            ['text'  => '{serial}',      'x' => 18, 'y' => 266, 'width' => 30, 'align' => 'C', 'font' => 'Courier', 'size' => 6],
+            // student_name
+            ['value' => 'full_name', 'x' => 61.7, 'y' => 74.8, 'width' => 55.0, 'align' => 'L', 'size' => 10],
+            // student_address
+            ['value' => 'address', 'x' => 124.5, 'y' => 74.8, 'width' => 33.2, 'align' => 'L', 'size' => 10],
+            // year_level
+            ['value' => 'year_level', 'x' => 20.8, 'y' => 82.2, 'width' => 9.9, 'align' => 'C', 'size' => 10],
+            // program
+            ['value' => 'program', 'x' => 72.7, 'y' => 82.2, 'width' => 40.9, 'align' => 'L', 'size' => 10],
+            // date_issued
+            ['value' => 'issued_on', 'x' => 104.8, 'y' => 56.1, 'width' => 44.4, 'align' => 'L', 'size' => 10],
+            // student_signature_printed_name — printed name under the signature line
+            ['value' => 'full_name', 'x' => 17.3, 'y' => 109.5, 'width' => 62.8, 'align' => 'C', 'size' => 10],
+            // registrar_printed_name — comes from .env, not the payload
+            ['text' => '{registrar}', 'x' => 103.4, 'y' => 122.2, 'width' => 52.2, 'align' => 'C', 'size' => 10],
+
+            // ---- Verification block. Sits in the clear area below the
+            // ---- signature line, left of the dry seal box, above the OR block.
+            ['type' => 'qr', 'x' => 78.0, 'y' => 165.0, 'size' => 24],
+            ['text' => '{serial}', 'x' => 105.0, 'y' => 168.0, 'width' => 52, 'font' => 'Courier', 'style' => 'B', 'size' => 7],
+            ['text' => 'Scan to verify', 'x' => 105.0, 'y' => 174.0, 'width' => 52, 'font' => 'Helvetica', 'size' => 6, 'color' => [91, 103, 132]],
+            ['text' => 'SHA-256 {hash}', 'x' => 105.0, 'y' => 180.0, 'width' => 55, 'font' => 'Courier', 'size' => 4, 'color' => [138, 148, 173]],
         ],
     ],
 

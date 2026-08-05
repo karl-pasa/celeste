@@ -176,13 +176,23 @@ class QrCodeService
             : ErrorCorrectionLevel::H();
     }
 
+    /**
+     * Cache the QR alongside the certificate. Best effort: on a read-only
+     * filesystem the code is simply re-encoded whenever it is needed, which
+     * costs a few milliseconds and is always reproducible from the token.
+     */
     public function store(Certificate $certificate): string
     {
         $path = "certificates/qr/{$certificate->verification_token}.png";
 
-        Storage::disk('local')->put($path, $this->render($certificate));
+        try {
+            Storage::disk('local')->put($path, $this->render($certificate));
+            $certificate->forceFill(['qr_path' => $path])->save();
+        } catch (\Throwable $e) {
+            report($e);
 
-        $certificate->forceFill(['qr_path' => $path])->save();
+            return '';
+        }
 
         return $path;
     }

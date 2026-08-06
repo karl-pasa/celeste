@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 class EnsureUserHasRole
 {
     /**
-     * Usage: ->middleware('role:registrar') or 'role:student,graduate'
+     * Usage: ->middleware('role:registrar') or 'role:student'
      */
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {

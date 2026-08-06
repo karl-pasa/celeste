@@ -13,7 +13,6 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     public const ROLE_STUDENT   = 'student';
-    public const ROLE_GRADUATE  = 'graduate';
     public const ROLE_REGISTRAR = 'registrar';
 
     protected $fillable = [
@@ -49,14 +48,13 @@ class User extends Authenticatable
 
     public function isLearner(): bool
     {
-        return in_array($this->role, [self::ROLE_STUDENT, self::ROLE_GRADUATE], true);
+        return $this->role === self::ROLE_STUDENT;
     }
 
     public function roleLabel(): string
     {
         return match ($this->role) {
             self::ROLE_REGISTRAR => 'Registrar',
-            self::ROLE_GRADUATE  => 'Graduate',
             default              => 'Student',
         };
     }

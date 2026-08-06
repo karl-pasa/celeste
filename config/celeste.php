@@ -87,6 +87,93 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Programs by college
+    |--------------------------------------------------------------------------
+    | Choosing a college on the batch generation page narrows the program
+    | dropdown to that college's offerings.
+    |
+    | Prefilled from ParSU's published program offerings -- CHECK THIS AGAINST
+    | YOUR REGISTRAR'S OFFICIAL LIST before relying on it. The university does
+    | not publish a complete college-by-college breakdown, so some placements
+    | here are inferred.
+    |
+    | A college with no entry here falls back to whatever programs appear in
+    | student_records for that college, so an unlisted college still works.
+    |
+    | The keys must match the entries in 'colleges' above exactly, including
+    | the campus suffixes.
+    */
+    'programs' => [
+
+        'College of Education' => [
+            'Bachelor of Elementary Education',
+            'Bachelor of Secondary Education Major in English',
+            'Bachelor of Secondary Education Major in Filipino',
+            'Bachelor of Secondary Education Major in Mathematics',
+            'Bachelor of Secondary Education Major in Science',
+            'Bachelor of Secondary Education Major in Social Studies',
+            'Bachelor of Secondary Education Major in Values Education',
+        ],
+
+        'College of Engineering and Computational Sciences' => [
+            'Bachelor of Science in Mathematics',
+            'Bachelor of Science in Information Technology',
+            'Bachelor of Science in Computer Science',
+            'Bachelor of Science in Civil Engineering',
+            'Bachelor of Science in Sanitary Engineering',
+            'Bachelor of Engineering Technology Major in Electrical Engineering Technology',
+        ],
+
+        'College of Business and Management' => [
+            'Bachelor of Science in Accountancy',
+            'Bachelor of Science in Business Administration Major in Financial Management',
+            'Bachelor of Science in Entrepreneurship',
+            'Bachelor of Science in Economics',
+            'Bachelor of Science in Office Administration',
+        ],
+
+        'College of Science' => [
+            'Bachelor of Science in Biology',
+            'Bachelor of Science in Geology',
+        ],
+
+        'College of Arts and Humanities' => [
+            'Bachelor of Arts in Communication',
+            'Bachelor of Arts in English Language Studies',
+        ],
+
+        'College of Hospitality and Tourism Management-San Jose Campus' => [
+            'Bachelor of Science in Hospitality Management',
+            'Bachelor of Science in Tourism Management',
+        ],
+
+        'College of Agribusiness and Community Development-Salogon Campus' => [
+            'Bachelor of Science in Agriculture',
+            'Bachelor of Science in Agribusiness',
+            'Bachelor of Science in Community Development',
+        ],
+
+        'College of Public Safety and Community Health-Lagonoy Campus' => [
+            'Bachelor of Science in Criminology',
+            'Bachelor of Science in Public Health',
+        ],
+
+        'College of Fisheries and Marines Science-Sagñay Campus' => [
+            'Bachelor of Science in Fisheries',
+            'Bachelor of Science in Marine Biology',
+        ],
+
+        'College of Environmental Science and Design-Tinambac Campus' => [
+            'Bachelor of Science in Environmental Science',
+        ],
+
+        'College of Sustainable Communities and Ecosystems-Caramoan Campus' => [
+            'Bachelor of Science in Community Development',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Documents
     |--------------------------------------------------------------------------
     */

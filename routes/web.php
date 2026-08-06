@@ -57,10 +57,10 @@ Route::middleware(['auth', 'role:registrar'])->prefix('registrar')->name('regist
 
 /*
 |--------------------------------------------------------------------------
-| Students and graduates — their own documents
+| Students — their own documents
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:student,graduate'])->prefix('my')->name('student.')->group(function () {
+Route::middleware(['auth', 'role:student'])->prefix('my')->name('student.')->group(function () {
     Route::get('/', [DashboardController::class, 'student'])->name('dashboard');
     Route::get('/documents', [DashboardController::class, 'documents'])->name('documents');
 });

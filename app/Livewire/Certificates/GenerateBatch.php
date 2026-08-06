@@ -53,6 +53,12 @@ class GenerateBatch extends Component
             $this->resetPage();
             $this->selectPage = false;
         }
+
+        // A program from the previous college would keep filtering the list
+        // after the college changed, showing nothing and looking broken.
+        if ($field === 'college') {
+            $this->program = '';
+        }
     }
 
     /**
@@ -142,13 +148,43 @@ class GenerateBatch extends Component
             ->values();
     }
 
+    /**
+     * Programs for the chosen college.
+     *
+     * Config first, so a program can be selected before any student carrying
+     * it has been imported. A college with no config entry falls back to the
+     * programs actually present in its records, which keeps an unlisted or
+     * newly added college usable without a code change.
+     *
+     * With no college chosen, every configured program is offered.
+     */
+    protected function programOptions()
+    {
+        $map = collect(config('celeste.programs', []));
+
+        if ($this->college === '') {
+            return $map->flatten()->unique()->sort()->values();
+        }
+
+        $configured = collect($map->get($this->college, []));
+
+        if ($configured->isNotEmpty()) {
+            return $configured->values();
+        }
+
+        return StudentRecord::query()
+            ->where('college', $this->college)
+            ->distinct()
+            ->orderBy('program')
+            ->pluck('program');
+    }
+
     public function render()
     {
         return view('livewire.certificates.generate-batch', [
             'types'    => Certificate::types(),
             'colleges' => $this->collegeOptions(),
-            'programs' => StudentRecord::when($this->college, fn ($q) => $q->where('college', $this->college))
-                ->distinct()->orderBy('program')->pluck('program'),
+            'programs' => $this->programOptions(),
         ]);
     }
 }

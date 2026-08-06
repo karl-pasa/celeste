@@ -15,7 +15,7 @@ class AuthController extends Controller
     public function showLogin(Request $request): View
     {
         return view('auth.login', [
-            'role' => in_array($request->query('as'), ['student', 'graduate', 'registrar'], true)
+            'role' => in_array($request->query('as'), ['student', 'registrar'], true)
                 ? $request->query('as')
                 : 'student',
         ]);
@@ -26,7 +26,7 @@ class AuthController extends Controller
         $credentials = $request->validate([
             'username' => ['required', 'string'],
             'password' => ['required', 'string'],
-            'role'     => ['required', 'in:student,graduate,registrar'],
+            'role'     => ['required', 'in:student,registrar'],
         ]);
 
         $user = User::where('username', $credentials['username'])

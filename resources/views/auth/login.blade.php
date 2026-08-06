@@ -27,7 +27,6 @@
             <div class="role-tabs mb-3" role="tablist" aria-label="Account type">
                 @foreach ([
                     'student'   => ['Student', 'bi-mortarboard'],
-                    'graduate'  => ['Graduate', 'bi-award'],
                     'registrar' => ['Registrar', 'bi-shield-lock'],
                 ] as $value => [$label, $icon])
                     <button type="button" role="tab"

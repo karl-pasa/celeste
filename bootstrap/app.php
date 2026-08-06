@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureCertificateAccess;
 use App\Http\Middleware\EnsureUserHasRole;
+use App\Http\Middleware\PreventBackHistory;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,6 +14,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Signed-in pages must not be stored by the browser, or Back would
+        // replay a registrar's dashboard after they have signed out.
+        $middleware->web(append: [
+            PreventBackHistory::class,
+        ]);
+
         $middleware->alias([
             'role'            => EnsureUserHasRole::class,
             'certificate.own' => EnsureCertificateAccess::class,

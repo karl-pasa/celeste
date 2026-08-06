@@ -125,30 +125,21 @@ class GenerateBatch extends Component
     }
 
     /**
-     * The official college list, plus anything already in the records.
+     * The official college list, and only that.
      *
-     * Reading only from student_records means a college with no students yet
-     * cannot be selected at all -- a problem the first time a cohort is
-     * imported. Reading only from config means an imported spelling that
-     * differs slightly vanishes from the dropdown while its students remain
-     * in the table. Merging both avoids each failure.
+     * Sourced from config/celeste.php rather than from the records, so a
+     * college name left over in student_records -- an old title, or a
+     * spelling that arrived with an import -- cannot appear in the filter.
+     *
+     * Those students are still reachable: the search box on this page matches
+     * on name and student number regardless of college. Only the dropdown is
+     * restricted.
      */
     protected function collegeOptions()
     {
-        $official = collect(config('celeste.colleges', []))->filter();
-
-        // Anything in the records that is not on the official list -- an older
-        // college name, or a spelling that came in with an import. Sorted and
-        // appended rather than dropped, so those students stay reachable.
-        $extras = StudentRecord::query()
-            ->distinct()
-            ->pluck('college')
+        return collect(config('celeste.colleges', []))
             ->filter()
-            ->reject(fn ($college) => $official->contains($college))
-            ->sort()
             ->values();
-
-        return $official->concat($extras)->values();
     }
 
     public function render()

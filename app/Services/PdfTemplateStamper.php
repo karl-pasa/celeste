@@ -122,14 +122,10 @@ class PdfTemplateStamper
             $text = mb_strtoupper($text);
         }
 
+        $encoded = $this->encode($text);
         $color = $field['color'] ?? [22, 35, 63];
-
-        $pdf->SetFont(
-            $field['font'] ?? 'Helvetica',
-            $field['style'] ?? '',
-            (float) ($field['size'] ?? 10)
-        );
-        $pdf->SetTextColor($color[0], $color[1], $color[2]);
+        $font = $field['font'] ?? 'Helvetica';
+        $style = $field['style'] ?? '';
 
         $width = (float) ($field['width'] ?? 0);
 
@@ -137,8 +133,71 @@ class PdfTemplateStamper
             $width = $pageWidth - (float) $field['x'];
         }
 
+        $size = $this->fitToWidth($pdf, $encoded, $field, $font, $style, $width);
+
+        $pdf->SetFont($font, $style, $size);
+        $pdf->SetTextColor($color[0], $color[1], $color[2]);
+
         $pdf->SetXY((float) $field['x'], (float) $field['y']);
-        $pdf->Cell($width, 6, $this->encode($text), 0, 0, $field['align'] ?? 'L');
+        $pdf->Cell($width, 6, $encoded, 0, 0, $field['align'] ?? 'L');
+    }
+
+    /**
+     * Shrink the font until the text fits inside the field box.
+     *
+     * A registrar form's blanks are sized for handwriting, not for the longest
+     * name in the database. "BSIT" fits a 41mm blank at 12pt; "Bachelor of
+     * Science in Business Administration" needs 5pt in the same space. FPDF
+     * does not wrap inside a Cell -- it simply runs the text past the edge and
+     * over whatever is printed there -- so a fixed size means either tiny text
+     * everywhere or occasional collisions.
+     *
+     * 'size' is therefore the preferred size, and 'min_size' the floor below
+     * which the value would be too small to read. If the text still does not
+     * fit at the floor, it is printed anyway and reported, because silently
+     * shrinking a name to 4pt is worse than a visible problem you can fix.
+     */
+    protected function fitToWidth(
+        Fpdi $pdf,
+        string $text,
+        array $field,
+        string $font,
+        string $style,
+        float $width,
+    ): float {
+        $size = (float) ($field['size'] ?? 10);
+        $min = (float) ($field['min_size'] ?? 7);
+        $available = max(1.0, $width - 1.0);   // 1mm of breathing room
+
+        $pdf->SetFont($font, $style, $size);
+
+        while ($size > $min && $pdf->GetStringWidth($text) > $available) {
+            $size -= 0.25;
+            $pdf->SetFont($font, $style, $size);
+        }
+
+        if ($pdf->GetStringWidth($text) > $available) {
+            $this->overflows[] = [
+                'text'  => $text,
+                'width' => $width,
+                'size'  => $size,
+            ];
+        }
+
+        return $size;
+    }
+
+    /**
+     * Fields whose text could not be made to fit. Read this after render()
+     * when tuning a template.
+     *
+     * @var array<int, array{text:string, width:float, size:float}>
+     */
+    protected array $overflows = [];
+
+    public function overflows(): array
+    {
+        return $this->overflows;
     }
 
     /**
@@ -164,9 +223,6 @@ class PdfTemplateStamper
             '{short_hash}' => $certificate->shortHash(),
             '{verify_url}' => $certificate->verificationUrl(),
             '{date}'       => $certificate->issued_on?->format('F j, Y') ?? '',
-            '{registrar}'  => config('celeste.officials.registrar'),        
-            '{president}'  => config('celeste.officials.president'),       
-            '{institution}'=> config('celeste.institution.name'),           
         ];
 
         foreach ($payload as $key => $value) {

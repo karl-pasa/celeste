@@ -33,9 +33,9 @@ class ImportStudents extends Command
 
     /** Everything else the importer will read if present. */
     protected array $optional = [
-        'middle_name', 'suffix', 'birth_date', 'major', 'year_level',
+        'middle_name', 'suffix', 'birth_date', 'address', 'major', 'year_level',
         'academic_year', 'semester', 'date_admitted', 'date_graduated',
-        'latin_honor', 'general_weighted_average',
+        'latin_honor', 'general_weighted_average', 'year_level',
     ];
 
     public function handle(): int

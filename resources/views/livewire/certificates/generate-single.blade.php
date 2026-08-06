@@ -1,4 +1,61 @@
 <div class="row g-3">
+
+    {{--
+      | The document picker used to be Bootstrap radio inputs. Those render a
+      | blue dot of their own and pick up the browser's blue focus ring, which
+      | left an unchosen option looking chosen. They are plain buttons now, and
+      | the only blue on the card is the CELESTE navy of a real selection.
+    --}}
+    <style>
+        .doc-choice {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            padding: .85rem 1rem;
+            height: 100%;
+            text-align: left;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #fff;
+            font-size: .875rem;
+            color: var(--ink);
+            cursor: pointer;
+            transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+        }
+
+        .doc-choice:hover {
+            border-color: var(--psu-navy-500);
+            background: var(--psu-navy-050);
+        }
+
+        /* Kill the browser's blue ring. The global :focus-visible rule in
+           celeste.css uses --psu-blue, which is what lingered on a card after
+           it was clicked and then unselected. */
+        .doc-choice:focus,
+        .doc-choice:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(36, 65, 127, .18);
+            border-color: var(--psu-navy-500);
+        }
+
+        .doc-choice[aria-pressed="true"] {
+            border-color: var(--psu-navy-500);
+            background: var(--psu-navy-050);
+            color: var(--psu-navy-800);
+            font-weight: 600;
+            box-shadow: 0 0 0 3px rgba(36, 65, 127, .12);
+        }
+
+        /* The check mark exists only on a chosen card. Nothing is drawn in its
+           place otherwise, so an unchosen option carries no marker at all. */
+        .doc-choice .doc-check {
+            color: var(--psu-navy-600);
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+    </style>
+
     <div class="col-lg-7">
         <div class="card-celeste">
             <div class="card-header">Document details</div>
@@ -55,24 +112,49 @@
                     @endif
                 @endif
 
-                {{-- Step 2: document type --}}
-                <div class="d-flex align-items-center gap-2 mb-2 mt-4">
-                    <span class="step-pill">2</span>
-                    <label class="form-label mb-0">Choose the document</label>
+                {{-- Step 2: document type. Nothing is chosen until it is clicked. --}}
+                <div class="d-flex align-items-center justify-content-between gap-2 mb-2 mt-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="step-pill">2</span>
+                        <label class="form-label mb-0">Choose the document</label>
+                    </div>
+                    @if ($documentType)
+                        <button type="button" wire:click="clearType"
+                                class="btn btn-sm btn-psu-outline" style="padding:.25rem .6rem">
+                            <i class="bi bi-x-lg"></i> Clear
+                        </button>
+                    @endif
                 </div>
 
-                <div class="row g-2 mb-3">
+                <div class="row g-2 mb-2">
                     @foreach ($types as $value => $label)
+                        @php $selected = $documentType === $value; @endphp
                         <div class="col-sm-6">
-                            <label class="d-flex align-items-center gap-2 p-3 rounded-3 h-100"
-                                   style="border:1px solid {{ $documentType === $value ? 'var(--psu-navy-500)' : 'var(--line)' }};
-                                          background:{{ $documentType === $value ? 'var(--psu-navy-050)' : '#fff' }};cursor:pointer">
-                                <input type="radio" class="form-check-input mt-0" wire:model.live="documentType" value="{{ $value }}">
-                                <span style="font-size:.875rem">{{ $label }}</span>
-                            </label>
+                            <button type="button"
+                                    class="doc-choice"
+                                    wire:click="selectType('{{ $value }}')"
+                                    wire:key="type-{{ $value }}"
+                                    aria-pressed="{{ $selected ? 'true' : 'false' }}">
+                                @if ($selected)
+                                    <i class="bi bi-check-circle-fill doc-check"></i>
+                                @endif
+                                <span>{{ $label }}</span>
+                            </button>
                         </div>
                     @endforeach
                 </div>
+
+                @error('documentType')
+                    <div class="invalid-feedback d-block mb-2">{{ $message }}</div>
+                @enderror
+
+                <p class="text-muted-celeste mb-3" style="font-size:.75rem">
+                    @if ($documentType)
+                        Click <strong>{{ $types[$documentType] }}</strong> again to unselect it, or pick a different document.
+                    @else
+                        Nothing is selected yet. Click a document to choose it.
+                    @endif
+                </p>
 
                 @if ($this->eligibility)
                     <div class="alert d-flex gap-2 py-2 px-3 mb-3" style="background:var(--psu-gold-soft);border:1px solid #f0dcae;color:#8a5c0c;font-size:.8125rem">
@@ -101,9 +183,16 @@
                     </div>
                 </div>
 
-                <button wire:click="generate" class="btn btn-psu w-100 mt-4" wire:loading.attr="disabled" wire:target="generate">
+                <button wire:click="generate" class="btn btn-psu w-100 mt-4"
+                        wire:loading.attr="disabled" wire:target="generate"
+                        @disabled(! $this->ready)>
                     <span wire:loading.remove wire:target="generate">
-                        <i class="bi bi-shield-lock"></i> Generate, hash, and stamp the QR
+                        <i class="bi bi-shield-lock"></i>
+                        @if (! $this->ready)
+                            Choose a student and a document
+                        @else
+                            Generate, hash, and stamp the QR
+                        @endif
                     </span>
                     <span wire:loading wire:target="generate">
                         <span class="spinner-border spinner-border-sm me-1"></span> Building the document…

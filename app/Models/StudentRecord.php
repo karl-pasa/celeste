@@ -14,7 +14,7 @@ class StudentRecord extends Model
         'student_number', 'first_name', 'middle_name', 'last_name', 'suffix',
         'birth_date', 'college', 'program', 'major', 'status', 'year_level',
         'academic_year', 'semester', 'date_admitted', 'date_graduated',
-        'latin_honor', 'general_weighted_average', 'grades',
+        'latin_honor', 'general_weighted_average', 'grades', 'address', 'year_level',
     ];
 
     protected function casts(): array

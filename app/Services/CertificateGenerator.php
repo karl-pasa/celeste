@@ -164,6 +164,8 @@ class CertificateGenerator
                 'last_semester'  => $student->semester,
                 'academic_year'  => $student->academic_year,
                 'purpose'        => 'Transfer to another institution',
+                'address'        => $student->address,      
+                'year_level'     => $student->year_level,   
             ],
             Certificate::TYPE_ENROLMENT => $base + [
                 'year_level'    => $student->year_level,

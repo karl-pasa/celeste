@@ -11,7 +11,10 @@ class GenerateSingle extends Component
 {
     public string $search = '';
     public ?int $studentId = null;
-    public string $documentType = Certificate::TYPE_ENROLMENT;
+    // Nothing is preselected. Issuing the wrong document type is a real
+    // clerical error, and a default choice is one the registrar never
+    // consciously made.
+    public ?string $documentType = null;
     public string $issuedOn = '';
     public string $purpose = '';
     public ?int $issuedId = null;
@@ -32,8 +35,45 @@ class GenerateSingle extends Component
     }
 
     protected array $messages = [
-        'studentId.required' => 'Pick a student record first.',
+        'studentId.required'    => 'Pick a student record first.',
+        'documentType.required' => 'Choose which document to issue.',
+        'documentType.in'       => 'Choose which document to issue.',
     ];
+
+    /**
+     * Click to choose, click again to undo. Selecting a different type
+     * replaces the current one.
+     */
+    public function selectType(string $type): void
+    {
+        if (! array_key_exists($type, Certificate::types())) {
+            return;
+        }
+
+        $this->documentType = $this->documentType === $type ? null : $type;
+
+        // A type change invalidates the previous result panel.
+        $this->issuedId = null;
+
+        $this->resetValidation('documentType');
+    }
+
+    public function clearType(): void
+    {
+        $this->documentType = null;
+        $this->issuedId = null;
+        $this->resetValidation('documentType');
+    }
+
+    public function isSelected(string $type): bool
+    {
+        return $this->documentType === $type;
+    }
+
+    public function getReadyProperty(): bool
+    {
+        return $this->studentId !== null && $this->documentType !== null;
+    }
 
     public function selectStudent(int $id): void
     {
@@ -77,7 +117,7 @@ class GenerateSingle extends Component
     {
         $student = $this->student;
 
-        if (! $student) {
+        if (! $student || $this->documentType === null) {
             return null;
         }
 

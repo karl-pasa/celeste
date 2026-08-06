@@ -77,6 +77,7 @@
                     <label for="statusFilter" class="form-label">Status</label>
                     <select id="statusFilter" wire:model.live="status" class="form-select">
                         <option value="">Any status</option>
+                        <option disabled>──────────</option>
                         <option value="enrolled">Enrolled</option>
                         <option value="graduated">Graduated</option>
                         <option value="transferred">Transferred</option>

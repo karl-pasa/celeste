@@ -31,7 +31,11 @@ class GenerateBatch extends Component
     public function mount(): void
     {
         $this->label = 'Batch run ' . now()->format('M j, Y');
-        $this->status = 'graduated';
+
+        // No status filter by default. Preselecting "graduated" quietly hid
+        // every enrolled student, which is wrong for a Certificate of
+        // Enrolment run and easy to miss.
+        $this->status = '';
     }
 
     public function updatedSelectPage(bool $value): void
@@ -120,11 +124,38 @@ class GenerateBatch extends Component
         return $this->batchId ? CertificateBatch::find($this->batchId) : null;
     }
 
+    /**
+     * The official college list, plus anything already in the records.
+     *
+     * Reading only from student_records means a college with no students yet
+     * cannot be selected at all -- a problem the first time a cohort is
+     * imported. Reading only from config means an imported spelling that
+     * differs slightly vanishes from the dropdown while its students remain
+     * in the table. Merging both avoids each failure.
+     */
+    protected function collegeOptions()
+    {
+        $official = collect(config('celeste.colleges', []))->filter();
+
+        // Anything in the records that is not on the official list -- an older
+        // college name, or a spelling that came in with an import. Sorted and
+        // appended rather than dropped, so those students stay reachable.
+        $extras = StudentRecord::query()
+            ->distinct()
+            ->pluck('college')
+            ->filter()
+            ->reject(fn ($college) => $official->contains($college))
+            ->sort()
+            ->values();
+
+        return $official->concat($extras)->values();
+    }
+
     public function render()
     {
         return view('livewire.certificates.generate-batch', [
             'types'    => Certificate::types(),
-            'colleges' => StudentRecord::distinct()->orderBy('college')->pluck('college'),
+            'colleges' => $this->collegeOptions(),
             'programs' => StudentRecord::when($this->college, fn ($q) => $q->where('college', $this->college))
                 ->distinct()->orderBy('program')->pluck('program'),
         ]);

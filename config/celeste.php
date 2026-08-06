@@ -54,6 +54,39 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Colleges
+    |--------------------------------------------------------------------------
+    | Offered in the batch generation filter so a cohort can be selected before
+    | any record carrying that college exists. Colleges already present in
+    | student_records are merged in automatically, so an imported spelling that
+    | differs from this list still appears rather than silently disappearing
+    | from the dropdown.
+    |
+    | The order here is the order shown in the dropdown: Goa campus colleges
+    | first, then the satellite campuses. Alphabetical sorting would scatter
+    | the campuses through the list and make a long dropdown harder to scan.
+    |
+    | Edit this list to match your registrar's official naming.
+    */
+    'colleges' => [
+        // Goa main campus
+        'College of Education',
+        'College of Engineering and Computational Sciences',
+        'College of Business and Management',
+        'College of Science',
+        'College of Arts and Humanities',
+
+        // Satellite campuses
+        'College of Hospitality and Tourism Management-San Jose Campus',
+        'College of Agribusiness and Community Development-Salogon Campus',
+        'College of Public Safety and Community Health-Lagonoy Campus',
+        'College of Fisheries and Marines Science-Sagñay Campus',
+        'College of Environmental Science and Design-Tinambac Campus',
+        'College of Sustainable Communities and Ecosystems-Caramoan Campus',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Documents
     |--------------------------------------------------------------------------
     */

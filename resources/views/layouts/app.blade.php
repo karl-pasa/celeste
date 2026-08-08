@@ -18,7 +18,9 @@
 
     <aside class="sidebar" :class="{ 'open': nav }">
         <div class="brand">
-            <div class="mark">CE</div>
+            <img src="{{ asset('images/psu-seal-white.png') }}" alt=""
+                 style="width:34px;height:34px;object-fit:contain"
+                 onerror="this.outerHTML='&lt;div class=&quot;mark&quot;&gt;CE&lt;/div&gt;'">
             <div>
                 <div class="name">CELESTE</div>
                 <div class="sub">{{ config('celeste.institution.short') }}</div>

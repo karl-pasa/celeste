@@ -67,6 +67,17 @@ Route::middleware(['auth', 'role:student'])->prefix('my')->name('student.')->gro
 
 /*
 |--------------------------------------------------------------------------
+| Account settings — any signed-in user
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth')->group(function () {
+    Route::get('/account', function () {
+        return view('account.settings');
+    })->name('account.settings');
+});
+
+/*
+|--------------------------------------------------------------------------
 | Document delivery — owner or registrar only
 |--------------------------------------------------------------------------
 */

@@ -25,10 +25,9 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'password'            => 'hashed', // bcrypt via config/hashing.php
-            'is_active'           => 'boolean',
-            'last_login_at'       => 'datetime',
-            'password_changed_at' => 'datetime',
+            'password'      => 'hashed', // bcrypt via config/hashing.php
+            'is_active'     => 'boolean',
+            'last_login_at' => 'datetime',
         ];
     }
 

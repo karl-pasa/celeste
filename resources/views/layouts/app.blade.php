@@ -18,7 +18,9 @@
 
     <aside class="sidebar" :class="{ 'open': nav }">
         <div class="brand">
-            <div class="mark">CE</div>
+            <img src="{{ asset('images/psu-seal-white.png') }}" alt=""
+                 style="width:34px;height:34px;object-fit:contain"
+                 onerror="this.outerHTML='&lt;div class=&quot;mark&quot;&gt;CE&lt;/div&gt;'">
             <div>
                 <div class="name">CELESTE</div>
                 <div class="sub">{{ config('celeste.institution.short') }}</div>
@@ -56,11 +58,6 @@
                 <a href="{{ route('verify') }}" class="nav-link" target="_blank">
                     <i class="bi bi-box-arrow-up-right"></i> Public portal
                 </a>
-
-                <div class="nav-section">Account</div>
-                <a href="{{ route('account.settings') }}" class="nav-link {{ request()->routeIs('account.settings') ? 'active' : '' }}">
-                    <i class="bi bi-person-gear"></i> Account settings
-                </a>
             @else
                 <div class="nav-section">My records</div>
                 <a href="{{ route('student.dashboard') }}" class="nav-link {{ request()->routeIs('student.dashboard') ? 'active' : '' }}">
@@ -77,22 +74,17 @@
                 <a href="{{ route('verify') }}" class="nav-link">
                     <i class="bi bi-patch-check"></i> Verify a document
                 </a>
-
-                <div class="nav-section">Account</div>
-                <a href="{{ route('account.settings') }}" class="nav-link {{ request()->routeIs('account.settings') ? 'active' : '' }}">
-                    <i class="bi bi-person-gear"></i> Account settings
-                </a>
             @endif
         </nav>
 
         <div class="sidebar-foot">
-            <a href="{{ route('account.settings') }}" class="d-flex align-items-center gap-2 mb-2 text-decoration-none">
+            <div class="d-flex align-items-center gap-2 mb-2">
                 <div class="avatar">{{ auth()->user()->initials() }}</div>
                 <div class="small" style="min-width:0">
                     <div class="text-white text-truncate">{{ auth()->user()->name }}</div>
                     <div style="color:rgba(255,255,255,.55); font-size:.75rem">{{ auth()->user()->roleLabel() }}</div>
                 </div>
-            </a>
+            </div>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button class="btn btn-sm w-100" style="background:rgba(255,255,255,.1); color:#fff; border:0">
@@ -135,6 +127,5 @@
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
 @livewireScripts
 @stack('scripts')
-@include('partials.session-guard')
 </body>
 </html>

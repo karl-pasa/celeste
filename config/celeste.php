@@ -23,9 +23,9 @@ return [
     | in code so a change of officials does not require a deployment.
     */
     'officials' => [
-        'registrar'       => env('CELESTE_REGISTRAR_NAME', 'RAUL G. BRADECINA, Ph.D.'),
-        'president'       => env('CELESTE_PRESIDENT_NAME', 'THE UNIVERSITY PRESIDENT'),
-        'records_officer' => env('CELESTE_RECORDS_OFFICER', 'RECORDS OFFICER'),
+        'registrar'       => env('CELESTE_REGISTRAR_NAME', ''),
+        'president'       => env('CELESTE_PRESIDENT_NAME', ''),
+        'records_officer' => env('CELESTE_RECORDS_OFFICER', ''),
     ],
 
     /*
@@ -37,7 +37,7 @@ return [
     | without this value. Set it once, then never rotate it — changing it
     | invalidates every certificate already issued.
     */
-    'hash_pepper' => env('CELESTE_HASH_PEPPER', 'change-this-before-going-live'),
+    'hash_pepper' => env('CELESTE_HASH_PEPPER'),
 
     /*
     |--------------------------------------------------------------------------
@@ -50,6 +50,43 @@ return [
 
         // Flag a single certificate verified from this many distinct addresses.
         'spread_threshold'  => (int) env('CELESTE_SPREAD_THRESHOLD', 12),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Student accounts
+    |--------------------------------------------------------------------------
+    | Students sign in with their university email address. Where a record has
+    | no address on file, one is derived as <student number>@<domain> so the
+    | account can still be created.
+    |
+    | The initial password is the student number. See the warning in
+    | celeste:create-student-accounts before using this in earnest -- a student
+    | number is printed on ID cards and appears on every document, so it is a
+    | starting credential, not a lasting one.
+    */
+    'student_email_domain' => env('CELESTE_STUDENT_EMAIL_DOMAIN', 'parsu.edu.ph'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Authentication
+    |--------------------------------------------------------------------------
+    | allow_remember — remember-me issues a cookie valid for years, bypassing
+    | session lifetime. On the Registrar's shared counter that is a standing
+    | credential left on the machine, so it is off unless a deployment on
+    | personal devices opts in.
+    |
+    | require_password_change — while a user's password_changed_at is null they
+    | are still on their provisioned credential. For students that is their
+    | student number, printed on every document this system issues.
+    |
+    | require_email_verification — leave false until mail is configured, or
+    | students will be locked out of a system that cannot send them a link.
+    */
+    'auth' => [
+        'allow_remember'             => (bool) env('CELESTE_ALLOW_REMEMBER', false),
+        'require_password_change'    => (bool) env('CELESTE_REQUIRE_PASSWORD_CHANGE', true),
+        'require_email_verification' => (bool) env('CELESTE_REQUIRE_EMAIL_VERIFICATION', false),
     ],
 
     /*
@@ -107,26 +144,25 @@ return [
 
         'College of Education' => [
             'Bachelor of Elementary Education',
-            'Bachelor of Secondary Education Major in English',
-            'Bachelor of Secondary Education Major in Filipino',
-            'Bachelor of Secondary Education Major in Mathematics',
-            'Bachelor of Secondary Education Major in Science',
-            'Bachelor of Secondary Education Major in Social Studies',
-            'Bachelor of Secondary Education Major in Values Education',
+            'Bachelor of Secondary Education major in English',
+            'Bachelor of Secondary Education major in Filipino',
+            'Bachelor of Secondary Education major in Mathematics',
+            'Bachelor of Secondary Education major in Science',
+            'Bachelor of Secondary Education major in Social Studies',
+            'Bachelor of Secondary Education major in Values Education',
         ],
 
         'College of Engineering and Computational Sciences' => [
-            'Bachelor of Science in Mathematics',
             'Bachelor of Science in Information Technology',
             'Bachelor of Science in Computer Science',
             'Bachelor of Science in Civil Engineering',
             'Bachelor of Science in Sanitary Engineering',
-            'Bachelor of Engineering Technology Major in Electrical Engineering Technology',
+            'Bachelor of Engineering Technology major in Electrical Engineering Technology',
         ],
 
         'College of Business and Management' => [
             'Bachelor of Science in Accountancy',
-            'Bachelor of Science in Business Administration Major in Financial Management',
+            'Bachelor of Science in Business Administration major in Financial Management',
             'Bachelor of Science in Entrepreneurship',
             'Bachelor of Science in Economics',
             'Bachelor of Science in Office Administration',
@@ -135,6 +171,8 @@ return [
         'College of Science' => [
             'Bachelor of Science in Biology',
             'Bachelor of Science in Geology',
+            'Bachelor of Science in Mathematics',
+            'Bachelor of Science in Environmental Science',
         ],
 
         'College of Arts and Humanities' => [

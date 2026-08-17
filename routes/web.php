@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EmailVerificationController;
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PublicVerificationController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,14 +30,48 @@ Route::get('/verify/{token}', [PublicVerificationController::class, 'token'])
 */
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+
+    // Per-account limiting lives in the controller (username + IP). This is a
+    // second, coarser layer against one address enumerating many accounts.
     Route::post('/login', [AuthController::class, 'login'])
-        ->middleware('throttle:5,1')
+        ->middleware('throttle:20,1')
         ->name('login.attempt');
+
+    // Password reset. Token lifetime and per-account request throttling are
+    // set in config/auth.php: 15 minutes, 60 seconds between requests.
+    Route::get('/forgot-password', [PasswordResetController::class, 'requestForm'])->name('password.request');
+    Route::post('/forgot-password', [PasswordResetController::class, 'sendLink'])
+        ->middleware('throttle:6,1')
+        ->name('password.email');
+    Route::get('/reset-password/{token}', [PasswordResetController::class, 'resetForm'])->name('password.reset');
+    Route::post('/reset-password', [PasswordResetController::class, 'reset'])
+        ->middleware('throttle:6,1')
+        ->name('password.store');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
+
+/*
+|--------------------------------------------------------------------------
+| Email verification and password change — signed in, not yet cleared
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth')->group(function () {
+    Route::get('/verify-email', [EmailVerificationController::class, 'notice'])->name('verification.notice');
+    Route::get('/verify-email/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+        ->middleware(['signed', 'throttle:6,1'])
+        ->name('verification.verify');
+    Route::post('/verify-email/send', [EmailVerificationController::class, 'send'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
+
+    Route::get('/password/change', [PasswordResetController::class, 'changeForm'])->name('password.change');
+    Route::post('/password/change', [PasswordResetController::class, 'change'])
+        ->middleware('throttle:6,1')
+        ->name('password.change.store');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -60,7 +96,7 @@ Route::middleware(['auth', 'role:registrar'])->prefix('registrar')->name('regist
 | Students — their own documents
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:student'])->prefix('my')->name('student.')->group(function () {
+Route::middleware(['auth', 'verified', 'role:student'])->prefix('my')->name('student.')->group(function () {
     Route::get('/', [DashboardController::class, 'student'])->name('dashboard');
     Route::get('/documents', [DashboardController::class, 'documents'])->name('documents');
 });

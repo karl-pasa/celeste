@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
@@ -20,14 +21,22 @@ class User extends Authenticatable
         'student_number', 'college', 'program', 'is_active',
     ];
 
+    /**
+     * Never serialised. remember_token is a bearer credential in its own
+     * right, so it is hidden alongside the password hash.
+     */
     protected $hidden = ['password', 'remember_token'];
 
     protected function casts(): array
     {
         return [
-            'password'      => 'hashed', // bcrypt via config/hashing.php
-            'is_active'     => 'boolean',
-            'last_login_at' => 'datetime',
+            // Hashing happens on assignment, so a plaintext password can
+            // never be written to the column even by mistake.
+            'password'            => 'hashed', // bcrypt cost 12, config/hashing.php
+            'is_active'           => 'boolean',
+            'last_login_at'       => 'datetime',
+            'email_verified_at'   => 'datetime',
+            'password_changed_at' => 'datetime',
         ];
     }
 
@@ -44,6 +53,16 @@ class User extends Authenticatable
     public function isRegistrar(): bool
     {
         return $this->role === self::ROLE_REGISTRAR;
+    }
+
+    /**
+     * True while the account is still on its provisioned credential. For a
+     * student that is their student number, which is printed on every
+     * document this system issues.
+     */
+    public function isUsingInitialPassword(): bool
+    {
+        return $this->password_changed_at === null;
     }
 
     public function isLearner(): bool

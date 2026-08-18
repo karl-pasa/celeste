@@ -39,7 +39,6 @@
 
             <input type="hidden" name="role" :value="role">
 
-            
             <div class="mb-3">
                 <label for="email" class="form-label">
                     <i class="bi bi-envelope"></i> Institutional email
@@ -69,10 +68,10 @@ endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </div>
 
+            
             <div class="mb-3" x-data="{ show: false }">
                 <label for="password" class="form-label">
-                    <i class="bi bi-lock"></i>
-                    <span x-text="role === 'student' ? 'Student number' : 'Password'">Student number</span>
+                    <i class="bi bi-lock"></i> Password
                 </label>
                 <div class="input-group">
                     <input :type="show ? 'text' : 'password'" id="password" name="password"
@@ -84,7 +83,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                           :placeholder="role === 'student' ? 'e.g. 2021-00184' : 'Enter your password'"
+                           placeholder="Enter your password"
                            autocomplete="current-password" required>
                     <button class="input-group-text" type="button" @click="show = !show"
                             :aria-label="show ? 'Hide password' : 'Show password'">
@@ -102,11 +101,6 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </div>
-
-            <p class="text-muted-celeste mb-3" style="font-size:.75rem" x-show="role === 'student'" x-cloak>
-                Sign in with your university email. Your password is your student number
-                until you set your own.
-            </p>
 
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(config('celeste.auth.allow_remember', false)): ?>
                 <div class="form-check mb-3">
@@ -144,5 +138,4 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 <?php $__env->startPush('scripts'); ?>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
 <?php $__env->stopPush(); ?>
-
 <?php echo $__env->make('layouts.guest', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\celeste\resources\views/auth/login.blade.php ENDPATH**/ ?>

@@ -35,7 +35,7 @@ class ImportStudents extends Command
     protected array $optional = [
         'middle_name', 'suffix', 'birth_date', 'address', 'major', 'year_level',
         'academic_year', 'semester', 'date_admitted', 'date_graduated',
-        'latin_honor', 'general_weighted_average', 'year_level',
+        'latin_honor', 'general_weighted_average', 'year_level', 'email',
     ];
 
     public function handle(): int

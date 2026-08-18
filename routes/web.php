@@ -59,14 +59,6 @@ Route::post('/logout', [AuthController::class, 'logout'])
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
-    Route::get('/verify-email', [EmailVerificationController::class, 'notice'])->name('verification.notice');
-    Route::get('/verify-email/{id}/{hash}', [EmailVerificationController::class, 'verify'])
-        ->middleware(['signed', 'throttle:6,1'])
-        ->name('verification.verify');
-    Route::post('/verify-email/send', [EmailVerificationController::class, 'send'])
-        ->middleware('throttle:6,1')
-        ->name('verification.send');
-
     Route::get('/password/change', [PasswordResetController::class, 'changeForm'])->name('password.change');
     Route::post('/password/change', [PasswordResetController::class, 'change'])
         ->middleware('throttle:6,1')
@@ -96,7 +88,7 @@ Route::middleware(['auth', 'role:registrar'])->prefix('registrar')->name('regist
 | Students — their own documents
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'verified', 'role:student'])->prefix('my')->name('student.')->group(function () {
+Route::middleware(['auth', 'role:student'])->prefix('my')->name('student.')->group(function () {
     Route::get('/', [DashboardController::class, 'student'])->name('dashboard');
     Route::get('/documents', [DashboardController::class, 'documents'])->name('documents');
 });

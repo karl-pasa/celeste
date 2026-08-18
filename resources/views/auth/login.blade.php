@@ -40,8 +40,6 @@
 
             <input type="hidden" name="role" :value="role">
 
-            {{-- Both roles sign in with an institutional address; only the
-                 password hint differs. --}}
             <div class="mb-3">
                 <label for="email" class="form-label">
                     <i class="bi bi-envelope"></i> Institutional email
@@ -57,15 +55,17 @@
                 @enderror
             </div>
 
+            {{-- The label reads "Password" for both roles. The field holds a
+                 password; that it happens to be the student number is not
+                 something the sign-in screen needs to announce. --}}
             <div class="mb-3" x-data="{ show: false }">
                 <label for="password" class="form-label">
-                    <i class="bi bi-lock"></i>
-                    <span x-text="role === 'student' ? 'Student number' : 'Password'">Student number</span>
+                    <i class="bi bi-lock"></i> Password
                 </label>
                 <div class="input-group">
                     <input :type="show ? 'text' : 'password'" id="password" name="password"
                            class="form-control border-end-0 @error('password') is-invalid @enderror"
-                           :placeholder="role === 'student' ? 'e.g. 2021-00184' : 'Enter your password'"
+                           placeholder="Enter your password"
                            autocomplete="current-password" required>
                     <button class="input-group-text" type="button" @click="show = !show"
                             :aria-label="show ? 'Hide password' : 'Show password'">
@@ -76,11 +76,6 @@
                     <div class="invalid-feedback d-block">{{ $message }}</div>
                 @enderror
             </div>
-
-            <p class="text-muted-celeste mb-3" style="font-size:.75rem" x-show="role === 'student'" x-cloak>
-                Sign in with your university email. Your password is your student number
-                until you set your own.
-            </p>
 
             @if (config('celeste.auth.allow_remember', false))
                 <div class="form-check mb-3">

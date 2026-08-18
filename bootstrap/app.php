@@ -3,7 +3,6 @@
 use App\Http\Middleware\EnsureAccountIsActive;
 use App\Http\Middleware\EnsureCertificateAccess;
 use App\Http\Middleware\EnsureUserHasRole;
-use App\Http\Middleware\RequirePasswordChange;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use App\Http\Middleware\PreventBackHistory;
 use Illuminate\Foundation\Application;
@@ -25,10 +24,6 @@ return Application::configure(basePath: dirname(__DIR__))
             // is_active is verified once, at login. Without this a user
             // deactivated mid-session stays signed in until it expires.
             EnsureAccountIsActive::class,
-
-            // While password_changed_at is null the account is still on its
-            // provisioned credential, which for students is public data.
-            RequirePasswordChange::class,
 
             // Signed-in pages must not be stored by the browser, or Back would
             // replay a registrar's dashboard after they have signed out.

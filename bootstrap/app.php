@@ -17,8 +17,6 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Signed-in pages must not be stored by the browser, or Back would
-        // replay a registrar's dashboard after they have signed out.
         $middleware->web(append: [
             // Binds the session to the authenticated user's password hash, so
             // changing a password invalidates every other live session.
@@ -31,6 +29,10 @@ return Application::configure(basePath: dirname(__DIR__))
             // While password_changed_at is null the account is still on its
             // provisioned credential, which for students is public data.
             RequirePasswordChange::class,
+
+            // Signed-in pages must not be stored by the browser, or Back would
+            // replay a registrar's dashboard after they have signed out.
+            PreventBackHistory::class,
         ]);
 
         $middleware->alias([

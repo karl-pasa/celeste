@@ -40,22 +40,33 @@
 
             <input type="hidden" name="role" :value="role">
 
+            {{-- Both roles sign in with an institutional address; only the
+                 password hint differs. --}}
             <div class="mb-3">
-                <label for="username" class="form-label"><i class="bi bi-person"></i> Username</label>
-                <input type="text" id="username" name="username" value="{{ old('username') }}"
-                       class="form-control @error('username') is-invalid @enderror"
-                       placeholder="Enter your username" autocomplete="username" autofocus required>
-                @error('username')
+                <label for="email" class="form-label">
+                    <i class="bi bi-envelope"></i> Institutional email
+                </label>
+                <input type="email" id="email" name="email" value="{{ old('email') }}"
+                       class="form-control @error('email') is-invalid @enderror"
+                       :placeholder="role === 'student'
+                            ? 'jdelacruz922.pbox@{{ config('celeste.institution.email_domain', 'parsu.edu.ph') }}'
+                            : 'registrar@{{ config('celeste.institution.email_domain', 'parsu.edu.ph') }}'"
+                       autocomplete="username" autofocus required>
+                @error('email')
                     <div class="invalid-feedback d-block">{{ $message }}</div>
                 @enderror
             </div>
 
             <div class="mb-3" x-data="{ show: false }">
-                <label for="password" class="form-label"><i class="bi bi-lock"></i> Password</label>
+                <label for="password" class="form-label">
+                    <i class="bi bi-lock"></i>
+                    <span x-text="role === 'student' ? 'Student number' : 'Password'">Student number</span>
+                </label>
                 <div class="input-group">
                     <input :type="show ? 'text' : 'password'" id="password" name="password"
                            class="form-control border-end-0 @error('password') is-invalid @enderror"
-                           placeholder="Enter your password" autocomplete="current-password" required>
+                           :placeholder="role === 'student' ? 'e.g. 2021-00184' : 'Enter your password'"
+                           autocomplete="current-password" required>
                     <button class="input-group-text" type="button" @click="show = !show"
                             :aria-label="show ? 'Hide password' : 'Show password'">
                         <i class="bi" :class="show ? 'bi-eye-slash' : 'bi-eye'"></i>
@@ -66,15 +77,30 @@
                 @enderror
             </div>
 
-            <div class="form-check mb-3">
-                <input class="form-check-input" type="checkbox" name="remember" id="remember">
-                <label class="form-check-label small text-muted-celeste" for="remember">Keep me signed in</label>
-            </div>
+            <p class="text-muted-celeste mb-3" style="font-size:.75rem" x-show="role === 'student'" x-cloak>
+                Sign in with your university email. Your password is your student number
+                until you set your own.
+            </p>
+
+            @if (config('celeste.auth.allow_remember', false))
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="remember" id="remember">
+                    <label class="form-check-label small text-muted-celeste" for="remember">Keep me signed in</label>
+                </div>
+            @endif
 
             <button type="submit" class="btn btn-psu w-100">
                 <i class="bi bi-box-arrow-in-right"></i> Sign in
             </button>
         </form>
+
+        @if (Route::has('password.request'))
+            <div class="text-center mt-3">
+                <a href="{{ route('password.request') }}" class="text-muted-celeste" style="font-size:.8125rem">
+                    Forgot your password?
+                </a>
+            </div>
+        @endif
 
         <div class="divider-label my-3">or</div>
 

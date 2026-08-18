@@ -28,7 +28,7 @@ class ImportStudents extends Command
 
     /** Columns every student CSV must contain. */
     protected array $required = [
-        'student_number', 'first_name', 'last_name', 'college', 'program', 'status',
+        'student_number', 'first_name', 'last_name', 'college', 'program', 'status', 'email',
     ];
 
     /** Everything else the importer will read if present. */

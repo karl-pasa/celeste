@@ -13,6 +13,7 @@ return [
         'short'           => env('CELESTE_INSTITUTION_SHORT', 'Partido State University'),
         'campus'          => env('CELESTE_CAMPUS', 'Camarines Sur'),
         'registrar_email' => env('CELESTE_REGISTRAR_EMAIL', 'registrar@parsu.edu.ph'),
+        'email_domain'    => env('CELESTE_EMAIL_DOMAIN', 'parsu.edu.ph'), 
     ],
 
     /*

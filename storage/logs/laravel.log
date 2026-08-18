@@ -1189,3 +1189,20 @@ Did you mean one of these?
 #62 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(23): require_once('C://laragon//www//...')
 #63 {main}
 "} 
+[2026-08-18 08:06:06] local.ERROR: Undefined constant "App\Console\Commands\email" {"exception":"[object] (Error(code: 0): Undefined constant \"App\\Console\\Commands\\email\" at C:/laragon/www/celeste/app/Console/Commands/ImportStudents.php:31)
+[stacktrace]
+#0 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Container/Container.php(1168): [constant expression]()
+#1 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Container/Container.php(933): Illuminate/Container/Container->build('App//Console//Com...')
+#2 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1078): Illuminate/Container/Container->resolve('App//Console//Com...', Array, true)
+#3 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Container/Container.php(864): Illuminate/Foundation/Application->resolve('App//Console//Com...', Array)
+#4 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1058): Illuminate/Container/Container->make('App//Console//Com...', Array)
+#5 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Console/Application.php(294): Illuminate/Foundation/Application->make('App//Console//Com...')
+#6 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(386): Illuminate/Console/Application->resolve('App//Console//Com...')
+#7 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Console/Application.php(133): Illuminate/Foundation/Console/Kernel->Illuminate/Foundation/Console/{closure}(Object(Illuminate/Console/Application))
+#8 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Console/Application.php(80): Illuminate/Console/Application->bootstrap()
+#9 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(560): Illuminate/Console/Application->__construct(Object(Illuminate/Foundation/Application), Object(Illuminate/Events/Dispatcher), '12.64.0')
+#10 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Illuminate/Foundation/Console/Kernel->getArtisan()
+#11 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#12 C:/laragon/www/celeste/artisan(12): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
+#13 {main}
+"} 

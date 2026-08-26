@@ -27,24 +27,6 @@ class DatabaseSeeder extends Seeder
 
         $records = [
             [
-                'student_number' => '2021-00184',
-                'first_name'     => 'Andrea',
-                'middle_name'    => 'Bautista',
-                'last_name'      => 'Ramirez',
-                'college'        => 'College of Engineering and Computational Sciences',
-                'program'        => 'Bachelor of Science in Information Technology',
-                'major'          => 'Web and Mobile Development',
-                'status'         => 'graduated',
-                'academic_year'  => '2025-2026',
-                'semester'       => 'Second Semester',
-                'year_level'     => '4th Year',
-                'date_admitted'  => '2021-08-16',
-                'date_graduated' => '2026-06-12',
-                'latin_honor'    => 'Cum Laude',
-                'general_weighted_average' => 1.612,
-                'role_account'   => ['username' => 'aramirez', 'role' => User::ROLE_STUDENT],
-            ],
-            [
                 'student_number' => '2023-00457',
                 'first_name'     => 'Miguel',
                 'middle_name'    => 'Santos',

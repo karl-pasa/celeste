@@ -64,9 +64,6 @@
                 <a href="<?php echo e(route('student.dashboard')); ?>" class="nav-link <?php echo e(request()->routeIs('student.dashboard') ? 'active' : ''); ?>">
                     <i class="bi bi-grid-1x2"></i> Overview
                 </a>
-                <a href="<?php echo e(route('student.documents')); ?>" class="nav-link <?php echo e(request()->routeIs('student.documents') ? 'active' : ''); ?>">
-                    <i class="bi bi-file-earmark-text"></i> My documents
-                </a>
 
                 <div class="nav-section">Tools</div>
                 <a href="<?php echo e(route('verify.scanner')); ?>" class="nav-link">

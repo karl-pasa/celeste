@@ -1,10 +1,6 @@
 <div class="row g-3">
 
-    {{--
-      | The document picker is plain buttons rather than radio inputs: a radio
-      | draws its own blue dot and picks up the browser focus ring, which left
-      | an unchosen option looking chosen.
-    --}}
+    
     <style>
         .doc-choice {
             width: 100%;
@@ -75,109 +71,132 @@
             <div class="card-header">Document details</div>
             <div class="p-3 p-md-4">
 
-                {{-- Step 1: student --}}
+                
                 <div class="d-flex align-items-center gap-2 mb-2">
                     <span class="step-pill">1</span>
                     <label class="form-label mb-0">Find the student record</label>
                 </div>
 
-                @if ($this->student)
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($this->student): ?>
                     <div class="d-flex justify-content-between align-items-center p-3 rounded-3 mb-3"
                          style="background:var(--psu-navy-050);border:1px solid var(--line)">
                         <div>
-                            <div class="fw-semibold">{{ $this->student->full_name }}</div>
+                            <div class="fw-semibold"><?php echo e($this->student->full_name); ?></div>
                             <div class="text-muted-celeste" style="font-size:.8125rem">
-                                <span class="serial">{{ $this->student->student_number }}</span>
-                                · {{ $this->student->program }}
-                                · <span class="text-capitalize">{{ $this->student->status }}</span>
+                                <span class="serial"><?php echo e($this->student->student_number); ?></span>
+                                · <?php echo e($this->student->program); ?>
+
+                                · <span class="text-capitalize"><?php echo e($this->student->status); ?></span>
                             </div>
                         </div>
                         <button wire:click="clearStudent" class="btn btn-sm btn-psu-outline">Change</button>
                     </div>
-                @else
+                <?php else: ?>
                     <input type="text" wire:model.live.debounce.300ms="search"
-                           class="form-control @error('studentId') is-invalid @enderror"
+                           class="form-control <?php $__errorArgs = ['studentId'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                            placeholder="Search by name or student number" autocomplete="off">
-                    @error('studentId') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['studentId'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <div class="invalid-feedback d-block"><?php echo e($message); ?></div> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                    @if ($this->results->isNotEmpty())
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($this->results->isNotEmpty()): ?>
                         <div class="list-group mt-2 mb-3">
-                            @foreach ($this->results as $record)
-                                <button type="button" wire:click="selectStudent({{ $record->id }})"
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $this->results; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $record): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <button type="button" wire:click="selectStudent(<?php echo e($record->id); ?>)"
                                         class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                                     <span>
-                                        <span class="d-block">{{ $record->full_name }}</span>
+                                        <span class="d-block"><?php echo e($record->full_name); ?></span>
                                         <span class="text-muted-celeste" style="font-size:.8125rem">
-                                            {{ $record->student_number }} · {{ $record->program }}
+                                            <?php echo e($record->student_number); ?> · <?php echo e($record->program); ?>
+
                                         </span>
                                     </span>
-                                    <span class="badge-celeste badge-type text-capitalize">{{ $record->status }}</span>
+                                    <span class="badge-celeste badge-type text-capitalize"><?php echo e($record->status); ?></span>
                                 </button>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
-                    @elseif (strlen($search) >= 2)
+                    <?php elseif(strlen($search) >= 2): ?>
                         <p class="text-muted-celeste mt-2 mb-3" style="font-size:.8125rem">
-                            No records match “{{ $search }}”. Check the spelling or the student number.
+                            No records match “<?php echo e($search); ?>”. Check the spelling or the student number.
                         </p>
-                    @else
+                    <?php else: ?>
                         <p class="text-muted-celeste mt-2 mb-3" style="font-size:.8125rem">
                             Type at least two characters to search.
                         </p>
-                    @endif
-                @endif
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                {{-- Step 2: document type --}}
+                
                 <div class="d-flex align-items-center justify-content-between gap-2 mb-2 mt-4">
                     <div class="d-flex align-items-center gap-2">
                         <span class="step-pill">2</span>
                         <label class="form-label mb-0">Choose the document</label>
                     </div>
-                    @if ($documentType)
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($documentType): ?>
                         <button type="button" wire:click="clearType"
                                 class="btn btn-sm btn-psu-outline" style="padding:.25rem .6rem">
                             <i class="bi bi-x-lg"></i> Clear
                         </button>
-                    @endif
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
 
                 <div class="row g-2 mb-2">
-                    @foreach ($types as $value => $label)
-                        @php $selected = $documentType === $value; @endphp
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $types; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php $selected = $documentType === $value; ?>
                         <div class="col-sm-6">
                             <button type="button" class="doc-choice"
-                                    wire:click="selectType('{{ $value }}')"
-                                    wire:key="type-{{ $value }}"
-                                    aria-pressed="{{ $selected ? 'true' : 'false' }}">
-                                @if ($selected)
+                                    wire:click="selectType('<?php echo e($value); ?>')"
+                                    wire:key="type-<?php echo e($value); ?>"
+                                    aria-pressed="<?php echo e($selected ? 'true' : 'false'); ?>">
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($selected): ?>
                                     <i class="bi bi-check-circle-fill doc-check"></i>
-                                @endif
-                                <span>{{ $label }}</span>
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                <span><?php echo e($label); ?></span>
                             </button>
                         </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
 
-                @error('documentType')
-                    <div class="invalid-feedback d-block mb-2">{{ $message }}</div>
-                @enderror
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['documentType'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                    <div class="invalid-feedback d-block mb-2"><?php echo e($message); ?></div>
+                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                 <p class="text-muted-celeste mb-3" style="font-size:.75rem">
-                    @if ($documentType)
-                        Click <strong>{{ $types[$documentType] }}</strong> again to unselect it, or pick a different document.
-                    @else
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($documentType): ?>
+                        Click <strong><?php echo e($types[$documentType]); ?></strong> again to unselect it, or pick a different document.
+                    <?php else: ?>
                         Nothing is selected yet. Click a document to choose it.
-                    @endif
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </p>
 
-                @if ($this->eligibility)
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($this->eligibility): ?>
                     <div class="alert d-flex gap-2 py-2 px-3 mb-3"
                          style="background:var(--psu-gold-soft);border:1px solid #f0dcae;color:#8a5c0c;font-size:.8125rem">
                         <i class="bi bi-exclamation-triangle"></i>
-                        <span>{{ $this->eligibility }}</span>
+                        <span><?php echo e($this->eligibility); ?></span>
                     </div>
-                @endif
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                {{-- Step 3: issuance --}}
+                
                 <div class="d-flex align-items-center gap-2 mb-2 mt-4">
                     <span class="step-pill">3</span>
                     <label class="form-label mb-0">Issuance</label>
@@ -187,8 +206,22 @@
                     <div class="col-sm-5">
                         <label for="issuedOn" class="form-label">Date of issue</label>
                         <input type="date" id="issuedOn" wire:model="issuedOn"
-                               class="form-control @error('issuedOn') is-invalid @enderror">
-                        @error('issuedOn') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                               class="form-control <?php $__errorArgs = ['issuedOn'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['issuedOn'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <div class="invalid-feedback"><?php echo e($message); ?></div> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                     <div class="col-sm-7">
                         <label for="purpose" class="form-label">Purpose <span class="text-muted-celeste">(optional)</span></label>
@@ -199,14 +232,14 @@
 
                 <button wire:click="generate" class="btn btn-psu w-100 mt-4"
                         wire:loading.attr="disabled" wire:target="generate"
-                        @disabled(! $this->ready)>
+                        <?php if(! $this->ready): echo 'disabled'; endif; ?>>
                     <span wire:loading.remove wire:target="generate">
                         <i class="bi bi-shield-lock"></i>
-                        @if (! $this->ready)
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(! $this->ready): ?>
                             Choose a student and a document
-                        @else
+                        <?php else: ?>
                             Generate, hash, and stamp the QR
-                        @endif
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </span>
                     <span wire:loading wire:target="generate">
                         <span class="spinner-border spinner-border-sm me-1"></span> Building the document…
@@ -217,36 +250,31 @@
     </div>
 
     <div class="col-lg-5">
-        @if ($this->issued)
-            <div class="card-celeste" wire:key="issued-{{ $this->issued->id }}">
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($this->issued): ?>
+            <div class="card-celeste" wire:key="issued-<?php echo e($this->issued->id); ?>">
                 <div class="card-header d-flex align-items-center gap-2" style="color:#157a34">
                     <i class="bi bi-check-circle-fill"></i> Document issued
                 </div>
 
                 <div class="p-3 p-md-4">
 
-                    {{-- QR code and identifiers --}}
+                    
                     <div class="text-center">
-                        <img src="{{ route('certificates.qr', $this->issued) }}"
-                             alt="QR code for {{ $this->issued->serial_number }}"
+                        <img src="<?php echo e(route('certificates.qr', $this->issued)); ?>"
+                             alt="QR code for <?php echo e($this->issued->serial_number); ?>"
                              class="img-fluid mb-3" style="max-width:170px">
 
-                        <div class="serial mb-1">{{ $this->issued->serial_number }}</div>
+                        <div class="serial mb-1"><?php echo e($this->issued->serial_number); ?></div>
                         <div class="text-muted-celeste mb-3" style="font-size:.8125rem">
-                            {{ $this->issued->type_label }} · {{ $this->issued->studentRecord?->full_name }}
+                            <?php echo e($this->issued->type_label); ?> · <?php echo e($this->issued->studentRecord?->full_name); ?>
+
                         </div>
                     </div>
 
                     <div class="form-label">Fingerprint (SHA-256)</div>
-                    <div class="hash-chip d-block mb-4">{{ $this->issued->content_hash }}</div>
+                    <div class="hash-chip d-block mb-4"><?php echo e($this->issued->content_hash); ?></div>
 
-                    {{--
-                      | Preview, directly beneath the QR.
-                      |
-                      | The iframe points at the print route, so these are the
-                      | same bytes the download produces rather than a separate
-                      | rendering — what appears here is what prints.
-                    --}}
+                    
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <div class="form-label mb-0">
                             <i class="bi bi-file-earmark-text"></i> Document preview
@@ -261,8 +289,8 @@
                     <div class="doc-preview mb-2">
                         <div class="preview-loading">Loading the document…</div>
                         <iframe
-                            src="{{ route('certificates.print', $this->issued) }}#view=FitH&toolbar=0&navpanes=0"
-                            title="Preview of {{ $this->issued->serial_number }}"></iframe>
+                            src="<?php echo e(route('certificates.print', $this->issued)); ?>#view=FitH&toolbar=0&navpanes=0"
+                            title="Preview of <?php echo e($this->issued->serial_number); ?>"></iframe>
                     </div>
 
                     <p class="text-muted-celeste mb-3" style="font-size:.75rem">
@@ -271,46 +299,44 @@
                     </p>
 
                     <div class="d-flex gap-2 mb-2">
-                        <a href="{{ route('certificates.download', $this->issued) }}"
+                        <a href="<?php echo e(route('certificates.download', $this->issued)); ?>"
                            class="btn btn-psu flex-fill btn-sm">
                             <i class="bi bi-download"></i> Download
                         </a>
-                        <a href="{{ route('certificates.print', $this->issued) }}" target="_blank"
+                        <a href="<?php echo e(route('certificates.print', $this->issued)); ?>" target="_blank"
                            class="btn btn-psu-outline flex-fill btn-sm">
                             <i class="bi bi-printer"></i> Print
                         </a>
                     </div>
 
-                    <a href="{{ route('registrar.certificates.show', $this->issued) }}"
+                    <a href="<?php echo e(route('registrar.certificates.show', $this->issued)); ?>"
                        class="btn btn-psu-outline btn-sm w-100">
                         Open the record
                     </a>
                 </div>
             </div>
 
-            {{--
-              | wire:ignore keeps Livewire from re-rendering the modal while it
-              | is open, which would otherwise tear out the iframe mid-view.
-            --}}
+            
             <div wire:ignore>
                 <div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-xl modal-dialog-centered">
                         <div class="modal-content" style="border:0;border-radius:var(--radius-lg)">
                             <div class="modal-header border-0 pb-2">
                                 <h5 class="modal-title" style="font-size:1rem">
-                                    {{ $this->issued->type_label }}
-                                    <span class="serial ms-2">{{ $this->issued->serial_number }}</span>
+                                    <?php echo e($this->issued->type_label); ?>
+
+                                    <span class="serial ms-2"><?php echo e($this->issued->serial_number); ?></span>
                                 </h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body pt-0">
                                 <div class="preview-modal-body rounded-3 overflow-hidden">
-                                    <iframe src="{{ route('certificates.print', $this->issued) }}#view=Fit"
+                                    <iframe src="<?php echo e(route('certificates.print', $this->issued)); ?>#view=Fit"
                                             title="Full size preview"></iframe>
                                 </div>
                             </div>
                             <div class="modal-footer border-0 pt-0">
-                                <a href="{{ route('certificates.download', $this->issued) }}" class="btn btn-psu btn-sm">
+                                <a href="<?php echo e(route('certificates.download', $this->issued)); ?>" class="btn btn-psu btn-sm">
                                     <i class="bi bi-download"></i> Download
                                 </a>
                                 <button type="button" class="btn btn-psu-outline btn-sm" data-bs-dismiss="modal">Close</button>
@@ -319,7 +345,7 @@
                     </div>
                 </div>
             </div>
-        @else
+        <?php else: ?>
             <div class="card-celeste">
                 <div class="card-header">What happens when you generate</div>
                 <div class="p-3 p-md-4">
@@ -337,6 +363,6 @@
                     </p>
                 </div>
             </div>
-        @endif
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
     </div>
-</div>
+</div><?php /**PATH C:\laragon\www\celeste\resources\views/livewire/certificates/generate-single.blade.php ENDPATH**/ ?>

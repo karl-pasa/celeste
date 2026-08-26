@@ -63,9 +63,6 @@
                 <a href="{{ route('student.dashboard') }}" class="nav-link {{ request()->routeIs('student.dashboard') ? 'active' : '' }}">
                     <i class="bi bi-grid-1x2"></i> Overview
                 </a>
-                <a href="{{ route('student.documents') }}" class="nav-link {{ request()->routeIs('student.documents') ? 'active' : '' }}">
-                    <i class="bi bi-file-earmark-text"></i> My documents
-                </a>
 
                 <div class="nav-section">Tools</div>
                 <a href="{{ route('verify.scanner') }}" class="nav-link">

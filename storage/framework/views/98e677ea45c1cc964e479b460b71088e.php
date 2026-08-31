@@ -19,7 +19,11 @@
 <div class="celeste-field">
     <nav class="container py-3 d-flex align-items-center justify-content-between">
         <a href="<?php echo e(route('home')); ?>" class="d-flex align-items-center gap-2 text-decoration-none">
-            <span class="d-grid" style="width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.12);place-items:center;color:#fff;font-weight:700;font-size:.8125rem">CE</span>
+            <span class="d-grid" style="width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.12);place-items:center;overflow:hidden">
+                <img src="<?php echo e(asset('images/psu-seal-white.png')); ?>" alt=""
+                    style="width:26px;height:26px;object-fit:contain"
+                    onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            </span>
             <span>
                 <span class="d-block text-white fw-bold" style="letter-spacing:.04em;line-height:1.1">CELESTE</span>
                 <span class="d-block" style="color:rgba(255,255,255,.6);font-size:.6875rem"><?php echo e(config('celeste.institution.short')); ?></span>

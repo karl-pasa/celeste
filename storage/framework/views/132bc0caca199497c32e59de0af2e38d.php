@@ -1,20 +1,5 @@
-{{--
-    Official Transcript of Records · PSU-F-URO-27
-    ---------------------------------------------------------------------------
-    Two pages: cover, then the subject area.
 
-    Vertical budget — a 330mm page less margins leaves about 314mm. Exceed that
-    and Dompdf pushes the remainder onto a new sheet, so one logical page
-    becomes two. Both pages here sit inside it.
-
-    The registrar's name comes from config('celeste.officials.registrar'),
-    which reads CELESTE_REGISTRAR_NAME from .env — a change of registrar is an
-    environment change, not a code edit.
-
-    Values come from $certificate->payload, the snapshot taken at issuance.
-    A missing value prints as blank space, as the office fills these by hand.
---}}
-@php
+<?php
     $p = $certificate->payload ?? [];
 
     $v = fn (string $k, string $else = '') => filled($p[$k] ?? null) ? $p[$k] : $else;
@@ -36,12 +21,12 @@
     $grouped  = $subjects->groupBy(fn ($r) => trim(
         ($r['term'] ?? '') ?: (($r['semester'] ?? '') . ' ' . ($r['academic_year'] ?? ''))
     ));
-@endphp
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>{{ $certificate->serial_number }}</title>
+<title><?php echo e($certificate->serial_number); ?></title>
 <style>
     @page { size: 216mm 330mm; margin: 7mm 7mm 5mm 7mm; }
 
@@ -100,105 +85,98 @@
 </head>
 <body>
 
-{{-- ══════════════════════ PAGE 1 ══════════════════════ --}}
-@include('pdf.partials.tor-header')
-@include('pdf.partials.tor-identity', ['p' => $p])
 
-{{-- PERSONAL INFORMATION --}}
+<?php echo $__env->make('pdf.partials.tor-header', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+<?php echo $__env->make('pdf.partials.tor-identity', ['p' => $p], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
+
 <table class="bx" style="margin-top:2mm">
     <tr><td colspan="2" style="padding:0"><span class="bar">PERSONAL INFORMATION</span></td></tr>
-    @foreach ([
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [
         'Address'     => $v('address'),
         'Gender'      => $v('gender'),
         'Nationality' => $v('nationality'),
         'Birthdate'   => $d('birth_date'),
         'Birthplace'  => $v('birthplace'),
-    ] as $label => $value)
+    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $label => $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <tr>
-            <td class="lbl" style="width:26mm">{{ $label }}:</td>
-            <td class="plain">{{ $value }}</td>
+            <td class="lbl" style="width:26mm"><?php echo e($label); ?>:</td>
+            <td class="plain"><?php echo e($value); ?></td>
         </tr>
-    @endforeach
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 </table>
 
-{{--
-    ADMISSION DATA · GRADUATION DATA · NSTP SERIAL NO.
 
-    One box, as on the form: a single outer border, a vertical rule down the
-    middle, and a horizontal rule in the right column separating graduation
-    data from the NSTP serial. The previous version drew three separate boxes,
-    which is why they read as detached panels.
---}}
 <table class="bx" style="margin-top:2mm">
     <tr>
-        {{-- Left column --}}
+        
         <td style="width:52%; border-right:.7pt solid #000; padding:0">
             <table>
                 <tr><td colspan="2" style="padding:0"><span class="bar">ADMISSION DATA</span></td></tr>
 
                 <tr>
                     <td colspan="2" class="lbl" style="padding:1mm 1.4mm .3mm">
-                        A. <span class="tick">{{ $tickNew }}</span> NEW
+                        A. <span class="tick"><?php echo e($tickNew); ?></span> NEW
                     </td>
                 </tr>
-                @foreach ([
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [
                     'School'         => $isNew ? $v('adm_new_school') : '',
                     'Address'        => $isNew ? $v('adm_new_address') : '',
                     'Course'         => $isNew ? $v('adm_new_course') : '',
                     'Year Graduated' => $isNew ? $v('adm_new_year_graduated') : '',
-                ] as $label => $value)
+                ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $label => $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr>
-                        <td class="lbl" style="width:26mm; padding:.5mm 1.4mm .5mm 5mm">{{ $label }}:</td>
-                        <td class="plain" style="padding:.5mm 1.4mm">{{ $value }}</td>
+                        <td class="lbl" style="width:26mm; padding:.5mm 1.4mm .5mm 5mm"><?php echo e($label); ?>:</td>
+                        <td class="plain" style="padding:.5mm 1.4mm"><?php echo e($value); ?></td>
                     </tr>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                 <tr>
                     <td colspan="2" class="lbl" style="padding:2.5mm 1.4mm .3mm 5mm">
-                        <span class="tick">{{ $tickTr }}</span> TRANSFEREE
+                        <span class="tick"><?php echo e($tickTr); ?></span> TRANSFEREE
                     </td>
                 </tr>
-                @foreach ([
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [
                     'School'               => $isNew ? '' : $v('adm_tr_school'),
                     'Address'              => $isNew ? '' : $v('adm_tr_address'),
                     'Course'               => $isNew ? '' : $v('adm_tr_course'),
                     'Year Graduated'       => $isNew ? '' : $v('adm_tr_year_graduated'),
                     'Admission Credential' => $isNew ? '' : $v('adm_tr_credential'),
-                ] as $label => $value)
+                ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $label => $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr>
-                        <td class="lbl" style="width:26mm; padding:.5mm 1.4mm .5mm 5mm">{{ $label }}:</td>
-                        <td class="plain" style="padding:.5mm 1.4mm">{{ $value }}</td>
+                        <td class="lbl" style="width:26mm; padding:.5mm 1.4mm .5mm 5mm"><?php echo e($label); ?>:</td>
+                        <td class="plain" style="padding:.5mm 1.4mm"><?php echo e($value); ?></td>
                     </tr>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                 <tr>
                     <td class="lbl" style="padding:2.5mm 1.4mm 1.5mm">B.&nbsp; Date of Admission:</td>
-                    <td class="plain" style="padding:2.5mm 1.4mm 1.5mm">{{ $d('date_admitted') }}</td>
+                    <td class="plain" style="padding:2.5mm 1.4mm 1.5mm"><?php echo e($d('date_admitted')); ?></td>
                 </tr>
             </table>
         </td>
 
-        {{-- Right column, split by a horizontal rule --}}
+        
         <td style="width:48%; padding:0">
             <table>
                 <tr>
                     <td style="padding:0">
                         <table>
                             <tr><td colspan="2" style="padding:0"><span class="bar">GRADUATION DATA</span></td></tr>
-                            @foreach ([
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [
                                 'Date Conferred'       => $d('date_conferred'),
                                 'Board Resolution No.' => $v('board_resolution_no'),
                                 'Date'                 => $d('board_resolution_date'),
-                            ] as $label => $value)
+                            ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $label => $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <tr>
-                                    <td class="lbl" style="width:30mm; padding:.5mm 1.4mm .5mm 5mm">{{ $label }}:</td>
-                                    <td class="plain" style="padding:.5mm 1.4mm">{{ $value }}</td>
+                                    <td class="lbl" style="width:30mm; padding:.5mm 1.4mm .5mm 5mm"><?php echo e($label); ?>:</td>
+                                    <td class="plain" style="padding:.5mm 1.4mm"><?php echo e($value); ?></td>
                                 </tr>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             <tr><td colspan="2" style="height:6mm"></td></tr>
                             <tr>
                                 <td class="lbl" style="padding:.5mm 1.4mm 2mm 5mm">Awards:</td>
-                                <td class="plain" style="padding:.5mm 1.4mm 2mm">{{ $v('awards') }}</td>
+                                <td class="plain" style="padding:.5mm 1.4mm 2mm"><?php echo e($v('awards')); ?></td>
                             </tr>
                         </table>
                     </td>
@@ -207,7 +185,8 @@
                     <td style="border-top:.7pt solid #000; padding:0">
                         <span class="bar">NSTP SERIAL NO.:</span>
                         <div class="plain" style="text-align:center; padding:6mm 1.4mm 5mm">
-                            {{ $v('nstp_serial_no') }}
+                            <?php echo e($v('nstp_serial_no')); ?>
+
                         </div>
                     </td>
                 </tr>
@@ -216,58 +195,57 @@
     </tr>
 </table>
 
-{{-- PROGRAM ACCREDITATION STATUS --}}
+
 <table class="bx" style="margin-top:2mm">
     <tr><td class="lbl">PROGRAM ACCREDITATION STATUS:</td></tr>
-    <tr><td style="height:8mm">{{ $v('program_accreditation') }}</td></tr>
+    <tr><td style="height:8mm"><?php echo e($v('program_accreditation')); ?></td></tr>
 </table>
 
-{{-- GRANTED TRANSFER CREDENTIALS · receipt --}}
+
 <table style="margin-top:2mm">
     <tr>
         <td style="width:72%; padding-right:2.5mm">
             <table class="bx">
                 <tr><td class="lbl">GRANTED TRANSFER CREDENTIALS :</td></tr>
-                <tr><td style="height:9mm">{{ $v('granted_transfer_credentials') }}</td></tr>
+                <tr><td style="height:9mm"><?php echo e($v('granted_transfer_credentials')); ?></td></tr>
             </table>
         </td>
         <td style="width:28%">
             <table class="bx">
-                @foreach ([
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [
                     'OR NO.' => $v('or_no'),
                     'DATE'   => $d('or_date'),
                     'AMOUNT' => filled($p['cert_fee'] ?? $p['or_amount'] ?? null)
                                 ? 'Php ' . ($p['cert_fee'] ?? $p['or_amount']) : '',
-                ] as $label => $value)
+                ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $label => $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr>
-                        <td class="lbl" style="width:15mm">{{ $label }}:</td>
-                        <td class="plain">{{ $value }}</td>
+                        <td class="lbl" style="width:15mm"><?php echo e($label); ?>:</td>
+                        <td class="plain"><?php echo e($value); ?></td>
                     </tr>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </table>
         </td>
     </tr>
 </table>
 
-{{-- REMARKS --}}
+
 <table class="bx" style="margin-top:2mm">
     <tr><td class="lbl">REMARKS:</td></tr>
-    <tr><td style="height:11mm">{{ $v('remarks') }}</td></tr>
+    <tr><td style="height:11mm"><?php echo e($v('remarks')); ?></td></tr>
 </table>
 
-@include('pdf.partials.tor-footer', [
+<?php echo $__env->make('pdf.partials.tor-footer', [
     'p' => $p, 'page' => 1, 'pages' => 2,
     'certificate' => $certificate, 'qr' => $qr ?? null,
-])
+], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
 <div class="brk"></div>
 
-{{-- ══════════════════════ PAGE 2 ══════════════════════ --}}
-@include('pdf.partials.tor-header')
-@include('pdf.partials.tor-identity', ['p' => $p])
 
-{{-- Column labels above open space. No surrounding box: the printed form
-     leaves this area blank for the entries. --}}
+<?php echo $__env->make('pdf.partials.tor-header', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+<?php echo $__env->make('pdf.partials.tor-identity', ['p' => $p], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
+
 <table class="subj-head" style="margin-top:3mm">
     <tr>
         <td style="width:22%">Subject Code</td>
@@ -281,20 +259,20 @@
 <table>
 <tr><td class="subj-area">
 <table class="subj">
-    @foreach ($grouped as $term => $list)
-        @if (filled($term))
-            <tr><td colspan="5">{{ mb_strtoupper($term) }}</td></tr>
-        @endif
-        @foreach ($list as $s)
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $grouped; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $term => $list): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(filled($term)): ?>
+            <tr><td colspan="5"><?php echo e(mb_strtoupper($term)); ?></td></tr>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $list; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <tr>
-                <td style="width:22%">{{ $s['code'] ?? '' }}</td>
-                <td style="width:46%">{{ $s['title'] ?? '' }}</td>
-                <td style="width:11%; text-align:center">{{ $s['grade'] ?? '' }}</td>
-                <td style="width:11%; text-align:center">{{ $s['removal'] ?? '' }}</td>
-                <td style="width:10%; text-align:center">{{ filled($s['units'] ?? null) ? number_format((float) $s['units'], 1) : '' }}</td>
+                <td style="width:22%"><?php echo e($s['code'] ?? ''); ?></td>
+                <td style="width:46%"><?php echo e($s['title'] ?? ''); ?></td>
+                <td style="width:11%; text-align:center"><?php echo e($s['grade'] ?? ''); ?></td>
+                <td style="width:11%; text-align:center"><?php echo e($s['removal'] ?? ''); ?></td>
+                <td style="width:10%; text-align:center"><?php echo e(filled($s['units'] ?? null) ? number_format((float) $s['units'], 1) : ''); ?></td>
             </tr>
-        @endforeach
-    @endforeach
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <tr>
         <td colspan="5" class="close">
@@ -305,10 +283,11 @@
 </td></tr>
 </table>
 
-@include('pdf.partials.tor-footer', [
+<?php echo $__env->make('pdf.partials.tor-footer', [
     'p' => $p, 'page' => 2, 'pages' => 2,
     'certificate' => $certificate, 'qrPath' => $qrPath ?? null,
-])
+], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
 </body>
 </html>
+<?php /**PATH C:\laragon\www\celeste\resources\views/pdf/transcript-of-records.blade.php ENDPATH**/ ?>

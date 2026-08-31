@@ -71,6 +71,10 @@
                 <a href="{{ route('verify') }}" class="nav-link">
                     <i class="bi bi-patch-check"></i> Verify a document
                 </a>
+                <a href="{{ route('registrar.transcript') }}"
+                   class="nav-link {{ request()->routeIs('registrar.transcript') ? 'active' : '' }}">
+                    <i class="bi bi-list-columns-reverse"></i> Transcript of Records
+                </a>
             @endif
         </nav>
 

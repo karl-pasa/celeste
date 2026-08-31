@@ -15,6 +15,14 @@ class StudentRecord extends Model
         'birth_date', 'college', 'program', 'major', 'status', 'year_level',
         'academic_year', 'semester', 'date_admitted', 'date_graduated',
         'latin_honor', 'general_weighted_average', 'grades', 'address', 'year_level', 'email',
+        'gender', 'nationality', 'birth_date', 'birthplace',
+        'admission_type',
+        'adm_new_school', 'adm_new_address', 'adm_new_course', 'adm_new_year_graduated',
+        'adm_tr_school', 'adm_tr_address', 'adm_tr_course', 'adm_tr_year_graduated',
+        'adm_tr_credential',
+        'date_conferred', 'board_resolution_no', 'board_resolution_date', 'awards',
+        'nstp_serial_no', 'program_accreditation',
+        'granted_transfer_credentials', 'remarks',
     ];
 
     protected function casts(): array
@@ -25,6 +33,8 @@ class StudentRecord extends Model
             'date_admitted'            => 'date',
             'date_graduated'           => 'date',
             'general_weighted_average' => 'decimal:3',
+            'date_conferred'        => 'date',
+            'board_resolution_date' => 'date',
         ];
     }
 

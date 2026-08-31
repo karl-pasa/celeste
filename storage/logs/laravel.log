@@ -1486,3 +1486,28 @@ DETAIL:  Key (email)=(registrar@parsu.edu.ph) already exists. at C:/laragon/www/
 #46 C:/laragon/www/celeste/artisan(12): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
 #47 {main}
 "} 
+[2026-08-29 06:03:05] local.ERROR: Command "celeste:scan-form" is not defined.
+
+Did you mean one of these?
+    celeste:calibrate
+    celeste:create-registrar
+    celeste:create-student-accounts
+    celeste:import-students
+    celeste:onboard
+    celeste:pepper {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException(code: 0): Command \"celeste:scan-form\" is not defined.
+
+Did you mean one of these?
+    celeste:calibrate
+    celeste:create-registrar
+    celeste:create-student-accounts
+    celeste:import-students
+    celeste:onboard
+    celeste:pepper at C:/laragon/www/celeste/vendor/symfony/console/Application.php:759)
+[stacktrace]
+#0 C:/laragon/www/celeste/vendor/symfony/console/Application.php(298): Symfony/Component/Console/Application->find('celeste:scan-fo...')
+#1 C:/laragon/www/celeste/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#2 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#3 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#4 C:/laragon/www/celeste/artisan(12): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
+#5 {main}
+"} 

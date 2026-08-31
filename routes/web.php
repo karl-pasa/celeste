@@ -81,6 +81,9 @@ Route::middleware(['auth', 'role:registrar'])->prefix('registrar')->name('regist
     Route::get('/students', [CertificateController::class, 'students'])->name('students');
     Route::get('/analytics', [DashboardController::class, 'analytics'])->name('analytics');
     Route::get('/logs', [DashboardController::class, 'logs'])->name('logs');
+    Route::get('/transcript', function () {
+        return view('registrar.transcript');
+    })->name('transcript');
 });
 
 /*

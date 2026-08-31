@@ -29,6 +29,22 @@ class CertificateGenerator
         protected PdfTemplateStamper $stamper,
     ) {}
 
+    /**
+     * Issue one certificate.
+     *
+     * $overrides accepts two keys:
+     *   'issued_on' — the date of issue, otherwise today
+     *   'payload'   — values supplied by the caller, merged over those read
+     *                 from the student record BEFORE hashing, so anything
+     *                 printed is covered by the fingerprint
+     *
+     * There was previously an unused $extra parameter sitting ahead of
+     * $overrides. Because it was never read, every caller passing values in
+     * the fourth position had them silently discarded — including reissue(),
+     * whose 'supersedes' marker never reached a payload. Removing it makes
+     * $overrides the fourth argument, which is the position callers were
+     * already using.
+     */
     public function issue(
         StudentRecord $student,
         string $documentType,
@@ -42,9 +58,13 @@ class CertificateGenerator
                 : now();
 
             $serial = $this->nextSerial($documentType, $issuedOn);
+
+            // Caller-supplied values win over those read from the record, and
+            // the merge happens before the hash below. A value printed on the
+            // document but absent here would sit outside the fingerprint and
+            // could be altered afterwards without verification noticing.
             $payload = array_merge(
                 $this->buildPayload($student, $documentType, $serial, $issuedOn),
-                Str::of('')->isEmpty() ? [] : [],
                 $overrides['payload'] ?? []
             );
 
@@ -105,6 +125,9 @@ class CertificateGenerator
             }
 
             try {
+                // The batch is the fifth argument. It was previously passed
+                // fifth while the signature expected an array there, which
+                // raised a TypeError on the first student of every batch.
                 $this->issue($student, $documentType, $registrar, [], $batch);
                 $batch->increment('generated');
             } catch (\Throwable $e) {
@@ -164,8 +187,8 @@ class CertificateGenerator
                 'last_semester'  => $student->semester,
                 'academic_year'  => $student->academic_year,
                 'purpose'        => 'Transfer to another institution',
-                'address'        => $student->address,      
-                'year_level'     => $student->year_level,   
+                'address'        => $student->address,
+                'year_level'     => $student->year_level,
             ],
             Certificate::TYPE_ENROLMENT => $base + [
                 'year_level'    => $student->year_level,
@@ -179,6 +202,7 @@ class CertificateGenerator
                 'gwa'           => $student->general_weighted_average,
                 'date_admitted' => optional($student->date_admitted)->toDateString(),
                 'date_graduated'=> optional($student->date_graduated)->toDateString(),
+                'major'         => $student->major,
             ],
             default => $base,
         };
@@ -214,19 +238,33 @@ class CertificateGenerator
             Certificate::TYPE_TOR       => 'pdf.transcript-of-records',
         };
 
-        $paper = $certificate->document_type === Certificate::TYPE_DIPLOMA
-            ? ['a4', 'landscape']
-            : ['a4', 'portrait'];
+        $paper = match ($certificate->document_type) {
+            Certificate::TYPE_DIPLOMA => ['a4', 'landscape'],
+
+            // Long bond, 8.5 × 13 inches, which is what the Registrar prints
+            // transcripts on. Expressed in points because Dompdf has no name
+            // for this size.
+            //
+            // This previously fell through to A4. A4 is 297mm tall against
+            // long bond's 330mm, so a layout laid out for the taller sheet
+            // lost 33mm and pushed its footer onto a third page — the
+            // stylesheet said one size while the renderer used another.
+            Certificate::TYPE_TOR => [[0, 0, 612, 936], 'portrait'],
+
+            default => ['a4', 'portrait'],
+        };
 
         return Pdf::loadView($view, [
             'certificate' => $certificate,
             'student'     => $certificate->studentRecord,
             'payload'     => $certificate->payload,
+
+            // A data URI, which Dompdf renders inline without touching the
+            // filesystem — so no temporary file, no cleanup, and no chroot
+            // restriction to fall foul of.
             'qr'          => $this->qr->dataUri($certificate),
             'verifyUrl'   => $this->qr->payloadUrl($certificate),
         ])->setPaper(...$paper);
-
-        return $this->storeRendered($certificate, $pdf->output());
     }
 
     /**

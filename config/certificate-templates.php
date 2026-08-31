@@ -142,9 +142,7 @@ Certificate::TYPE_DISMISSAL => [
      | each line is. See USING-YOUR-PDF-TEMPLATES.md.
      */
     Certificate::TYPE_TOR => [
-        'template'    => null,
         'page'        => 'Letter',
         'orientation' => 'portrait',
-        'fields'      => [],
     ],
 ];

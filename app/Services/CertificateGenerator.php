@@ -46,12 +46,35 @@ class CertificateGenerator
      * already using.
      */
     public function issue(
-        StudentRecord $student,
+         StudentRecord $student,
         string $documentType,
         User $registrar,
         array $overrides = [],
         ?CertificateBatch $batch = null,
     ): Certificate {
+        // A student holds one active document of each type. Asking for a
+        // second returns the first rather than minting a new serial, a new
+        // token and a new QR for a document that already exists — which is
+        // what produced duplicate certificates for the same student.
+        //
+        // When the details have genuinely changed, reissue() is the path:
+        // it supersedes the original and leaves any printed copy resolving
+        // to an explanation rather than silently competing with a twin.
+        if (! ($overrides['force'] ?? false)) {
+            $existing = Certificate::where('student_record_id', $student->id)
+                ->where('document_type', $documentType)
+                ->where('status', 'issued')
+                ->latest('id')
+                ->first();
+
+            if ($existing) {
+                // Re-render so the PDF reflects the current template, without
+                // touching the payload or the fingerprint.
+                $this->renderPdf($existing);
+
+                return $existing;
+            }
+        }
         return DB::transaction(function () use ($student, $documentType, $registrar, $overrides, $batch) {
             $issuedOn = isset($overrides['issued_on'])
                 ? Carbon::parse($overrides['issued_on'])

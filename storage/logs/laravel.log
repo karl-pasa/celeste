@@ -2210,3 +2210,146 @@ Did you mean one of these?
 #78 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(23): require_once('C://laragon//www//...')
 #79 {main}
 "} 
+[2026-08-31 12:47:18] local.ERROR: Command "celeste:check-integrity" is not defined.
+
+Did you mean one of these?
+    celeste:calibrate
+    celeste:create-registrar
+    celeste:create-student-accounts
+    celeste:import-students
+    celeste:onboard
+    celeste:pepper {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException(code: 0): Command \"celeste:check-integrity\" is not defined.
+
+Did you mean one of these?
+    celeste:calibrate
+    celeste:create-registrar
+    celeste:create-student-accounts
+    celeste:import-students
+    celeste:onboard
+    celeste:pepper at C:/laragon/www/celeste/vendor/symfony/console/Application.php:759)
+[stacktrace]
+#0 C:/laragon/www/celeste/vendor/symfony/console/Application.php(298): Symfony/Component/Console/Application->find('celeste:check-i...')
+#1 C:/laragon/www/celeste/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#2 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#3 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#4 C:/laragon/www/celeste/artisan(12): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
+#5 {main}
+"} 
+[2026-08-31 13:31:37] local.ERROR: SQLSTATE[23505]: Unique violation: 7 ERROR:  could not create unique index "certificates_one_active_per_type"
+DETAIL:  Key (student_record_id, document_type)=(6, transcript_of_records) is duplicated. (Connection: pgsql, Host: aws-0-ap-southeast-1.pooler.supabase.com, Port: 5432, Database: postgres, SQL: 
+            CREATE UNIQUE INDEX IF NOT EXISTS certificates_one_active_per_type
+            ON certificates (student_record_id, document_type)
+            WHERE status = 'issued'
+        ) {"exception":"[object] (Illuminate\\Database\\UniqueConstraintViolationException(code: 23505): SQLSTATE[23505]: Unique violation: 7 ERROR:  could not create unique index \"certificates_one_active_per_type\"
+DETAIL:  Key (student_record_id, document_type)=(6, transcript_of_records) is duplicated. (Connection: pgsql, Host: aws-0-ap-southeast-1.pooler.supabase.com, Port: 5432, Database: postgres, SQL: 
+
+            CREATE UNIQUE INDEX IF NOT EXISTS certificates_one_active_per_type
+
+            ON certificates (student_record_id, document_type)
+
+            WHERE status = 'issued'
+
+        ) at C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Connection.php:838)
+[stacktrace]
+#0 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Connection.php(794): Illuminate/Database/Connection->runQueryCallback('/r/n            C...', Array, Object(Closure))
+#1 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Connection.php(573): Illuminate/Database/Connection->run('/r/n            C...', Array, Object(Closure))
+#2 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/DatabaseManager.php(491): Illuminate/Database/Connection->statement('/r/n            C...')
+#3 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(363): Illuminate/Database/DatabaseManager->__call('statement', Array)
+#4 C:/laragon/www/celeste/database/migrations/2026_02_10_000001_one_active_certificate_per_type.php(22): Illuminate/Support/Facades/Facade::__callStatic('statement', Array)
+#5 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(517): Illuminate/Database/Migrations/Migration@anonymous->up()
+#6 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(442): Illuminate/Database/Migrations/Migrator->runMethod(Object(Illuminate/Database/PostgresConnection), Object(Illuminate/Database/Migrations/Migration@anonymous), 'up')
+#7 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Concerns/ManagesTransactions.php(35): Illuminate/Database/Migrations/Migrator->Illuminate/Database/Migrations/{closure}(Object(Illuminate/Database/PostgresConnection))
+#8 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(450): Illuminate/Database/Connection->transaction(Object(Closure))
+#9 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(253): Illuminate/Database/Migrations/Migrator->runMigration(Object(Illuminate/Database/Migrations/Migration@anonymous), 'up')
+#10 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Console/View/Components/Task.php(41): Illuminate/Database/Migrations/Migrator->Illuminate/Database/Migrations/{closure}()
+#11 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(814): Illuminate/Console/View/Components/Task->render('2026_02_10_0000...', Object(Closure))
+#12 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(253): Illuminate/Database/Migrations/Migrator->write('Illuminate//Cons...', '2026_02_10_0000...', Object(Closure))
+#13 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(211): Illuminate/Database/Migrations/Migrator->runUp('C://laragon//www//...', 11, false)
+#14 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(138): Illuminate/Database/Migrations/Migrator->runPending(Array, Array)
+#15 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php(116): Illuminate/Database/Migrations/Migrator->run(Array, Array)
+#16 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(671): Illuminate/Database/Console/Migrations/MigrateCommand->Illuminate/Database/Console/Migrations/{closure}()
+#17 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php(109): Illuminate/Database/Migrations/Migrator->usingConnection(NULL, Object(Closure))
+#18 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php(88): Illuminate/Database/Console/Migrations/MigrateCommand->runMigrations()
+#19 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate/Database/Console/Migrations/MigrateCommand->handle()
+#20 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate/Container/BoundMethod::Illuminate/Container/{closure}()
+#21 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(96): Illuminate/Container/Util::unwrapIfClosure(Object(Closure))
+#22 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate/Container/BoundMethod::callBoundMethod(Object(Illuminate/Foundation/Application), Array, Object(Closure))
+#23 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Container/Container.php(799): Illuminate/Container/BoundMethod::call(Object(Illuminate/Foundation/Application), Array, Array, NULL)
+#24 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Console/Command.php(211): Illuminate/Container/Container->call(Array)
+#25 C:/laragon/www/celeste/vendor/symfony/console/Command/Command.php(341): Illuminate/Console/Command->execute(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#26 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony/Component/Console/Command/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#27 C:/laragon/www/celeste/vendor/symfony/console/Application.php(1117): Illuminate/Console/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#28 C:/laragon/www/celeste/vendor/symfony/console/Application.php(356): Symfony/Component/Console/Application->doRunCommand(Object(Illuminate/Database/Console/Migrations/MigrateCommand), Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#29 C:/laragon/www/celeste/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#30 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#31 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#32 C:/laragon/www/celeste/artisan(12): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
+#33 {main}
+
+[previous exception] [object] (PDOException(code: 23505): SQLSTATE[23505]: Unique violation: 7 ERROR:  could not create unique index \"certificates_one_active_per_type\"
+DETAIL:  Key (student_record_id, document_type)=(6, transcript_of_records) is duplicated. at C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Connection.php:584)
+[stacktrace]
+#0 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Connection.php(584): PDOStatement->execute()
+#1 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Connection.php(827): Illuminate/Database/Connection->Illuminate/Database/{closure}('/r/n            C...', Array)
+#2 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Connection.php(794): Illuminate/Database/Connection->runQueryCallback('/r/n            C...', Array, Object(Closure))
+#3 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Connection.php(573): Illuminate/Database/Connection->run('/r/n            C...', Array, Object(Closure))
+#4 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/DatabaseManager.php(491): Illuminate/Database/Connection->statement('/r/n            C...')
+#5 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(363): Illuminate/Database/DatabaseManager->__call('statement', Array)
+#6 C:/laragon/www/celeste/database/migrations/2026_02_10_000001_one_active_certificate_per_type.php(22): Illuminate/Support/Facades/Facade::__callStatic('statement', Array)
+#7 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(517): Illuminate/Database/Migrations/Migration@anonymous->up()
+#8 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(442): Illuminate/Database/Migrations/Migrator->runMethod(Object(Illuminate/Database/PostgresConnection), Object(Illuminate/Database/Migrations/Migration@anonymous), 'up')
+#9 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Concerns/ManagesTransactions.php(35): Illuminate/Database/Migrations/Migrator->Illuminate/Database/Migrations/{closure}(Object(Illuminate/Database/PostgresConnection))
+#10 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(450): Illuminate/Database/Connection->transaction(Object(Closure))
+#11 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(253): Illuminate/Database/Migrations/Migrator->runMigration(Object(Illuminate/Database/Migrations/Migration@anonymous), 'up')
+#12 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Console/View/Components/Task.php(41): Illuminate/Database/Migrations/Migrator->Illuminate/Database/Migrations/{closure}()
+#13 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(814): Illuminate/Console/View/Components/Task->render('2026_02_10_0000...', Object(Closure))
+#14 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(253): Illuminate/Database/Migrations/Migrator->write('Illuminate//Cons...', '2026_02_10_0000...', Object(Closure))
+#15 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(211): Illuminate/Database/Migrations/Migrator->runUp('C://laragon//www//...', 11, false)
+#16 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(138): Illuminate/Database/Migrations/Migrator->runPending(Array, Array)
+#17 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php(116): Illuminate/Database/Migrations/Migrator->run(Array, Array)
+#18 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(671): Illuminate/Database/Console/Migrations/MigrateCommand->Illuminate/Database/Console/Migrations/{closure}()
+#19 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php(109): Illuminate/Database/Migrations/Migrator->usingConnection(NULL, Object(Closure))
+#20 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php(88): Illuminate/Database/Console/Migrations/MigrateCommand->runMigrations()
+#21 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate/Database/Console/Migrations/MigrateCommand->handle()
+#22 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate/Container/BoundMethod::Illuminate/Container/{closure}()
+#23 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(96): Illuminate/Container/Util::unwrapIfClosure(Object(Closure))
+#24 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate/Container/BoundMethod::callBoundMethod(Object(Illuminate/Foundation/Application), Array, Object(Closure))
+#25 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Container/Container.php(799): Illuminate/Container/BoundMethod::call(Object(Illuminate/Foundation/Application), Array, Array, NULL)
+#26 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Console/Command.php(211): Illuminate/Container/Container->call(Array)
+#27 C:/laragon/www/celeste/vendor/symfony/console/Command/Command.php(341): Illuminate/Console/Command->execute(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#28 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony/Component/Console/Command/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#29 C:/laragon/www/celeste/vendor/symfony/console/Application.php(1117): Illuminate/Console/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#30 C:/laragon/www/celeste/vendor/symfony/console/Application.php(356): Symfony/Component/Console/Application->doRunCommand(Object(Illuminate/Database/Console/Migrations/MigrateCommand), Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#31 C:/laragon/www/celeste/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#32 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#33 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#34 C:/laragon/www/celeste/artisan(12): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
+#35 {main}
+"} 
+[2026-08-31 13:58:44] local.ERROR: Command "celeste:generate-pepper" is not defined.
+
+Did you mean one of these?
+    celeste:calibrate
+    celeste:check-integrity
+    celeste:create-registrar
+    celeste:create-student-accounts
+    celeste:import-students
+    celeste:onboard
+    celeste:pepper {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException(code: 0): Command \"celeste:generate-pepper\" is not defined.
+
+Did you mean one of these?
+    celeste:calibrate
+    celeste:check-integrity
+    celeste:create-registrar
+    celeste:create-student-accounts
+    celeste:import-students
+    celeste:onboard
+    celeste:pepper at C:/laragon/www/celeste/vendor/symfony/console/Application.php:759)
+[stacktrace]
+#0 C:/laragon/www/celeste/vendor/symfony/console/Application.php(298): Symfony/Component/Console/Application->find('celeste:generat...')
+#1 C:/laragon/www/celeste/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#2 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#3 C:/laragon/www/celeste/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#4 C:/laragon/www/celeste/artisan(12): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
+#5 {main}
+"} 

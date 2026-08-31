@@ -197,12 +197,47 @@ class CertificateGenerator
                 'status'        => $student->status,
             ],
             Certificate::TYPE_TOR => $base + [
-                'grades'        => $student->grades ?? [],
-                'total_units'   => $student->totalUnits(),
-                'gwa'           => $student->general_weighted_average,
-                'date_admitted' => optional($student->date_admitted)->toDateString(),
-                'date_graduated'=> optional($student->date_graduated)->toDateString(),
-                'major'         => $student->major,
+                // Personal information
+                'address'     => $student->address,
+                'gender'      => $student->gender,
+                'nationality' => $student->nationality,
+                'birth_date'  => optional($student->birth_date)->toDateString(),
+                'birthplace'  => $student->birthplace,
+                'major'       => $student->major,
+
+                // Admission data — both blocks are carried, and the template
+                // shows whichever admission_type selects. Storing both means a
+                // record corrected from "new" to "transferee" later still has
+                // the figures it needs.
+                'admission_type'         => $student->admission_type ?? 'new',
+                'adm_new_school'         => $student->adm_new_school,
+                'adm_new_address'        => $student->adm_new_address,
+                'adm_new_course'         => $student->adm_new_course,
+                'adm_new_year_graduated' => $student->adm_new_year_graduated,
+                'adm_tr_school'          => $student->adm_tr_school,
+                'adm_tr_address'         => $student->adm_tr_address,
+                'adm_tr_course'          => $student->adm_tr_course,
+                'adm_tr_year_graduated'  => $student->adm_tr_year_graduated,
+                'adm_tr_credential'      => $student->adm_tr_credential,
+                'date_admitted'          => optional($student->date_admitted)->toDateString(),
+
+                // Graduation data
+                'date_conferred'        => optional($student->date_conferred)->toDateString(),
+                'board_resolution_no'   => $student->board_resolution_no,
+                'board_resolution_date' => optional($student->board_resolution_date)->toDateString(),
+                'awards'                => $student->awards ?: $student->latin_honor,
+                'date_graduated'        => optional($student->date_graduated)->toDateString(),
+
+                // Other printed fields
+                'nstp_serial_no'               => $student->nstp_serial_no,
+                'program_accreditation'        => $student->program_accreditation,
+                'granted_transfer_credentials' => $student->granted_transfer_credentials,
+                'remarks'                      => $student->remarks,
+
+                // Subjects
+                'grades'      => $student->grades ?? [],
+                'total_units' => $student->totalUnits(),
+                'gwa'         => $student->general_weighted_average,
             ],
             default => $base,
         };

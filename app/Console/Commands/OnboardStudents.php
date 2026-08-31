@@ -7,15 +7,6 @@ use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
-/**
- * Adds a batch of students in one step: import the records, then create the
- * sign-in accounts.
- *
- * The two operations were already available separately. Running them by hand
- * in the right order, with the right flags, is the sort of thing that goes
- * wrong at the end of a long day — records imported but accounts forgotten,
- * so a cohort exists in the system and none of them can sign in.
- */
 class OnboardStudents extends Command
 {
     protected $signature = 'celeste:onboard
@@ -99,9 +90,6 @@ class OnboardStudents extends Command
             ]
         );
 
-        // Records without an account are the failure that hides: the students
-        // exist, documents can be issued to them, and none of them can sign in
-        // to collect one.
         $orphaned = StudentRecord::whereNotExists(function ($q) {
             $q->selectRaw(1)->from('users')
               ->whereColumn('users.student_number', 'student_records.student_number');

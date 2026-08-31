@@ -7,15 +7,6 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 
-/**
- * Imports the Registrar's own student records from CSV.
- *
- * Deliberately conservative: it validates the whole file before writing
- * anything, reports every bad row by line number, and defaults to refusing
- * to overwrite records that already exist. Certificates are generated from
- * these rows, so a silent bad import would mean printed diplomas with wrong
- * names on them.
- */
 class ImportStudents extends Command
 {
     protected $signature = 'celeste:import-students
@@ -26,12 +17,10 @@ class ImportStudents extends Command
 
     protected $description = 'Import student records (and optionally grades) from CSV';
 
-    /** Columns every student CSV must contain. */
     protected array $required = [
         'student_number', 'first_name', 'last_name', 'college', 'program', 'status', 'email',
     ];
 
-    /** Everything else the importer will read if present. */
     protected array $optional = [
         'middle_name', 'suffix', 'birth_date', 'address', 'major', 'year_level',
         'academic_year', 'semester', 'date_admitted', 'date_graduated',
@@ -130,10 +119,6 @@ class ImportStudents extends Command
         return self::SUCCESS;
     }
 
-    /**
-     * Grades live on the student record as a JSON column, so the whole set for
-     * one student is replaced at once rather than appended row by row.
-     */
     protected function importGrades(string $path): int
     {
         if (! is_readable($path)) {
@@ -209,8 +194,6 @@ class ImportStudents extends Command
             return null;
         }
 
-        // Strip a UTF-8 byte order mark, which Excel adds and which would
-        // otherwise turn the first column name into "\u{FEFF}student_number".
         $header[0] = preg_replace('/^\x{FEFF}/u', '', $header[0]);
         $header = array_map(fn ($h) => strtolower(trim((string) $h)), $header);
 
@@ -291,9 +274,6 @@ class ImportStudents extends Command
         return [$valid, $errors];
     }
 
-    /**
-     * Normalise the raw strings into the types the model expects.
-     */
     protected function cast(array $row): array
     {
         $clean = [];

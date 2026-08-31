@@ -2,50 +2,6 @@
 
 use App\Models\Certificate;
 
-/*
-|--------------------------------------------------------------------------
-| Certificate PDF templates
-|--------------------------------------------------------------------------
-|
-| Drop your own official PDFs into storage/templates/ and describe where each
-| field should be printed. When a template file exists for a document type,
-| CELESTE stamps the fields onto your PDF and ignores the Blade template
-| entirely. Leave 'template' as null (or delete the file) to fall back to the
-| built-in Blade layouts.
-|
-| ALL COORDINATES ARE IN MILLIMETRES from the TOP-LEFT corner of the page,
-| so you can measure them off a printed copy with a ruler.
-|
-| A4 portrait  = 210 x 297 mm
-| A4 landscape = 297 x 210 mm
-| Long bond    = 216 x 330 mm
-|
-| To find coordinates without guessing, run:
-|     php artisan celeste:calibrate diploma
-| That prints your template with a labelled 10 mm grid over it.
-|
-|--------------------------------------------------------------------------
-| Field options
-|--------------------------------------------------------------------------
-| type    text (default) | qr | serial
-| value   a key from the hashed payload, e.g. 'full_name', 'program'
-| text    a literal string instead of a payload key. Supports the
-|         placeholders {serial}, {hash}, {short_hash}, {verify_url}, {date},
-|         and any payload key wrapped in braces, e.g. {full_name}
-| x, y    position in mm from the top-left
-| width   box width in mm; needed for centring. 0 means "to the page edge"
-| align   L | C | R  (default L)
-| font    Helvetica | Times | Courier   (PDF core fonts, always available)
-| style   '' | B | I | BI
-| size    font size in points
-| color   [r, g, b]
-| upper   true to force uppercase
-|
-| Only the fields listed here get printed. Anything absent from the payload
-| is skipped silently rather than printing an empty box.
-|
-*/
-
 return [
 
     Certificate::TYPE_DIPLOMA => [
@@ -124,23 +80,11 @@ Certificate::TYPE_DISMISSAL => [
         // registrar_printed_name — comes from .env, not the payload
         ['text' => '{registrar}', 'x' => 103.4, 'y' => 122.2, 'width' => 52.2, 'align' => 'C', 'size' => 10],
 
-        // ---- Verification block. Sits in the clear area below the
-        // ---- signature line, left of the dry seal box, above the OR block.
         ['type' => 'qr', 'x' => 78.0, 'y' => 165.0, 'size' => 24],
         ['text' => '{serial}', 'x' => 105.0, 'y' => 168.0, 'width' => 52, 'font' => 'Courier', 'style' => 'B', 'size' => 7],
     ],
 ],
 
-    /*
-     | The Transcript of Records is intentionally NOT template-stamped by
-     | default. Its grade table has a variable number of rows spanning an
-     | unknown number of pages, which fixed coordinates cannot express.
-     | The Blade template flows and paginates automatically.
-     |
-     | If your transcript form must be used, set 'template' to the file path
-     | and add a 'rows' block describing where the table starts and how tall
-     | each line is. See USING-YOUR-PDF-TEMPLATES.md.
-     */
     Certificate::TYPE_TOR => [
         'page'        => 'Letter',
         'orientation' => 'portrait',

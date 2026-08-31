@@ -7,14 +7,6 @@ use App\Services\CertificateHashService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Explains why a certificate's fingerprint does not match its payload.
- *
- * "Mismatch" only means the stored hash differs from a fresh hash of the
- * stored payload. That has several possible causes with very different
- * consequences, and guessing between them is how a harmless type-conversion
- * bug gets mistaken for tampering. This reports which one it is.
- */
 class CheckIntegrity extends Command
 {
     protected $signature = 'celeste:check-integrity
@@ -37,8 +29,6 @@ class CheckIntegrity extends Command
         $this->newLine();
         $this->line('  <options=bold>Pepper</>');
 
-        // A pepper that has changed since issuance breaks every certificate at
-        // once, so it is worth ruling out before examining any single one.
         $pepper = (string) config('celeste.hash_pepper', '');
         $this->line('     configured : ' . ($pepper === '' ? 'EMPTY' : 'set, ' . strlen($pepper) . ' chars'));
         $this->line('     fingerprint: ' . ($pepper === '' ? '—' : substr(hash('sha256', $pepper), 0, 16)));
@@ -83,15 +73,9 @@ class CheckIntegrity extends Command
         return $bad === 0 ? self::SUCCESS : self::FAILURE;
     }
 
-    /**
-     * Work out which of the usual causes applies to this certificate.
-     */
     private function explain(Certificate $certificate, CertificateHashService $hasher): void
     {
-        // The payload the model hands back has been through Eloquent's array
-        // cast. Comparing it against the raw column shows whether the database
-        // round trip changed anything — the commonest cause, and an entirely
-        // innocent one.
+
         $rawJson = DB::table('certificates')
             ->where('id', $certificate->id)
             ->value('payload');
@@ -110,8 +94,6 @@ class CheckIntegrity extends Command
             return;
         }
 
-        // Key order: JSONB does not preserve it. If canonicalisation does not
-        // sort keys, the hash changes the moment the payload is written.
         $sorted = $cast;
         $this->recursiveSort($sorted);
 
@@ -125,7 +107,6 @@ class CheckIntegrity extends Command
             return;
         }
 
-        // Numeric types: 3 and 3.0 and "3" all serialise differently.
         $normalised = json_decode(json_encode($cast), true);
 
         if (hash_equals((string) $certificate->content_hash, $hasher->hash((array) $normalised))) {
@@ -138,7 +119,6 @@ class CheckIntegrity extends Command
             return;
         }
 
-        // Nothing benign explains it.
         $this->newLine();
         $this->error('     Cause: the payload content itself differs.');
         $this->line('     None of the type or ordering explanations reproduce the stored hash,');

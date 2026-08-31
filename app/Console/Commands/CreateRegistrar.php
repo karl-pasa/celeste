@@ -9,14 +9,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 
-/**
- * Creates the Registrar account.
- *
- * The password is typed at the terminal rather than passed as an argument or
- * read from a file: an argument lands in shell history and a file lands in
- * version control, and this account can issue and revoke academic credentials
- * for the whole university.
- */
 class CreateRegistrar extends Command
 {
     protected $signature = 'celeste:create-registrar
@@ -68,8 +60,6 @@ class CreateRegistrar extends Command
             return self::FAILURE;
         }
 
-        // Refuse the obvious: the address itself, or a sample credential from
-        // the setup documentation.
         $weak = [mb_strtolower(explode('@', $email)[0]), 'registrar123', 'password123', 'parsu12345'];
 
         if (in_array(mb_strtolower($password), $weak, true)) {
@@ -82,14 +72,11 @@ class CreateRegistrar extends Command
 
         $user = User::create([
             'name'      => $name,
-            'username'  => $email,   // kept in step; sign-in uses email
+            'username'  => $email,   
             'email'     => $email,
-            'password'  => Hash::make($password),   // bcrypt cost 12
+            'password'  => Hash::make($password),  
             'role'      => User::ROLE_REGISTRAR,
             'is_active' => true,
-            // Provisioned in person at a console by someone with server
-            // access, so the change-password and verification gates would add
-            // a failure mode without adding assurance.
             'password_changed_at' => now(),
             'email_verified_at'   => now(),
         ]);

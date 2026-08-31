@@ -7,15 +7,6 @@ return [
     'default' => env('DB_CONNECTION', 'pgsql'),
 
     'connections' => [
-
-        /*
-        |----------------------------------------------------------------------
-        | Supabase (PostgreSQL)
-        |----------------------------------------------------------------------
-        | Supabase requires SSL. 'require' is enough for the pooler endpoints;
-        | use 'verify-full' with a downloaded CA cert if your institution's
-        | policy calls for certificate pinning.
-        */
         'pgsql' => [
             'driver'         => 'pgsql',
             'url'            => env('DB_URL'),
@@ -30,9 +21,6 @@ return [
             'search_path'    => 'public',
             'sslmode'        => env('DB_SSLMODE', 'require'),
         ],
-
-        // Kept for local experimentation only. Note that the Certificate model
-        // uses ILIKE for searching, which is PostgreSQL-specific.
         'sqlite' => [
             'driver'   => 'sqlite',
             'database' => env('DB_DATABASE', database_path('database.sqlite')),

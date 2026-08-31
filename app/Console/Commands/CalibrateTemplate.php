@@ -6,13 +6,6 @@ use App\Models\Certificate;
 use Illuminate\Console\Command;
 use setasign\Fpdi\Fpdi;
 
-/**
- * Prints a template with a labelled millimetre grid over it.
- *
- * Finding coordinates by generating, squinting, and nudging by 5mm is slow.
- * With a grid you read the position straight off the page and type it into
- * config/certificate-templates.php once.
- */
 class CalibrateTemplate extends Command
 {
     protected $signature = 'celeste:calibrate
@@ -95,7 +88,6 @@ class CalibrateTemplate extends Command
     {
         $pdf->SetFont('Helvetica', '', 4);
 
-        // Minor lines every `spacing` mm, major every 50mm and labelled.
         for ($x = 0; $x <= $width; $x += $spacing) {
             $major = $x % 50 === 0;
 

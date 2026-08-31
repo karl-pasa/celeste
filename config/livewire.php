@@ -8,7 +8,7 @@ return [
 
     'temporary_file_upload' => [
         'disk' => null,
-        'rules' => ['file', 'max:12288'],   // 12MB — CSV imports only
+        'rules' => ['file', 'max:12288'],
         'directory' => null,
         'middleware' => null,
         'preview_mimes' => ['csv', 'txt'],

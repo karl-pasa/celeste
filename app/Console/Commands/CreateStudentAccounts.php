@@ -7,19 +7,6 @@ use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 
-/**
- * Creates student sign-in accounts.
- *
- * Sign-in is the institutional email address on the student record; the
- * initial password is the student number.
- *
- * Addresses are never derived. The university's format —
- * jdelacruz922.pbox@parsu.edu.ph — combines an initial, a surname, digits and
- * a mailbox suffix, none of which is reconstructable from a name and a
- * student number. A guessed address produces an account at a mailbox the
- * student cannot reach: they can never sign in, verify or reset. A record
- * without an email is reported and skipped rather than invented.
- */
 class CreateStudentAccounts extends Command
 {
     protected $signature = 'celeste:create-student-accounts
@@ -73,15 +60,13 @@ class CreateStudentAccounts extends Command
                 ['email' => $email],
                 [
                     'name'           => $record->full_name,
-                    'username'       => $email,   // kept in step; sign-in uses email
-                    'password'       => Hash::make($record->student_number),   // bcrypt cost 12
+                    'username'       => $email,   
+                    'password'       => Hash::make($record->student_number),   
                     'role'           => User::ROLE_STUDENT,
                     'student_number' => $record->student_number,
                     'college'        => $record->college,
                     'program'        => $record->program,
                     'is_active'      => true,
-                    // Null means "still on the provisioned credential", which
-                    // is what RequirePasswordChange reads.
                     'password_changed_at' => null,
                 ]
             );

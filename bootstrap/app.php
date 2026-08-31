@@ -17,16 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [
-            // Binds the session to the authenticated user's password hash, so
-            // changing a password invalidates every other live session.
             AuthenticateSession::class,
 
-            // is_active is verified once, at login. Without this a user
-            // deactivated mid-session stays signed in until it expires.
             EnsureAccountIsActive::class,
 
-            // Signed-in pages must not be stored by the browser, or Back would
-            // replay a registrar's dashboard after they have signed out.
             PreventBackHistory::class,
         ]);
 
@@ -35,8 +29,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'certificate.own' => EnsureCertificateAccess::class,
         ]);
 
-        // Vercel and most PaaS hosts sit behind a proxy. Without this, Laravel
-        // builds http:// URLs and every QR code points at the wrong scheme.
         $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions) {

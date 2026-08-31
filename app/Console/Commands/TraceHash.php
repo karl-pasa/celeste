@@ -9,15 +9,6 @@ use Illuminate\Support\Facades\DB;
 use ReflectionMethod;
 use ReflectionProperty;
 
-/**
- * Traces one certificate's payload through the database round trip and reports
- * the exact character at which the canonical form changes.
- *
- * The earlier check narrowed the cause by elimination and ran out of theories.
- * This one stops theorising: it hashes the payload as written, hashes it as
- * read back, and if they differ, prints the two canonical strings around the
- * first byte that does not match. Whatever the cause, it becomes visible.
- */
 class TraceHash extends Command
 {
     protected $signature = 'celeste:trace-hash {serial? : A serial, otherwise the newest certificate}';
@@ -40,7 +31,6 @@ class TraceHash extends Command
         $this->line("  {$certificate->serial_number}");
         $this->line('  ' . str_repeat('─', 64));
 
-        // ---- 1. Is hashing even deterministic? ---------------------------
         $payload = $certificate->payload;
         $a = $hasher->hash($payload);
         $b = $hasher->hash($payload);
@@ -62,7 +52,6 @@ class TraceHash extends Command
 
         $this->info('     Stable.');
 
-        // ---- 2. Where does the pepper come from? -------------------------
         $this->newLine();
         $this->line('  <options=bold>2. Pepper as the service sees it</>');
 
@@ -84,7 +73,6 @@ class TraceHash extends Command
             $this->line('     config:cache has run, which changes the key between requests.');
         }
 
-        // ---- 3. Does the round trip change the canonical form? -----------
         $this->newLine();
         $this->line('  <options=bold>3. Canonical form, written vs read back</>');
 
@@ -111,7 +99,6 @@ class TraceHash extends Command
             return self::FAILURE;
         }
 
-        // Find the first difference and show its surroundings.
         $len = min(strlen($canonical), strlen($canonicalDb));
         $i = 0;
 
@@ -134,9 +121,6 @@ class TraceHash extends Command
         return self::FAILURE;
     }
 
-    /**
-     * Reach canonicalise() whatever it is called and however it is scoped.
-     */
     private function canonicalOf(CertificateHashService $hasher, array $payload): ?string
     {
         foreach (['canonicalise', 'canonicalize', 'canonical', 'normalise', 'normalize'] as $name) {

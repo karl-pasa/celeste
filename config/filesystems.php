@@ -5,22 +5,6 @@ return [
     'default' => env('FILESYSTEM_DISK', 'local'),
 
     'disks' => [
-
-        /*
-        |----------------------------------------------------------------------
-        | Local
-        |----------------------------------------------------------------------
-        | Generated certificates and QR images are written here.
-        |
-        | The root is configurable because serverless hosts mount the project
-        | read-only and allow writes only to /tmp. On Vercel, set
-        | FILESYSTEM_LOCAL_ROOT=/tmp/celeste-storage — the directory is wiped
-        | between invocations, which is fine: the PDF is only a rendering of
-        | the hashed payload, and CertificateController regenerates it on
-        | demand whenever the file is missing.
-        |
-        | Locally, leave this unset and files persist normally under storage/app.
-        */
         'local' => [
             'driver' => 'local',
             'root'   => env('FILESYSTEM_LOCAL_ROOT', storage_path('app')),
@@ -36,11 +20,6 @@ return [
             'throw'      => false,
         ],
 
-        /*
-        | For a real deployment, point certificate storage at object storage so
-        | files persist. Set FILESYSTEM_DISK=s3 and fill in the credentials —
-        | Supabase Storage is S3-compatible and needs no code changes.
-        */
         's3' => [
             'driver'                  => 's3',
             'key'                     => env('AWS_ACCESS_KEY_ID'),

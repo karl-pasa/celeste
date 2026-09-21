@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Certificate;
 use App\Models\VerificationLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Verification Module.
@@ -12,6 +13,26 @@ use Illuminate\Http\Request;
  * Resolves a scanned or typed reference to a certificate, recomputes its hash,
  * and returns one of four outcomes. Every attempt is logged — including the
  * failures, which are the interesting ones for the analytics module.
+ *
+ * ---------------------------------------------------------------------------
+ * Why the verification counters are written through the query builder
+ * ---------------------------------------------------------------------------
+ * Recording a successful verification previously used
+ * forceFill([...])->save() on the model. Eloquent's save() writes every
+ * attribute it considers dirty, not only the ones just filled, and a JSON-cast
+ * attribute such as payload is marked dirty merely by having been read and
+ * re-encoded. The re-encoded JSON is not byte-identical to what was stored,
+ * because the database returns object keys in its own order rather than the
+ * order they were written in.
+ *
+ * The payload was therefore rewritten while content_hash was left untouched,
+ * so the fingerprint no longer described the bytes it was computed over. The
+ * effect was that a certificate verified correctly exactly once and reported
+ * as TAMPERED on every subsequent scan.
+ *
+ * Writing the two counter columns directly leaves payload alone. The rule this
+ * enforces is that payload and content_hash are written together at issuance
+ * and never again.
  */
 class VerificationService
 {
@@ -41,29 +62,58 @@ class VerificationService
         $this->log($reference, $method, $outcome, $request);
 
         if ($outcome['result'] === self::AUTHENTIC) {
-            $certificate->increment('verification_count');
-            $certificate->forceFill(['last_verified_at' => now()])->save();
+            $this->recordVerification($certificate);
         }
 
         return $outcome;
     }
 
     /**
+     * Record that a certificate was successfully verified.
+     *
+     * Both columns are updated in one statement through the query builder, so
+     * that no other column — in particular payload — is touched. The counter
+     * is incremented in SQL rather than read and rewritten, which also keeps
+     * the count correct when two verifications arrive at the same moment.
+     */
+    protected function recordVerification(Certificate $certificate): void
+    {
+        DB::table('certificates')
+            ->where('id', $certificate->id)
+            ->update([
+                'verification_count' => DB::raw('COALESCE(verification_count, 0) + 1'),
+                'last_verified_at'   => now(),
+            ]);
+
+        // Keep the in-memory model consistent with the row without marking
+        // anything dirty, so a later save elsewhere cannot write these back.
+        $certificate->forceFill([
+            'verification_count' => ($certificate->verification_count ?? 0) + 1,
+            'last_verified_at'   => now(),
+        ])->syncOriginal();
+    }
+
+    /**
      * A verifier may present a QR token, a printed serial, or a raw hash.
+     *
+     * The three alternatives are grouped so that adding any further condition
+     * to this query later cannot accidentally fall outside the OR and match
+     * every certificate.
      */
     public function resolve(string $reference): ?Certificate
     {
-        $query = Certificate::with('studentRecord');
-
         // QR URLs are pasted whole often enough to be worth handling.
         if (str_contains($reference, '/verify/')) {
             $reference = trim(parse_url($reference, PHP_URL_PATH) ?? '', '/');
             $reference = substr($reference, strrpos($reference, '/') + 1);
         }
 
-        return $query->where('verification_token', $reference)
-            ->orWhere('serial_number', mb_strtoupper($reference))
-            ->orWhere('content_hash', mb_strtolower($reference))
+        return Certificate::with('studentRecord')
+            ->where(function ($query) use ($reference) {
+                $query->where('verification_token', $reference)
+                    ->orWhere('serial_number', mb_strtoupper($reference))
+                    ->orWhere('content_hash', mb_strtolower($reference));
+            })
             ->first();
     }
 

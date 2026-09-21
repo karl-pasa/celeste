@@ -138,7 +138,6 @@ h1, h2, h3, h4, h5, .display {
     line-height: 1.5;
 }
 
-/* --- Cards --------------------------------------------------------------- */
 .card-celeste {
     background: var(--surface);
     border: 1px solid var(--line);
@@ -173,7 +172,6 @@ h1, h2, h3, h4, h5, .display {
     color: var(--ink-faint);
 }
 
-/* --- Role tabs ----------------------------------------------------------- */
 .role-tabs {
     display: inline-flex;
     gap: .25rem;
@@ -209,7 +207,6 @@ h1, h2, h3, h4, h5, .display {
     box-shadow: 0 2px 8px rgba(18, 34, 79, .3);
 }
 
-/* --- Forms --------------------------------------------------------------- */
 .form-label {
     font-size: .8125rem;
     font-weight: 500;
@@ -248,7 +245,6 @@ h1, h2, h3, h4, h5, .display {
     border-radius: 0 var(--radius) var(--radius) 0;
 }
 
-/* --- Buttons ------------------------------------------------------------- */
 .btn {
     border-radius: var(--radius);
     font-size: .875rem;
@@ -285,7 +281,6 @@ h1, h2, h3, h4, h5, .display {
 .btn-sm { padding: .375rem .7rem; font-size: .8125rem; }
 .btn-lg { padding: .8rem 1.5rem; font-size: .9375rem; }
 
-/* --- App shell ----------------------------------------------------------- */
 .app-shell { display: flex; min-height: 100vh; }
 
 .sidebar {
@@ -374,7 +369,6 @@ h1, h2, h3, h4, h5, .display {
 
 .app-content { padding: 1.5rem; flex: 1; }
 
-/* --- Stat tiles ---------------------------------------------------------- */
 .stat {
     background: #fff;
     border: 1px solid var(--line);
@@ -403,7 +397,6 @@ h1, h2, h3, h4, h5, .display {
 .stat-up { color: var(--psu-green); font-weight: 600; }
 .stat-down { color: var(--psu-red); font-weight: 600; }
 
-/* --- Badges -------------------------------------------------------------- */
 .badge-celeste {
     display: inline-flex;
     align-items: center;
@@ -423,7 +416,6 @@ h1, h2, h3, h4, h5, .display {
 .badge-superseded{ background: var(--psu-gold-soft); color: #96650f; }
 .badge-type      { background: var(--psu-navy-050); color: var(--psu-navy-700); border: 1px solid var(--line); }
 
-/* --- Tables -------------------------------------------------------------- */
 .table-celeste { margin: 0; font-size: .875rem; }
 
 .table-celeste thead th {
@@ -454,7 +446,6 @@ h1, h2, h3, h4, h5, .display {
     word-break: break-all;
 }
 
-/* --- Verification result ------------------------------------------------- */
 .result-card {
     background: #fff;
     border-radius: var(--radius-lg);
@@ -497,7 +488,6 @@ h1, h2, h3, h4, h5, .display {
 .detail-row dt { color: var(--ink-muted); font-weight: 400; margin: 0; }
 .detail-row dd { margin: 0; font-weight: 500; text-align: right; color: var(--ink); }
 
-/* --- Scanner ------------------------------------------------------------- */
 .scanner-frame {
     border-radius: var(--radius-lg);
     overflow: hidden;
@@ -531,7 +521,6 @@ h1, h2, h3, h4, h5, .display {
     50% { top: 96%; }
 }
 
-/* --- Decision support flags ---------------------------------------------- */
 .flag {
     display: flex;
     gap: .85rem;
@@ -557,7 +546,6 @@ h1, h2, h3, h4, h5, .display {
 .flag-ok     { border-left-color: var(--psu-green); }
 .flag-ok .flag-dot { background: var(--psu-green); }
 
-/* --- Empty states -------------------------------------------------------- */
 .empty {
     text-align: center;
     padding: 2.75rem 1.5rem;
@@ -567,7 +555,6 @@ h1, h2, h3, h4, h5, .display {
 .empty h6 { color: var(--psu-navy-700); margin-bottom: .3rem; }
 .empty p { font-size: .875rem; margin: 0; }
 
-/* --- Misc ---------------------------------------------------------------- */
 .text-muted-celeste { color: var(--ink-muted) !important; }
 .divider-label {
     display: flex; align-items: center; gap: .75rem;

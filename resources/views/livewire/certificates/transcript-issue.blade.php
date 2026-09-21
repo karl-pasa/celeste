@@ -42,7 +42,6 @@
         </button>
     </div>
 
-    {{-- ═══════════════ IMPORT ═══════════════ --}}
     @if ($mode === 'import')
 
         @if ($importResult)
@@ -187,7 +186,6 @@
             @endif
         @endif
 
-    {{-- ═══════════════ SINGLE ═══════════════ --}}
     @else
     <div class="row g-3">
         <div class="col-xl-8">

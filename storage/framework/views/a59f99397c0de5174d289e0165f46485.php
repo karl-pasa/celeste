@@ -34,7 +34,6 @@
         }
         .doc-choice .doc-check { color: var(--psu-navy-600); font-size: 1rem; flex-shrink: 0; }
 
-        /* Document preview -------------------------------------------------- */
         .doc-preview {
             position: relative;
             width: 100%;
@@ -52,7 +51,6 @@
             border: 0;
             display: block;
         }
-        /* Behind the iframe, so it is covered the moment the PDF paints. */
         .doc-preview .preview-loading {
             position: absolute;
             inset: 0;

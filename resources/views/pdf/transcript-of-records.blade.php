@@ -1,19 +1,3 @@
-{{--
-    Official Transcript of Records · PSU-F-URO-27
-    ---------------------------------------------------------------------------
-    Two pages: cover, then the subject area.
-
-    Vertical budget — a 330mm page less margins leaves about 314mm. Exceed that
-    and Dompdf pushes the remainder onto a new sheet, so one logical page
-    becomes two. Both pages here sit inside it.
-
-    The registrar's name comes from config('celeste.officials.registrar'),
-    which reads CELESTE_REGISTRAR_NAME from .env — a change of registrar is an
-    environment change, not a code edit.
-
-    Values come from $certificate->payload, the snapshot taken at issuance.
-    A missing value prints as blank space, as the office fills these by hand.
---}}
 @php
     $p = $certificate->payload ?? [];
 
@@ -27,8 +11,6 @@
 
     $isNew = ($p['admission_type'] ?? 'new') === 'new';
 
-    // Literal characters, not HTML entities: Blade escapes {{ }} output, so an
-    // entity would print as its own source text.
     $tickNew = $isNew ? '×' : ' ';
     $tickTr  = $isNew ? ' ' : '×';
 
@@ -45,7 +27,6 @@
 <style>
     @page { size: 216mm 330mm; margin: 7mm 7mm 5mm 7mm; }
 
-    /* DejaVu ships with Dompdf and carries ñ, which the core fonts do not. */
     body { font-family: "DejaVu Sans", sans-serif; font-size: 6.8pt; color:#000; margin:0; }
 
     table { border-collapse: collapse; width: 100%; }
@@ -54,7 +35,6 @@
     .bx { border: .7pt solid #000; }
     .bx > tbody > tr > td { padding: .7mm 1.4mm; }
 
-    /* The blue rule runs behind the heading only, not the full column. */
     .bar { background:#9DC3E6; font-size:7pt; padding:.5mm 1.4mm; display:block; }
 
     .h-rep  { font-family:"Times New Roman",serif; font-size:8pt;  color:#1F4E79; }
@@ -75,15 +55,10 @@
     .photo { border:.7pt solid #000; width:24mm; height:24mm;
              text-align:center; font-size:6pt; color:#777; }
 
-    /* Page two: column labels above open space, no surrounding box. */
     .subj-head td { font-size:6.8pt; padding:.8mm .6mm; border:0; }
     .subj td { font-size:6.8pt; padding:.35mm 1.2mm; height:4.2mm; border:0; }
     .subj .close { text-align:center; padding:2mm 0; }
 
-    /* The subject area is given a fixed height so the footer lands in the same
-       position regardless of how many subjects there are. Without it, a short
-       transcript pulls the signature block and the page rule up the sheet, and
-       two copies of the same document no longer line up. */
     .subj-area { height: 165mm; vertical-align: top; }
 
     .lg   { font-size:5.9pt; }
@@ -121,14 +96,6 @@
     @endforeach
 </table>
 
-{{--
-    ADMISSION DATA · GRADUATION DATA · NSTP SERIAL NO.
-
-    One box, as on the form: a single outer border, a vertical rule down the
-    middle, and a horizontal rule in the right column separating graduation
-    data from the NSTP serial. The previous version drew three separate boxes,
-    which is why they read as detached panels.
---}}
 <table class="bx" style="margin-top:2mm">
     <tr>
         {{-- Left column --}}

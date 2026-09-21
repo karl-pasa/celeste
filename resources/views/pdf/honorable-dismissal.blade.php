@@ -1,32 +1,3 @@
-{{--
-    Transfer Credential · PSU-F-URO-23
-    ---------------------------------------------------------------------------
-    One landscape page in two halves, divided by the cut line:
-
-      left  · PSU-F-URO-23    the credential the University issues
-      right · PSU-F-URO-23-A  the return slip the receiving school completes
-
-    The right half is deliberately blank. It is filled in by the school the
-    student transfers to, cut off, and returned — which is why the credential
-    says the Transcript of Records is forwarded only upon its receipt.
-
-    ---------------------------------------------------------------------------
-    Why the sentence is built from tables
-    ---------------------------------------------------------------------------
-    An earlier version set the filled values as inline-block spans with widths
-    and overflow rules. That is correct CSS and Dompdf ignores most of it:
-    inline-block is only partially implemented, so widths did not apply and a
-    long name ran across the words beside it.
-
-    Tables are what Dompdf renders reliably — the same reason the transcript is
-    built from them. Each line of the certifying sentence is a table row: fixed
-    cells for the static words, ruled cells for the values. A value now sits on
-    its own rule at a width the page controls, rather than pushing its
-    neighbours aside.
-
-    Values come from $certificate->payload, the snapshot taken at issuance,
-    which is what the fingerprint covers.
---}}
 @php
     $p = $certificate->payload ?? [];
 
@@ -38,9 +9,6 @@
         catch (\Throwable) { return (string) $p[$k]; }
     };
 
-    // The form reads "a ___ year student | graduate of". Where the record says
-    // which applies, print only that word; otherwise print both, as the blank
-    // form does, for the office to strike one through.
     $standing = $p['standing'] ?? null;
 
     $standingText = match ($standing) {
@@ -59,7 +27,6 @@
 <style>
     @page { size: 297mm 210mm; margin: 6mm; }
 
-    /* DejaVu ships with Dompdf and carries ñ, which the core fonts do not. */
     body { font-family: "DejaVu Sans", sans-serif; font-size: 8pt; color:#000; margin:0; }
 
     table { border-collapse: collapse; width: 100%; }
@@ -68,8 +35,6 @@
     .sheet { border: .8pt solid #000; height: 196mm; }
     .sheet > tbody > tr > td { vertical-align: top; }
 
-    /* The cut line. The printed form marks it with scissors; a dashed rule
-       reads the same and survives photocopying better than a glyph. */
     .cut  { border-right: .8pt dashed #000; }
     .half { padding: 4mm 5mm; }
 
@@ -84,36 +49,19 @@
     .title  { font-family:"Times New Roman",serif; font-size:15pt; text-align:center;
               letter-spacing:1pt; margin-top:6mm; }
 
-    /* The body of the credential is set in a script face on the printed form.
-       Dompdf carries no script font, so italic serif stands in. */
     .lead  { font-family:"Times New Roman",serif; font-style:italic; font-size:10pt; }
     .plain { font-family:"Times New Roman",serif; font-style:normal; font-size:10pt; }
 
-    /*
-      | Filled values match the text they sit among — same family, same size.
-      | A value printed a half-point smaller than the sentence around it reads
-      | as a different document pasted in, which is what the earlier version
-      | did at 9.5pt inside a 10pt sentence.
-      |
-      | Upright rather than italic: the form's own text is set in a script
-      | face, but an entry written onto a ruled line is upright, and a name in
-      | italic script is harder to read at speed. Change font-style here if the
-      | office wants it to match the printed wording exactly.
-      |
-      | Applied to table cells rather than inline spans, because Dompdf honours
-      | a width on a <td> and largely ignores one on an inline-block.
-    */
     .val {
         border-bottom: .7pt solid #000;
         font-family: "Times New Roman", serif;
         font-style: normal;
-        font-size: 10pt;           /* matches .lead and .sentence td */
+        font-size: 10pt;      
         color: #000;
         text-align: center;
         padding: 0 1mm .4mm;
     }
 
-    /* Rows of the certifying sentence. */
     .sentence td { font-family:"Times New Roman",serif; font-style:italic; font-size:10pt;
                    padding-bottom:.4mm; }
     .sentence .val { font-style:normal; }
@@ -126,9 +74,6 @@
     .sealbox { border:.7pt dashed #000; text-align:center;
                font-size:7.5pt; line-height:1.5; padding:2mm 1mm; }
 
-    /* The receipt block is labelled in the sans face at 8pt, so its values
-       follow it rather than the 10pt of the certifying sentence. Matching the
-       nearest label is what keeps each block internally consistent. */
     .receipt td   { font-size:8pt; padding:.6mm 0; }
     .receipt .val { font-family:"DejaVu Sans",sans-serif; font-size:8pt;
                     text-align:left; padding-left:1mm; }

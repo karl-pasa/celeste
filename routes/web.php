@@ -8,11 +8,6 @@ use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PublicVerificationController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Public Verification Portal — no authentication
-|--------------------------------------------------------------------------
-*/
 Route::get('/', [PublicVerificationController::class, 'index'])->name('home');
 Route::get('/verify', [PublicVerificationController::class, 'index'])->name('verify');
 Route::post('/verify', [PublicVerificationController::class, 'verify'])
@@ -23,11 +18,6 @@ Route::get('/verify/{token}', [PublicVerificationController::class, 'token'])
     ->middleware('throttle:60,1')
     ->name('verify.token');
 
-/*
-|--------------------------------------------------------------------------
-| Authentication Module
-|--------------------------------------------------------------------------
-*/
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 
@@ -53,11 +43,6 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
-/*
-|--------------------------------------------------------------------------
-| Email verification and password change — signed in, not yet cleared
-|--------------------------------------------------------------------------
-*/
 Route::middleware('auth')->group(function () {
     Route::get('/password/change', [PasswordResetController::class, 'changeForm'])->name('password.change');
     Route::post('/password/change', [PasswordResetController::class, 'change'])
@@ -65,11 +50,6 @@ Route::middleware('auth')->group(function () {
         ->name('password.change.store');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Registrar — generation, management, analytics
-|--------------------------------------------------------------------------
-*/
 Route::middleware(['auth', 'role:registrar'])->prefix('registrar')->name('registrar.')->group(function () {
     Route::get('/', [DashboardController::class, 'registrar'])->name('dashboard');
 
@@ -86,21 +66,11 @@ Route::middleware(['auth', 'role:registrar'])->prefix('registrar')->name('regist
     })->name('transcript');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Students — their own documents
-|--------------------------------------------------------------------------
-*/
 Route::middleware(['auth', 'role:student'])->prefix('my')->name('student.')->group(function () {
     Route::get('/', [DashboardController::class, 'student'])->name('dashboard');
     Route::get('/documents', [DashboardController::class, 'documents'])->name('documents');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Document delivery — owner or registrar only
-|--------------------------------------------------------------------------
-*/
 Route::middleware('auth')->group(function () {
     Route::get('/certificates/{certificate}/download', [CertificateController::class, 'download'])
         ->name('certificates.download');

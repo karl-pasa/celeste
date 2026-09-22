@@ -27,7 +27,7 @@
                 <label for="email" class="form-label"><i class="bi bi-envelope"></i> Email address</label>
                 <input type="email" id="email" name="email" value="{{ old('email') }}"
                        class="form-control @error('email') is-invalid @enderror"
-                        placeholder="{{ 'yourname@' . config('celeste.email_domain', 'parsu.edu.ph') }}" required autofocus>
+                        placeholder="{{ 'email@' . config('celeste.email_domain', 'parsu.edu.ph') }}" required autofocus>
                 @error('email') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
             </div>
 

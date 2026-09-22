@@ -66,14 +66,6 @@
                 <a href="{{ route('student.dashboard') }}" class="nav-link {{ request()->routeIs('student.dashboard') ? 'active' : '' }}">
                     <i class="bi bi-grid-1x2"></i> Overview
                 </a>
-
-                <div class="nav-section">Tools</div>
-                <a href="{{ route('verify.scanner') }}" class="nav-link">
-                    <i class="bi bi-qr-code-scan"></i> Scan a QR code
-                </a>
-                <a href="{{ route('verify') }}" class="nav-link">
-                    <i class="bi bi-patch-check"></i> Verify a document
-                </a>
             @endif
         </nav>
 

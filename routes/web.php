@@ -26,17 +26,6 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])
         ->middleware('throttle:20,1')
         ->name('login.attempt');
-
-    // Password reset. Token lifetime and per-account request throttling are
-    // set in config/auth.php: 15 minutes, 60 seconds between requests.
-    Route::get('/forgot-password', [PasswordResetController::class, 'requestForm'])->name('password.request');
-    Route::post('/forgot-password', [PasswordResetController::class, 'sendLink'])
-        ->middleware('throttle:6,1')
-        ->name('password.email');
-    Route::get('/reset-password/{token}', [PasswordResetController::class, 'resetForm'])->name('password.reset');
-    Route::post('/reset-password', [PasswordResetController::class, 'reset'])
-        ->middleware('throttle:6,1')
-        ->name('password.store');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])

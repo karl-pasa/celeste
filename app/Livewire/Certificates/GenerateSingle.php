@@ -21,14 +21,11 @@ class GenerateSingle extends Component
     public ?int $issuedId = null;
 
     /**
-     * Three characters rather than two.
-     *
-     * The trigram index that makes this search fast works on three-character
-     * sequences, so a two-character term cannot use it and falls back to
-     * scanning the table. Two characters also matches most of the roll, which
-     * is not a useful result for the registrar in any case.
+     * Four characters, which is the shortest useful prefix of a student
+     * number given the year-first format. Fewer than that matches a whole
+     * intake and is not a search so much as a listing.
      */
-    protected const MIN_SEARCH_LENGTH = 3;
+    protected const MIN_SEARCH_LENGTH = 4;
 
     /** Enough to choose from without the list becoming something to read. */
     protected const MAX_RESULTS = 8;
@@ -49,7 +46,7 @@ class GenerateSingle extends Component
     }
 
     protected array $messages = [
-        'studentId.required'    => 'Pick a student record first.',
+        'studentId.required'    => 'Enter a student number first.',
         'documentType.required' => 'Choose which document to issue.',
         'documentType.in'       => 'Choose which document to issue.',
     ];
@@ -105,9 +102,8 @@ class GenerateSingle extends Component
     /**
      * The chosen student.
      *
-     * Marked as a computed property so the lookup runs once per request
-     * rather than on every access. The eligibility check, the summary panel,
-     * and generate() all read it, which previously meant three identical
+     * Cached for the request. The eligibility check, the summary panel, and
+     * the generate action all read it, which previously meant three identical
      * queries for one page render.
      */
     #[Computed]
@@ -117,49 +113,70 @@ class GenerateSingle extends Component
     }
 
     /**
-     * Matching student records.
+     * Matching student records, searched by student number only.
      *
-     * Two things keep this cheap. Only the columns the result list displays
-     * are selected, rather than every column of a table that carries more
-     * than thirty, most of which relate to transcript printing. And the term
-     * is bound once as a parameter instead of being interpolated three times,
-     * so the database can reuse its plan.
+     * A prefix match is used rather than a contains match, and the difference
+     * is the whole reason this is fast. student_number already carries a
+     * unique B-tree index, and a B-tree can seek directly to a known prefix.
+     * A leading wildcard cannot use that index at all and would scan every
+     * row instead.
+     *
+     * This assumes the registrar types a student number from its beginning,
+     * which the year-first format makes natural. Someone typing only the tail
+     * digits will not match; the guidance in the interface should therefore
+     * ask for the number as printed.
      */
     #[Computed]
     public function results()
     {
-        $term = trim($this->search);
+        $term = $this->normalisedTerm();
 
         if (mb_strlen($term) < self::MIN_SEARCH_LENGTH) {
             return collect();
         }
 
-        $like = '%' . $term . '%';
-
         return StudentRecord::query()
             ->select(['id', 'student_number', 'first_name', 'middle_name', 'last_name', 'suffix', 'program', 'status'])
-            ->where(function ($q) use ($like) {
-                $q->where('last_name', 'ilike', $like)
-                  ->orWhere('first_name', 'ilike', $like)
-                  ->orWhere('student_number', 'ilike', $like);
-            })
-            ->orderBy('last_name')
-            ->orderBy('first_name')
+            ->where('student_number', 'ilike', $term . '%')
+            ->orderBy('student_number')
             ->limit(self::MAX_RESULTS)
             ->get();
     }
 
     /**
-     * Whether the term is long enough to search on, so the interface can say
-     * "keep typing" rather than showing an empty result list that looks like
-     * a failed search.
+     * Tidy what was typed before it reaches the query.
+     *
+     * Values pasted from a spreadsheet or a printed list frequently carry
+     * surrounding whitespace, and a number typed with spaces around the
+     * hyphen would otherwise fail to match a record that is stored without
+     * them.
+     */
+    protected function normalisedTerm(): string
+    {
+        return preg_replace('/\s+/', '', trim($this->search)) ?? '';
+    }
+
+    /**
+     * Whether the term is too short to search on, so the interface can say so
+     * rather than showing an empty list that reads as a failed search.
      */
     #[Computed]
     public function searchTooShort(): bool
     {
-        $length = mb_strlen(trim($this->search));
+        $length = mb_strlen($this->normalisedTerm());
 
         return $length > 0 && $length < self::MIN_SEARCH_LENGTH;
+    }
+
+    /**
+     * Whether a search ran and found nothing, which is a different state from
+     * not having searched yet and should read differently to the registrar.
+     */
+    #[Computed]
+    public function searchFoundNothing(): bool
+    {
+        return mb_strlen($this->normalisedTerm()) >= self::MIN_SEARCH_LENGTH
+            && $this->results->isEmpty();
     }
 
     /**
@@ -190,9 +207,9 @@ class GenerateSingle extends Component
     {
         $this->validate();
 
-        // The results list selects a subset of columns, and generate() needs
-        // the whole record, so the full model is loaded here rather than
-        // reusing whatever the search returned.
+        // The results list selects a subset of columns, and issuance needs the
+        // whole record, so the full model is loaded here rather than reusing
+        // whatever the search returned.
         $student = StudentRecord::findOrFail($this->studentId);
 
         $certificate = $generator->issue(

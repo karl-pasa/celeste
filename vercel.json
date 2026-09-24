@@ -39,11 +39,11 @@
     "APP_SERVICES_CACHE": "/tmp/services.php",
     "VIEW_COMPILED_PATH": "/tmp/views",
     "CACHE_STORE": "database",
-    "SESSION_DRIVER": "database",
+    "SESSION_DRIVER": "cookie",
     "LOG_CHANNEL": "stderr",
     "FILESYSTEM_LOCAL_ROOT": "/tmp/celeste-storage"
   },
-  "buildCommand": "",
+  "buildCommand": "php artisan config:cache && php artisan route:cache && php artisan view:cache",
   "installCommand": "composer install --no-dev --optimize-autoloader --ignore-platform-reqs",
   "outputDirectory": "public"
 }

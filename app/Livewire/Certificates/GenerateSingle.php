@@ -5,6 +5,7 @@ namespace App\Livewire\Certificates;
 use App\Models\Certificate;
 use App\Models\StudentRecord;
 use App\Services\CertificateGenerator;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class GenerateSingle extends Component
@@ -18,6 +19,19 @@ class GenerateSingle extends Component
     public string $issuedOn = '';
     public string $purpose = '';
     public ?int $issuedId = null;
+
+    /**
+     * Three characters rather than two.
+     *
+     * The trigram index that makes this search fast works on three-character
+     * sequences, so a two-character term cannot use it and falls back to
+     * scanning the table. Two characters also matches most of the roll, which
+     * is not a useful result for the registrar in any case.
+     */
+    protected const MIN_SEARCH_LENGTH = 3;
+
+    /** Enough to choose from without the list becoming something to read. */
+    protected const MAX_RESULTS = 8;
 
     public function mount(): void
     {
@@ -70,7 +84,8 @@ class GenerateSingle extends Component
         return $this->documentType === $type;
     }
 
-    public function getReadyProperty(): bool
+    #[Computed]
+    public function ready(): bool
     {
         return $this->studentId !== null && $this->documentType !== null;
     }
@@ -87,33 +102,72 @@ class GenerateSingle extends Component
         $this->studentId = null;
     }
 
-    public function getStudentProperty(): ?StudentRecord
+    /**
+     * The chosen student.
+     *
+     * Marked as a computed property so the lookup runs once per request
+     * rather than on every access. The eligibility check, the summary panel,
+     * and generate() all read it, which previously meant three identical
+     * queries for one page render.
+     */
+    #[Computed]
+    public function student(): ?StudentRecord
     {
         return $this->studentId ? StudentRecord::find($this->studentId) : null;
     }
 
-    public function getResultsProperty()
+    /**
+     * Matching student records.
+     *
+     * Two things keep this cheap. Only the columns the result list displays
+     * are selected, rather than every column of a table that carries more
+     * than thirty, most of which relate to transcript printing. And the term
+     * is bound once as a parameter instead of being interpolated three times,
+     * so the database can reuse its plan.
+     */
+    #[Computed]
+    public function results()
     {
-        if (strlen($this->search) < 2) {
+        $term = trim($this->search);
+
+        if (mb_strlen($term) < self::MIN_SEARCH_LENGTH) {
             return collect();
         }
 
+        $like = '%' . $term . '%';
+
         return StudentRecord::query()
-            ->where(function ($q) {
-                $q->where('last_name', 'ilike', "%{$this->search}%")
-                  ->orWhere('first_name', 'ilike', "%{$this->search}%")
-                  ->orWhere('student_number', 'ilike', "%{$this->search}%");
+            ->select(['id', 'student_number', 'first_name', 'middle_name', 'last_name', 'suffix', 'program', 'status'])
+            ->where(function ($q) use ($like) {
+                $q->where('last_name', 'ilike', $like)
+                  ->orWhere('first_name', 'ilike', $like)
+                  ->orWhere('student_number', 'ilike', $like);
             })
             ->orderBy('last_name')
-            ->limit(8)
+            ->orderBy('first_name')
+            ->limit(self::MAX_RESULTS)
             ->get();
+    }
+
+    /**
+     * Whether the term is long enough to search on, so the interface can say
+     * "keep typing" rather than showing an empty result list that looks like
+     * a failed search.
+     */
+    #[Computed]
+    public function searchTooShort(): bool
+    {
+        $length = mb_strlen(trim($this->search));
+
+        return $length > 0 && $length < self::MIN_SEARCH_LENGTH;
     }
 
     /**
      * Warn before issuing a document the record does not support —
      * a diploma for someone still enrolled, for instance.
      */
-    public function getEligibilityProperty(): ?string
+    #[Computed]
+    public function eligibility(): ?string
     {
         $student = $this->student;
 
@@ -136,8 +190,13 @@ class GenerateSingle extends Component
     {
         $this->validate();
 
+        // The results list selects a subset of columns, and generate() needs
+        // the whole record, so the full model is loaded here rather than
+        // reusing whatever the search returned.
+        $student = StudentRecord::findOrFail($this->studentId);
+
         $certificate = $generator->issue(
-            $this->student,
+            $student,
             $this->documentType,
             auth()->user(),
             [
@@ -149,10 +208,15 @@ class GenerateSingle extends Component
         $this->issuedId = $certificate->id;
         $this->purpose = '';
 
+        // The chosen student may now hold a document it did not a moment ago,
+        // so any cached view of it is stale.
+        unset($this->student);
+
         $this->dispatch('certificate-issued', serial: $certificate->serial_number);
     }
 
-    public function getIssuedProperty(): ?Certificate
+    #[Computed]
+    public function issued(): ?Certificate
     {
         return $this->issuedId ? Certificate::find($this->issuedId) : null;
     }

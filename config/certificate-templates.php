@@ -60,29 +60,8 @@ return [
     ],
 
 Certificate::TYPE_DISMISSAL => [
-    //'template'    => storage_path('templates/honorable-dismissal.pdf'),
-    'page'        => 'Legal',
+    'page'        => 'A4',
     'orientation' => 'landscape',
-
-    'fields' => [
-        // student_name
-        ['value' => 'full_name', 'x' => 61.7, 'y' => 74.8, 'width' => 55.0, 'align' => 'L', 'size' => 10],
-        // student_address
-        ['value' => 'address', 'x' => 124.5, 'y' => 74.8, 'width' => 33.2, 'align' => 'L', 'size' => 10],
-        // year_level
-        ['value' => 'year_level', 'x' => 20.8, 'y' => 82.2, 'width' => 9.9, 'align' => 'C', 'size' => 10],
-        // program
-        ['value' => 'program', 'x' => 72.7, 'y' => 82.2, 'width' => 40.9, 'align' => 'L', 'size' => 10],
-        // date_issued
-        ['value' => 'issued_on', 'x' => 104.8, 'y' => 56.1, 'width' => 44.4, 'align' => 'L', 'size' => 10],
-        // student_signature_printed_name — printed name under the signature line
-        ['value' => 'full_name', 'x' => 17.3, 'y' => 109.5, 'width' => 62.8, 'align' => 'C', 'size' => 10],
-        // registrar_printed_name — comes from .env, not the payload
-        ['text' => '{registrar}', 'x' => 103.4, 'y' => 122.2, 'width' => 52.2, 'align' => 'C', 'size' => 10],
-
-        ['type' => 'qr', 'x' => 78.0, 'y' => 165.0, 'size' => 24],
-        ['text' => '{serial}', 'x' => 105.0, 'y' => 168.0, 'width' => 52, 'font' => 'Courier', 'style' => 'B', 'size' => 7],
-    ],
 ],
 
     Certificate::TYPE_TOR => [

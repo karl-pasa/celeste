@@ -68,10 +68,14 @@ class CertificateGenerator
                 ->first();
 
             if ($existing) {
-                // Re-render so the PDF reflects the current template, without
-                // touching the payload or the fingerprint.
-                $this->renderPdf($existing);
-
+                // Return the certificate as issued, without re-rendering.
+                //
+                // Re-rendering here walks back into storeRendered(), which
+                // writes to the row, and any write that touches payload
+                // without recomputing content_hash silently invalidates the
+                // document. The PDF is a cache of the payload and is rebuilt
+                // on download if it is missing, so there is nothing to gain
+                // by regenerating it at this point.
                 return $existing;
             }
         }
@@ -309,6 +313,11 @@ class CertificateGenerator
             // stylesheet said one size while the renderer used another.
             Certificate::TYPE_TOR => [[0, 0, 612, 936], 'portrait'],
 
+            // The credential and its return slip sit side by side on one
+            // sheet, divided by the cut line, so the page must be landscape
+            // or the two halves stack and the layout collapses.
+            Certificate::TYPE_DISMISSAL => ['a4', 'landscape'],
+
             default => ['a4', 'portrait'],
         };
 
@@ -379,7 +388,24 @@ class CertificateGenerator
         }
 
         if ($attributes !== []) {
-            $certificate->forceFill($attributes)->save();
+            // Write only these columns, bypassing the model.
+            //
+            // Eloquent's save() writes every attribute it considers dirty,
+            // not only the ones just filled, and a JSON-cast attribute such
+            // as payload becomes dirty merely by having been read and
+            // re-encoded. The re-encoded JSON is not byte-identical to what
+            // was stored, because the database returns object keys in its own
+            // order. Rewriting payload without recomputing content_hash
+            // leaves the fingerprint describing bytes that no longer exist,
+            // and the certificate then fails verification for good.
+            DB::table('certificates')
+                ->where('id', $certificate->id)
+                ->update($attributes);
+
+            // Keep the in-memory model consistent with the row without
+            // marking anything dirty, so a later save elsewhere cannot write
+            // these values back through the model.
+            $certificate->forceFill($attributes)->syncOriginal();
         }
 
         return $path;

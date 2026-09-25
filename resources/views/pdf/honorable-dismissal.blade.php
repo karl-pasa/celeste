@@ -1,3 +1,29 @@
+{{--
+    Transfer Credential · PSU-F-URO-23
+    ---------------------------------------------------------------------------
+    One landscape page divided into two halves by the cut line:
+
+      left  · PSU-F-URO-23    the credential the University issues
+      right · PSU-F-URO-23-A  the return slip the receiving school completes
+
+    The right half prints blank deliberately. It is filled in by the school the
+    student transfers to, cut off, and returned — which is why the credential
+    states that the Transcript of Records is forwarded only upon its receipt.
+    Printing anything there would mean the signature the University waits for
+    sits above details the University wrote itself.
+
+    ---------------------------------------------------------------------------
+    Why the sentence is built from tables
+    ---------------------------------------------------------------------------
+    Dompdf implements CSS 2.1. Inline-block widths, flexbox and grid are parsed
+    and then ignored, so a value set as an inline-block span runs across the
+    words beside it instead of sitting on its own rule. Tables are what Dompdf
+    renders predictably, which is why the transcript is built from them too.
+
+    Values come from $certificate->payload, the snapshot taken at issuance and
+    covered by the fingerprint. A missing value prints as blank space, matching
+    how the office completes these by hand.
+--}}
 @php
     $p = $certificate->payload ?? [];
 
@@ -9,9 +35,10 @@
         catch (\Throwable) { return (string) $p[$k]; }
     };
 
-    $standing = $p['standing'] ?? null;
-
-    $standingText = match ($standing) {
+    // The form reads "a ___ year student | graduate of". Where the record says
+    // which applies, only that word prints; otherwise both print as on the
+    // blank form, for the office to strike one through.
+    $standingText = match ($p['standing'] ?? null) {
         'graduate' => 'year graduate of',
         'student'  => 'year student of',
         default    => 'year student | graduate of',
@@ -27,6 +54,7 @@
 <style>
     @page { size: 297mm 210mm; margin: 6mm; }
 
+    /* DejaVu ships with Dompdf and carries ñ, which the core fonts do not. */
     body { font-family: "DejaVu Sans", sans-serif; font-size: 8pt; color:#000; margin:0; }
 
     table { border-collapse: collapse; width: 100%; }
@@ -35,6 +63,8 @@
     .sheet { border: .8pt solid #000; height: 196mm; }
     .sheet > tbody > tr > td { vertical-align: top; }
 
+    /* The cut line. The printed form marks it with scissors; a dashed rule
+       reads the same and survives photocopying better than a glyph. */
     .cut  { border-right: .8pt dashed #000; }
     .half { padding: 4mm 5mm; }
 
@@ -49,19 +79,32 @@
     .title  { font-family:"Times New Roman",serif; font-size:15pt; text-align:center;
               letter-spacing:1pt; margin-top:6mm; }
 
+    /* The body of the credential is set in a script face on the printed form.
+       Dompdf carries no script font, so italic serif stands in. */
     .lead  { font-family:"Times New Roman",serif; font-style:italic; font-size:10pt; }
     .plain { font-family:"Times New Roman",serif; font-style:normal; font-size:10pt; }
 
+    /*
+      | One rule for every filled value: same family, same size, same colour,
+      | so the form does not read as though three people completed it.
+      | Applied to table cells rather than inline spans, because Dompdf honours
+      | a width on a <td> and largely ignores one on an inline-block.
+      |
+      | Upright rather than italic: the form's own wording is script, but an
+      | entry written onto a ruled line is upright and easier to read at speed.
+      | Change font-style here if the office prefers it to match the printing.
+    */
     .val {
         border-bottom: .7pt solid #000;
         font-family: "Times New Roman", serif;
         font-style: normal;
-        font-size: 10pt;      
+        font-size: 10pt;
         color: #000;
         text-align: center;
         padding: 0 1mm .4mm;
     }
 
+    /* Rows of the certifying sentence. */
     .sentence td { font-family:"Times New Roman",serif; font-style:italic; font-size:10pt;
                    padding-bottom:.4mm; }
     .sentence .val { font-style:normal; }
@@ -158,8 +201,16 @@
                     <table>
                         <tr>
                             <td style="text-align:center; padding-bottom:1mm">
+                                {{-- $qr is a data URI supplied by the generator. A
+                                     dashed placeholder is drawn if it is absent, so
+                                     the layout can be checked before it is wired. --}}
                                 @if (!empty($qr))
                                     <img src="{{ $qr }}" style="width:24mm;height:24mm">
+                                @else
+                                    <div style="width:24mm;height:24mm;border:.5pt dashed #999;
+                                                font-size:5pt;color:#999;margin:0 auto">
+                                        <div style="padding-top:10mm">QR</div>
+                                    </div>
                                 @endif
                             </td>
                         </tr>
@@ -302,8 +353,8 @@
             </tr>
         </table>
 
-        {{-- The school records what it received, and how it wishes the
-             transcript returned. --}}
+        {{-- The receiving school records what it received, and how it wishes
+             the transcript returned. All blank: this is their section. --}}
         <table style="margin-top:5mm">
             <tr>
                 <td style="width:52%; vertical-align:top">

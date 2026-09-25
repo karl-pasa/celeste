@@ -1,9 +1,14 @@
 {{--
-    Letterhead for the Transfer Credential. Appears on both halves, because
-    each is a separate document once the sheet is cut.
+    Letterhead for the Transfer Credential.
 
-    $formNo distinguishes them: PSU-F-URO-23 on the credential,
+    Appears on both halves of the sheet, because each becomes a separate
+    document once the sheet is cut along the centre line.
+
+    $formNo distinguishes them: PSU-F-URO-23 on the credential itself,
     PSU-F-URO-23-A on the return slip.
+
+    public_path() rather than asset(): Dompdf reads the seal from disk, and a
+    URL would require remote file access, which is disabled by default.
 --}}
 <table>
     <tr>

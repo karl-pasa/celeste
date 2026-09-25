@@ -80,49 +80,113 @@
                 </div>
 
                 @if ($this->student)
-                    <div class="d-flex justify-content-between align-items-center p-3 rounded-3 mb-3"
-                         style="background:var(--psu-navy-050);border:1px solid var(--line)">
-                        <div>
-                            <div class="fw-semibold">{{ $this->student->full_name }}</div>
-                            <div class="text-muted-celeste" style="font-size:.8125rem">
-                                <span class="serial">{{ $this->student->student_number }}</span>
-                                · {{ $this->student->program }}
-                                · <span class="text-capitalize">{{ $this->student->status }}</span>
-                            </div>
-                        </div>
-                        <button wire:click="clearStudent" class="btn btn-sm btn-psu-outline">Change</button>
-                    </div>
-                @else
-                    <input type="text" wire:model.live.debounce.300ms="search"
-                           class="form-control @error('studentId') is-invalid @enderror"
-                           placeholder="Search by name or student number" autocomplete="off">
-                    @error('studentId') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
 
-                    @if ($this->results->isNotEmpty())
-                        <div class="list-group mt-2 mb-3">
-                            @foreach ($this->results as $record)
-                                <button type="button" wire:click="selectStudent({{ $record->id }})"
-                                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                    <span>
-                                        <span class="d-block">{{ $record->full_name }}</span>
-                                        <span class="text-muted-celeste" style="font-size:.8125rem">
-                                            {{ $record->student_number }} · {{ $record->program }}
-                                        </span>
-                                    </span>
-                                    <span class="badge-celeste badge-type text-capitalize">{{ $record->status }}</span>
-                                </button>
-                            @endforeach
-                        </div>
-                    @elseif (strlen($search) >= 2)
-                        <p class="text-muted-celeste mt-2 mb-3" style="font-size:.8125rem">
-                            No records match “{{ $search }}”. Check the spelling or the student number.
-                        </p>
-                    @else
-                        <p class="text-muted-celeste mt-2 mb-3" style="font-size:.8125rem">
-                            Type at least two characters to search.
-                        </p>
-                    @endif
-                @endif
+    {{-- A student is selected. Show it, with a way to change it. --}}
+    <div class="d-flex align-items-center justify-content-between p-3 rounded-3"
+         style="background:var(--psu-navy-soft,#eef2f9);border:1px solid #dbe3ef">
+        <div>
+            <div class="fw-semibold" style="color:var(--psu-navy,#12224F)">
+                {{ $this->student->last_name }}, {{ $this->student->first_name }}
+                @if ($this->student->suffix) {{ $this->student->suffix }} @endif
+            </div>
+            <div class="text-muted-celeste" style="font-size:.8125rem">
+                <span class="font-monospace">{{ $this->student->student_number }}</span>
+                &middot; {{ $this->student->program }}
+                &middot; {{ ucfirst($this->student->status) }}
+            </div>
+        </div>
+
+        <button type="button" wire:click="clearStudent"
+                class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-x-lg"></i> Change
+        </button>
+    </div>
+
+@else
+
+    {{-- No student chosen yet. Search by student number. --}}
+    <label for="search" class="form-label">
+        <i class="bi bi-person-badge"></i> Student number
+    </label>
+
+    <div class="position-relative">
+        <input type="text"
+               id="search"
+               wire:model.live.debounce.300ms="search"
+               class="form-control @error('studentId') is-invalid @enderror"
+               placeholder="2026-00101"
+               autocomplete="off"
+               spellcheck="false"
+               inputmode="numeric">
+
+        {{-- Shown only while a request is in flight for this field, so the
+             registrar knows the pause is the system working rather than the
+             page having stopped responding. --}}
+        <span class="position-absolute top-50 end-0 translate-middle-y me-3"
+              wire:loading wire:target="search">
+            <span class="spinner-border spinner-border-sm text-secondary"></span>
+        </span>
+    </div>
+
+    @error('studentId')
+        <div class="invalid-feedback d-block">{{ $message }}</div>
+    @enderror
+
+    @if ($this->searchTooShort)
+
+        <p class="text-muted-celeste mt-2 mb-0" style="font-size:.75rem">
+            Keep typing — enter at least four characters of the student number.
+        </p>
+
+    @elseif ($this->searchFoundNothing)
+
+        <div class="mt-2 p-2 rounded-3" style="background:#fdf4e3;border:1px solid #f0dcae">
+            <p class="mb-0" style="font-size:.8125rem;color:#8a5c0c">
+                <i class="bi bi-exclamation-circle"></i>
+                No record begins with that number. Check it against the document,
+                or confirm the student has been imported.
+            </p>
+        </div>
+
+    @elseif ($this->results->isNotEmpty())
+
+        <div class="list-group mt-2" style="max-height:18rem;overflow-y:auto">
+            @foreach ($this->results as $result)
+                <button type="button"
+                        wire:key="student-{{ $result->id }}"
+                        wire:click="selectStudent({{ $result->id }})"
+                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <span>
+                        <span class="d-block fw-semibold" style="font-size:.9375rem">
+                            {{ $result->last_name }}, {{ $result->first_name }}
+                            @if ($result->suffix) {{ $result->suffix }} @endif
+                        </span>
+                        <span class="d-block text-muted-celeste" style="font-size:.8125rem">
+                            {{ $result->program }}
+                        </span>
+                    </span>
+                    <span class="font-monospace text-muted-celeste" style="font-size:.8125rem">
+                        {{ $result->student_number }}
+                    </span>
+                </button>
+            @endforeach
+        </div>
+
+        @if ($this->results->count() === 8)
+            <p class="text-muted-celeste mt-2 mb-0" style="font-size:.75rem">
+                Showing the first eight matches. Type more of the number to narrow them.
+            </p>
+        @endif
+
+    @else
+
+        <p class="text-muted-celeste mt-2 mb-0" style="font-size:.75rem">
+            Enter the student number as printed on the document.
+        </p>
+
+    @endif
+
+@endif
 
                 {{-- Step 2: document type --}}
                 <div class="d-flex align-items-center justify-content-between gap-2 mb-2 mt-4">

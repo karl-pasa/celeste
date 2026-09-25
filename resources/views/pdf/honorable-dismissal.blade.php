@@ -1,29 +1,3 @@
-{{--
-    Transfer Credential · PSU-F-URO-23
-    ---------------------------------------------------------------------------
-    One landscape page divided into two halves by the cut line:
-
-      left  · PSU-F-URO-23    the credential the University issues
-      right · PSU-F-URO-23-A  the return slip the receiving school completes
-
-    The right half prints blank deliberately. It is filled in by the school the
-    student transfers to, cut off, and returned — which is why the credential
-    states that the Transcript of Records is forwarded only upon its receipt.
-    Printing anything there would mean the signature the University waits for
-    sits above details the University wrote itself.
-
-    ---------------------------------------------------------------------------
-    Why the sentence is built from tables
-    ---------------------------------------------------------------------------
-    Dompdf implements CSS 2.1. Inline-block widths, flexbox and grid are parsed
-    and then ignored, so a value set as an inline-block span runs across the
-    words beside it instead of sitting on its own rule. Tables are what Dompdf
-    renders predictably, which is why the transcript is built from them too.
-
-    Values come from $certificate->payload, the snapshot taken at issuance and
-    covered by the fingerprint. A missing value prints as blank space, matching
-    how the office completes these by hand.
---}}
 @php
     $p = $certificate->payload ?? [];
 

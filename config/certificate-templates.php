@@ -60,7 +60,7 @@ return [
     ],
 
 Certificate::TYPE_DISMISSAL => [
-    'template'    => storage_path('templates/honorable-dismissal.pdf'),
+    //'template'    => storage_path('templates/honorable-dismissal.pdf'),
     'page'        => 'Legal',
     'orientation' => 'landscape',
 

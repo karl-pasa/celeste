@@ -4,7 +4,6 @@
 /public/storage
 /storage/*.key
 /storage/app/certificates
-/vendor
 .env
 .env.backup
 .env.production

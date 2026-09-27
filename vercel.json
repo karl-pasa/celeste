@@ -38,8 +38,8 @@
     "APP_ROUTES_CACHE": "/tmp/routes.php",
     "APP_SERVICES_CACHE": "/tmp/services.php",
     "VIEW_COMPILED_PATH": "/tmp/views",
-    "CACHE_STORE": "database",
-    "SESSION_DRIVER": "database",
+    "CACHE_STORE": "file",
+    "SESSION_DRIVER": "file",
     "LOG_CHANNEL": "stderr",
     "FILESYSTEM_LOCAL_ROOT": "/tmp/celeste-storage"
   },

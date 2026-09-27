@@ -44,5 +44,6 @@
     "FILESYSTEM_LOCAL_ROOT": "/tmp/celeste-storage"
   },
   "buildCommand": " ",
+  "installCommand": "composer install --no-dev --optimize-autoloader --ignore-platform-reqs",
   "outputDirectory": "public"
 }

@@ -55,9 +55,6 @@
                 @enderror
             </div>
 
-            {{-- The label reads "Password" for both roles. The field holds a
-                 password; that it happens to be the student number is not
-                 something the sign-in screen needs to announce. --}}
             <div class="mb-3" x-data="{ show: false }">
                 <label for="password" class="form-label">
                     <i class="bi bi-lock"></i> Password

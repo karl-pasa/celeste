@@ -89,14 +89,6 @@
             </button>
         </form>
 
-        @if (Route::has('password.request'))
-            <div class="text-center mt-3">
-
-            </div>
-        @endif
-
-        <div class="divider-label my-3">or</div>
-
         <a href="{{ route('verify') }}" class="btn btn-psu-outline w-100">
             <i class="bi bi-patch-check"></i> Verify a document without signing in
         </a>

@@ -13,14 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-/**
- * Certificate Generation Module.
- *
- * Issuing a certificate is a single transaction: build the payload snapshot,
- * hash it, persist it, then render the PDF with the QR already embedded.
- * Nothing becomes downloadable until the hash exists, so an unverifiable
- * document can never leave the system.
- */
+
 class CertificateGenerator
 {
     public function __construct(
@@ -29,22 +22,7 @@ class CertificateGenerator
         protected PdfTemplateStamper $stamper,
     ) {}
 
-    /**
-     * Issue one certificate.
-     *
-     * $overrides accepts two keys:
-     *   'issued_on' — the date of issue, otherwise today
-     *   'payload'   — values supplied by the caller, merged over those read
-     *                 from the student record BEFORE hashing, so anything
-     *                 printed is covered by the fingerprint
-     *
-     * There was previously an unused $extra parameter sitting ahead of
-     * $overrides. Because it was never read, every caller passing values in
-     * the fourth position had them silently discarded — including reissue(),
-     * whose 'supersedes' marker never reached a payload. Removing it makes
-     * $overrides the fourth argument, which is the position callers were
-     * already using.
-     */
+
     public function issue(
          StudentRecord $student,
         string $documentType,
@@ -52,14 +30,7 @@ class CertificateGenerator
         array $overrides = [],
         ?CertificateBatch $batch = null,
     ): Certificate {
-        // A student holds one active document of each type. Asking for a
-        // second returns the first rather than minting a new serial, a new
-        // token and a new QR for a document that already exists — which is
-        // what produced duplicate certificates for the same student.
-        //
-        // When the details have genuinely changed, reissue() is the path:
-        // it supersedes the original and leaves any printed copy resolving
-        // to an explanation rather than silently competing with a twin.
+
         if (! ($overrides['force'] ?? false)) {
             $existing = Certificate::where('student_record_id', $student->id)
                 ->where('document_type', $documentType)
@@ -68,14 +39,7 @@ class CertificateGenerator
                 ->first();
 
             if ($existing) {
-                // Return the certificate as issued, without re-rendering.
-                //
-                // Re-rendering here walks back into storeRendered(), which
-                // writes to the row, and any write that touches payload
-                // without recomputing content_hash silently invalidates the
-                // document. The PDF is a cache of the payload and is rebuilt
-                // on download if it is missing, so there is nothing to gain
-                // by regenerating it at this point.
+
                 return $existing;
             }
         }
@@ -86,10 +50,6 @@ class CertificateGenerator
 
             $serial = $this->nextSerial($documentType, $issuedOn);
 
-            // Caller-supplied values win over those read from the record, and
-            // the merge happens before the hash below. A value printed on the
-            // document but absent here would sit outside the fingerprint and
-            // could be altered afterwards without verification noticing.
             $payload = array_merge(
                 $this->buildPayload($student, $documentType, $serial, $issuedOn),
                 $overrides['payload'] ?? []
@@ -121,10 +81,7 @@ class CertificateGenerator
         });
     }
 
-    /**
-     * Batch generation. Each certificate is issued independently so one bad
-     * record cannot roll back an entire graduating class.
-     */
+
     public function issueBatch(
         array $studentIds,
         string $documentType,
@@ -152,9 +109,7 @@ class CertificateGenerator
             }
 
             try {
-                // The batch is the fifth argument. It was previously passed
-                // fifth while the signature expected an array there, which
-                // raised a TypeError on the first student of every batch.
+
                 $this->issue($student, $documentType, $registrar, [], $batch);
                 $batch->increment('generated');
             } catch (\Throwable $e) {
@@ -181,10 +136,7 @@ class CertificateGenerator
         return $batch->fresh();
     }
 
-    /**
-     * The canonical snapshot of everything printed on the document.
-     * Once hashed, changing any value here invalidates the certificate.
-     */
+
     public function buildPayload(
         StudentRecord $student,
         string $documentType,
@@ -270,15 +222,11 @@ class CertificateGenerator
         };
     }
 
-    /**
-     * Render the PDF with the QR embedded, then fingerprint the file itself.
-     */
+
     public function renderPdf(Certificate $certificate): string
     {
         $certificate->loadMissing('studentRecord', 'issuer');
 
-        // If the Registrar has supplied their own approved PDF form for this
-        // document type, stamp onto that instead of rendering a Blade layout.
         if ($this->stamper->hasTemplate($certificate->document_type)) {
             return $this->storeRendered($certificate, $this->stamper->render($certificate));
         }
@@ -286,9 +234,6 @@ class CertificateGenerator
         return $this->storeRendered($certificate, $this->buildDompdf($certificate)->output());
     }
 
-    /**
-     * Build the DomPDF instance for a certificate using its Blade layout.
-     */
     protected function buildDompdf(Certificate $certificate)
     {
         $certificate->loadMissing('studentRecord', 'issuer');
@@ -302,20 +247,7 @@ class CertificateGenerator
 
         $paper = match ($certificate->document_type) {
             Certificate::TYPE_DIPLOMA => ['a4', 'landscape'],
-
-            // Long bond, 8.5 × 13 inches, which is what the Registrar prints
-            // transcripts on. Expressed in points because Dompdf has no name
-            // for this size.
-            //
-            // This previously fell through to A4. A4 is 297mm tall against
-            // long bond's 330mm, so a layout laid out for the taller sheet
-            // lost 33mm and pushed its footer onto a third page — the
-            // stylesheet said one size while the renderer used another.
             Certificate::TYPE_TOR => [[0, 0, 612, 936], 'portrait'],
-
-            // The credential and its return slip sit side by side on one
-            // sheet, divided by the cut line, so the page must be landscape
-            // or the two halves stack and the layout collapses.
             Certificate::TYPE_DISMISSAL => ['a4', 'landscape'],
 
             default => ['a4', 'portrait'],
@@ -325,21 +257,11 @@ class CertificateGenerator
             'certificate' => $certificate,
             'student'     => $certificate->studentRecord,
             'payload'     => $certificate->payload,
-
-            // A data URI, which Dompdf renders inline without touching the
-            // filesystem — so no temporary file, no cleanup, and no chroot
-            // restriction to fall foul of.
             'qr'          => $this->qr->dataUri($certificate),
             'verifyUrl'   => $this->qr->payloadUrl($certificate),
         ])->setPaper(...$paper);
     }
 
-    /**
-     * Render and return the PDF bytes, whether or not they can be saved.
-     *
-     * Serverless hosts mount the project read-only, so persisting is a
-     * best-effort step rather than a precondition for serving the document.
-     */
     public function renderBinary(Certificate $certificate): string
     {
         $certificate->loadMissing('studentRecord', 'issuer');
@@ -357,24 +279,12 @@ class CertificateGenerator
         return $binary;
     }
 
-    /**
-     * Persist the rendered bytes and fingerprint the file itself, whichever
-     * renderer produced them.
-     *
-     * A write failure is survivable. The PDF is a rendering of the hashed
-     * payload, not the record itself, so it can always be rebuilt — and on a
-     * read-only filesystem it must be. Losing the response over a cache miss
-     * would be the wrong trade.
-     */
     protected function storeRendered(Certificate $certificate, string $binary): string
     {
         $path = "certificates/files/{$certificate->verification_token}.pdf";
 
         $attributes = [];
 
-        // Fingerprint the file once, at first issuance. Later re-renders after
-        // a template change would otherwise silently replace the fingerprint
-        // that was recorded when the document was issued.
         if (! $certificate->file_hash) {
             $attributes['file_hash'] = $this->hasher->hashFile($binary);
         }
@@ -388,23 +298,10 @@ class CertificateGenerator
         }
 
         if ($attributes !== []) {
-            // Write only these columns, bypassing the model.
-            //
-            // Eloquent's save() writes every attribute it considers dirty,
-            // not only the ones just filled, and a JSON-cast attribute such
-            // as payload becomes dirty merely by having been read and
-            // re-encoded. The re-encoded JSON is not byte-identical to what
-            // was stored, because the database returns object keys in its own
-            // order. Rewriting payload without recomputing content_hash
-            // leaves the fingerprint describing bytes that no longer exist,
-            // and the certificate then fails verification for good.
             DB::table('certificates')
                 ->where('id', $certificate->id)
                 ->update($attributes);
 
-            // Keep the in-memory model consistent with the row without
-            // marking anything dirty, so a later save elsewhere cannot write
-            // these values back through the model.
             $certificate->forceFill($attributes)->syncOriginal();
         }
 
@@ -437,10 +334,6 @@ class CertificateGenerator
         return $token;
     }
 
-    /**
-     * Reissue supersedes the old certificate rather than editing it —
-     * the original hash stays intact for anyone holding a printed copy.
-     */
     public function reissue(Certificate $original, User $registrar, string $reason): Certificate
     {
         $replacement = $this->issue(

@@ -7,27 +7,10 @@ use Illuminate\Support\Carbon;
 use RuntimeException;
 use setasign\Fpdi\Fpdi;
 
-/**
- * Stamps certificate data onto the Registrar's own PDF forms.
- *
- * The alternative — rebuilding an official document in HTML — never quite
- * matches, and registrar forms are often pre-designed, legally worded, and
- * already approved. This imports the approved PDF as a page background and
- * writes only the variable fields on top, so the layout is exactly the one
- * the University signed off on.
- *
- * Everything printed here comes from $certificate->payload, which is the
- * hashed snapshot. That is deliberate: if a value is printed from anywhere
- * else it is not covered by the fingerprint, and altering it in the database
- * would not be detected on verification.
- */
 class PdfTemplateStamper
 {
     public function __construct(protected QrCodeService $qr) {}
 
-    /**
-     * Is a usable template configured for this document type?
-     */
     public function hasTemplate(string $documentType): bool
     {
         $path = config("certificate-templates.{$documentType}.template");
@@ -35,9 +18,6 @@ class PdfTemplateStamper
         return $path !== null && is_readable($path);
     }
 
-    /**
-     * Render the certificate onto its template and return the PDF bytes.
-     */
     public function render(Certificate $certificate): string
     {
         $config = config("certificate-templates.{$certificate->document_type}");
@@ -67,7 +47,6 @@ class PdfTemplateStamper
         $qrFile = null;
 
         try {
-            // Import every page of the template, so multi-page forms survive.
             for ($page = 1; $page <= $pageCount; $page++) {
                 $template = $pdf->importPage($page);
                 $size = $pdf->getTemplateSize($template);
@@ -78,7 +57,6 @@ class PdfTemplateStamper
                 );
                 $pdf->useTemplate($template);
 
-                // Fields are stamped on page 1 unless they name another page.
                 foreach ($config['fields'] ?? [] as $field) {
                     if (($field['page'] ?? 1) !== $page) {
                         continue;
@@ -113,7 +91,6 @@ class PdfTemplateStamper
     {
         $text = $this->resolve($field, $certificate);
 
-        // A field with nothing behind it prints nothing, rather than an empty box.
         if ($text === null || $text === '') {
             return;
         }
@@ -142,21 +119,6 @@ class PdfTemplateStamper
         $pdf->Cell($width, 6, $encoded, 0, 0, $field['align'] ?? 'L');
     }
 
-    /**
-     * Shrink the font until the text fits inside the field box.
-     *
-     * A registrar form's blanks are sized for handwriting, not for the longest
-     * name in the database. "BSIT" fits a 41mm blank at 12pt; "Bachelor of
-     * Science in Business Administration" needs 5pt in the same space. FPDF
-     * does not wrap inside a Cell -- it simply runs the text past the edge and
-     * over whatever is printed there -- so a fixed size means either tiny text
-     * everywhere or occasional collisions.
-     *
-     * 'size' is therefore the preferred size, and 'min_size' the floor below
-     * which the value would be too small to read. If the text still does not
-     * fit at the floor, it is printed anyway and reported, because silently
-     * shrinking a name to 4pt is worse than a visible problem you can fix.
-     */
     protected function fitToWidth(
         Fpdi $pdf,
         string $text,
@@ -200,9 +162,6 @@ class PdfTemplateStamper
         return $this->overflows;
     }
 
-    /**
-     * Resolve a field to its printed string, from the hashed payload.
-     */
     protected function resolve(array $field, Certificate $certificate): ?string
     {
         $payload = $certificate->payload ?? [];
@@ -234,10 +193,6 @@ class PdfTemplateStamper
         return strtr($field['text'], $replacements);
     }
 
-    /**
-     * Dates are stored ISO for hashing stability but should read naturally
-     * on a printed certificate.
-     */
     protected function format(string $key, mixed $value): ?string
     {
         if ($value === null || $value === '') {
@@ -255,11 +210,6 @@ class PdfTemplateStamper
         return (string) $value;
     }
 
-    /**
-     * FPDF's core fonts are Latin-1. Philippine names carry Ñ and accents
-     * often enough that dropping them silently would be a real defect, so
-     * convert rather than letting them render as noise.
-     */
     protected function encode(string $text): string
     {
         $converted = @iconv('UTF-8', 'windows-1252//TRANSLIT', $text);

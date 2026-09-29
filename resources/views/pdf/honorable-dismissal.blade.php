@@ -30,7 +30,12 @@
       | 4mm page margin leaves 202mm of printable height on a 210mm sheet, and
       | the sheet below claims 200mm of it. height on a table is a minimum in
       | CSS, not a cap -- it grows if the content demands it, and a grown row
-      | paginates. The spacing below is therefore set to leave real headroom.
+      | paginates.
+      |
+      | The return slip is the taller of the two columns: it carries six ruled
+      | entries in its receipt block where the credential carries three. Its
+      | spacing is therefore set tighter than the credential's, which is why
+      | the two sides do not share margin values.
     */
     @page { size: 297mm 210mm; margin: 4mm; }
 
@@ -75,9 +80,6 @@
       | so the form does not read as though three people completed it.
       | Applied to table cells rather than inline spans, because Dompdf honours
       | a width on a <td> and largely ignores one on an inline-block.
-      |
-      | Upright rather than italic: the form's own wording is script, but an
-      | entry written onto a ruled line is upright and easier to read at speed.
     */
     .val {
         border-bottom: .7pt solid #000;
@@ -102,7 +104,7 @@
     .sealbox { border:.7pt dashed #000; text-align:center;
                font-size:7pt; line-height:1.45; padding:1.6mm 1mm; }
 
-    .receipt td   { font-size:8pt; padding:.5mm 0; }
+    .receipt td   { font-size:8pt; padding:.35mm 0; }
     .receipt .val { font-family:"DejaVu Sans",sans-serif; font-size:8pt;
                     text-align:left; padding-left:1mm; }
 
@@ -111,7 +113,7 @@
 
     .rs-title { font-size:9pt; }
     .rs-sub   { font-size:6.5pt; }
-    .rs-line  { border-bottom:.7pt solid #000; height:5mm; }
+    .rs-line  { border-bottom:.7pt solid #000; height:4mm; }
     .rs-cap   { font-size:7.5pt; text-align:center; }
     .tick     { border:.7pt solid #000; width:3mm; height:3mm; }
 </style>
@@ -283,7 +285,7 @@
 
         {{-- School and address rules are indented from the left on the printed
              form, not centred -- the left margin carries no text beside them. --}}
-        <table style="margin-top:7mm">
+        <table style="margin-top:5mm">
             <tr>
                 <td style="width:14%"></td>
                 <td class="rs-line"></td>
@@ -294,7 +296,7 @@
                 <td class="rs-cap">Name of School</td>
                 <td></td>
             </tr>
-            <tr><td colspan="3" style="height:3mm"></td></tr>
+            <tr><td colspan="3" style="height:2mm"></td></tr>
             <tr>
                 <td></td>
                 <td class="rs-line"></td>
@@ -307,7 +309,7 @@
             </tr>
         </table>
 
-        <table style="margin-top:4mm">
+        <table style="margin-top:3mm">
             <tr>
                 <td style="width:50%"></td>
                 <td class="rs-line"></td>
@@ -320,17 +322,17 @@
             </tr>
         </table>
 
-        <div style="margin-top:6mm; font-size:8.5pt; line-height:1.45">
+        <div style="margin-top:4.5mm; font-size:8.5pt; line-height:1.35">
             <div>The Registrar</div>
             <div>{{ config('celeste.institution.name', 'Partido State University') }}</div>
             <div>Goa, {{ config('celeste.institution.campus', 'Camarines Sur') }}</div>
         </div>
 
-        <div style="margin-top:5mm; font-size:8.5pt">Madam:</div>
+        <div style="margin-top:3.5mm; font-size:8.5pt">Madam:</div>
 
-        <table style="margin-top:2mm">
+        <table style="margin-top:1.5mm">
             <tr>
-                <td style="font-size:8.5pt; line-height:1.6" colspan="3">
+                <td style="font-size:8.5pt; line-height:1.45" colspan="3">
                     This is to acknowledge receipt of the Transfer Credential granted
                 </td>
             </tr>
@@ -341,7 +343,7 @@
             </tr>
         </table>
 
-        <table style="margin-top:9mm">
+        <table style="margin-top:6mm">
             <tr>
                 <td style="width:28%"></td>
                 <td class="rs-line"></td>
@@ -350,7 +352,7 @@
                 <td></td>
                 <td class="rs-cap">Signature over Printed Name</td>
             </tr>
-            <tr><td colspan="2" style="height:4mm"></td></tr>
+            <tr><td colspan="2" style="height:3mm"></td></tr>
             <tr>
                 <td></td>
                 <td class="rs-line"></td>
@@ -363,16 +365,13 @@
 
         {{-- The receiving school records what it received, and how it wishes
              the transcript returned. All blank: this is their section. --}}
-        <table style="margin-top:4mm">
+        <table style="margin-top:3mm">
             <tr>
                 <td style="width:58%; vertical-align:top">
                     <table class="receipt">
                         <tr><td style="width:22mm">OR No.:</td><td class="val"></td></tr>
                         <tr><td>Date:</td><td class="val"></td></tr>
-                        <tr>
-                            <td>Cert. Fee:</td>
-                            <td class="val">Php</td>
-                        </tr>
+                        <tr><td>Cert. Fee:</td><td class="val">Php</td></tr>
                         <tr><td>T.C.</td><td class="val"></td></tr>
                         <tr><td>Course:</td><td class="val"></td></tr>
                         <tr><td>Year Graduated:</td><td class="val"></td></tr>
@@ -391,7 +390,7 @@
             </tr>
         </table>
 
-        <table class="foot" style="margin-top:3mm">
+        <table class="foot" style="margin-top:2mm">
             <tr>
                 <td style="width:44%">Effectivity Date: January 2, 2025</td>
                 <td style="width:28%; text-align:center">Rev. No: 03</td>

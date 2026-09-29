@@ -26,7 +26,13 @@
 <meta charset="utf-8">
 <title>{{ $certificate->serial_number }}</title>
 <style>
-    @page { size: 297mm 210mm; margin: 6mm; }
+    /*
+      | Page margin is 4mm rather than 6mm. On a 210mm-tall sheet that leaves
+      | 202mm of printable height, and the sheet below claims 200mm of it.
+      | The left column's content ran about 192mm against a 188mm budget under
+      | the old figures, which is what pushed the row onto a second page.
+    */
+    @page { size: 297mm 210mm; margin: 4mm; }
 
     /* DejaVu ships with Dompdf and carries ñ, which the core fonts do not. */
     body { font-family: "DejaVu Sans", sans-serif; font-size: 8pt; color:#000; margin:0; }
@@ -34,13 +40,22 @@
     table { border-collapse: collapse; width: 100%; }
     td { vertical-align: bottom; }
 
-    .sheet { border: .8pt solid #000; height: 196mm; }
+    /*
+      | height on a table is a minimum, not a cap -- it will grow past 200mm if
+      | the content demands it, and a grown row paginates. The margins below
+      | are therefore set to leave real headroom, not to fit exactly.
+      |
+      | table-layout:fixed holds the two columns at a true 50/50. Without it
+      | Dompdf sizes them by content, and a long programme name widens the
+      | credential side at the return slip's expense.
+    */
+    .sheet { border: .8pt solid #000; height: 200mm; table-layout: fixed; }
     .sheet > tbody > tr > td { vertical-align: top; }
 
     /* The cut line. The printed form marks it with scissors; a dashed rule
        reads the same and survives photocopying better than a glyph. */
     .cut  { border-right: .8pt dashed #000; }
-    .half { padding: 4mm 5mm; }
+    .half { padding: 3mm 4.5mm; }
 
     .h-rep  { font-family:"Times New Roman",serif; font-size:8pt; }
     .h-uni  { font-family:"Times New Roman",serif; font-size:12.5pt; color:#1F4E79; letter-spacing:.2pt; }
@@ -49,9 +64,9 @@
     .rule   { border-bottom:.8pt solid #1F4E79; margin-top:1mm; }
 
     .office { font-family:"Times New Roman",serif; font-size:11pt; text-align:center;
-              letter-spacing:.6pt; margin-top:5mm; }
+              letter-spacing:.6pt; margin-top:3mm; }
     .title  { font-family:"Times New Roman",serif; font-size:15pt; text-align:center;
-              letter-spacing:1pt; margin-top:6mm; }
+              letter-spacing:1pt; margin-top:4mm; }
 
     /* The body of the credential is set in a script face on the printed form.
        Dompdf carries no script font, so italic serif stands in. */
@@ -119,7 +134,7 @@
         <div class="title">TRANSFER CREDENTIAL</div>
 
         {{-- Date of issue, on its rule. --}}
-        <table style="margin-top:7mm">
+        <table style="margin-top:5mm">
             <tr>
                 <td style="width:30%"></td>
                 <td class="val" style="width:44%">{{ $d('issued_on') }}</td>
@@ -169,7 +184,7 @@
         </table>
 
         {{-- Verification block and the Registrar's signature. --}}
-        <table style="margin-top:7mm">
+        <table style="margin-top:4mm">
             <tr>
                 <td style="width:32mm; vertical-align:top">
                     <table>
@@ -179,11 +194,11 @@
                                      dashed placeholder is drawn if it is absent, so
                                      the layout can be checked before it is wired. --}}
                                 @if (!empty($qr))
-                                    <img src="{{ $qr }}" style="width:24mm;height:24mm">
+                                    <img src="{{ $qr }}" style="width:21mm;height:21mm">
                                 @else
-                                    <div style="width:24mm;height:24mm;border:.5pt dashed #999;
+                                    <div style="width:21mm;height:21mm;border:.5pt dashed #999;
                                                 font-size:5pt;color:#999;margin:0 auto">
-                                        <div style="padding-top:10mm">QR</div>
+                                        <div style="padding-top:8mm">QR</div>
                                     </div>
                                 @endif
                             </td>
@@ -234,7 +249,7 @@
         </table>
 
         {{-- Receipt figures, bottom left as on the form. --}}
-        <table class="receipt" style="width:52mm; margin-top:5mm">
+        <table class="receipt" style="width:52mm; margin-top:3mm">
             <tr>
                 <td style="width:17mm">OR:</td>
                 <td class="val">{{ $v('or_no') }}</td>
@@ -249,7 +264,7 @@
             </tr>
         </table>
 
-        <table class="foot" style="margin-top:4mm">
+        <table class="foot" style="margin-top:2mm">
             <tr>
                 <td style="width:44%">Effectivity Date: January 2, 2025</td>
                 <td style="width:28%; text-align:center">Rev. No: 03</td>
@@ -268,7 +283,7 @@
             <div class="rs-sub">(to be filled by requesting school)</div>
         </div>
 
-        <table style="margin-top:9mm; width:88%; margin-left:auto; margin-right:auto">
+        <table style="margin-top:8mm; width:88%; margin-left:auto; margin-right:auto">
             <tr><td class="rs-line"></td></tr>
             <tr><td class="rs-cap">Name of School</td></tr>
             <tr><td style="height:4mm"></td></tr>
@@ -287,13 +302,13 @@
             </tr>
         </table>
 
-        <div style="margin-top:7mm; font-size:8.5pt; line-height:1.5">
+        <div style="margin-top:6mm; font-size:8.5pt; line-height:1.5">
             <div>The Registrar</div>
             <div>{{ config('celeste.institution.name', 'Partido State University') }}</div>
             <div>Goa, {{ config('celeste.institution.campus', 'Camarines Sur') }}</div>
         </div>
 
-        <div style="margin-top:6mm; font-size:8.5pt">Madam:</div>
+        <div style="margin-top:5mm; font-size:8.5pt">Madam:</div>
 
         <table style="margin-top:2mm">
             <tr>
@@ -307,7 +322,7 @@
             </tr>
         </table>
 
-        <table style="margin-top:12mm">
+        <table style="margin-top:10mm">
             <tr>
                 <td style="width:26%"></td>
                 <td class="rs-line"></td>
@@ -316,7 +331,7 @@
                 <td></td>
                 <td class="rs-cap">Signature over Printed Name</td>
             </tr>
-            <tr><td colspan="2" style="height:6mm"></td></tr>
+            <tr><td colspan="2" style="height:5mm"></td></tr>
             <tr>
                 <td></td>
                 <td class="rs-line"></td>
@@ -329,7 +344,7 @@
 
         {{-- The receiving school records what it received, and how it wishes
              the transcript returned. All blank: this is their section. --}}
-        <table style="margin-top:5mm">
+        <table style="margin-top:4mm">
             <tr>
                 <td style="width:52%; vertical-align:top">
                     <table class="receipt">
@@ -354,7 +369,7 @@
             </tr>
         </table>
 
-        <table class="foot" style="margin-top:4mm">
+        <table class="foot" style="margin-top:2mm">
             <tr>
                 <td style="width:44%">Effectivity Date: January 2, 2025</td>
                 <td style="width:28%; text-align:center">Rev. No: 03</td>

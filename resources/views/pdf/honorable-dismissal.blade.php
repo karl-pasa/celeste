@@ -27,10 +27,10 @@
 <title>{{ $certificate->serial_number }}</title>
 <style>
     /*
-      | Page margin is 4mm rather than 6mm. On a 210mm-tall sheet that leaves
-      | 202mm of printable height, and the sheet below claims 200mm of it.
-      | The left column's content ran about 192mm against a 188mm budget under
-      | the old figures, which is what pushed the row onto a second page.
+      | 4mm page margin leaves 202mm of printable height on a 210mm sheet, and
+      | the sheet below claims 200mm of it. height on a table is a minimum in
+      | CSS, not a cap -- it grows if the content demands it, and a grown row
+      | paginates. The spacing below is therefore set to leave real headroom.
     */
     @page { size: 297mm 210mm; margin: 4mm; }
 
@@ -40,15 +40,9 @@
     table { border-collapse: collapse; width: 100%; }
     td { vertical-align: bottom; }
 
-    /*
-      | height on a table is a minimum, not a cap -- it will grow past 200mm if
-      | the content demands it, and a grown row paginates. The margins below
-      | are therefore set to leave real headroom, not to fit exactly.
-      |
-      | table-layout:fixed holds the two columns at a true 50/50. Without it
-      | Dompdf sizes them by content, and a long programme name widens the
-      | credential side at the return slip's expense.
-    */
+    /* table-layout:fixed holds the two columns at a true 50/50. Without it
+       Dompdf sizes them by content, and a long programme name widens the
+       credential side at the return slip's expense. */
     .sheet { border: .8pt solid #000; height: 200mm; table-layout: fixed; }
     .sheet > tbody > tr > td { vertical-align: top; }
 
@@ -64,14 +58,17 @@
     .rule   { border-bottom:.8pt solid #1F4E79; margin-top:1mm; }
 
     .office { font-family:"Times New Roman",serif; font-size:11pt; text-align:center;
-              letter-spacing:.6pt; margin-top:3mm; }
+              letter-spacing:.6pt; margin-top:4mm; }
     .title  { font-family:"Times New Roman",serif; font-size:15pt; text-align:center;
-              letter-spacing:1pt; margin-top:4mm; }
+              letter-spacing:1pt; margin-top:6mm; }
 
-    /* The body of the credential is set in a script face on the printed form.
-       Dompdf carries no script font, so italic serif stands in. */
-    .lead  { font-family:"Times New Roman",serif; font-style:italic; font-size:10pt; }
-    .plain { font-family:"Times New Roman",serif; font-style:normal; font-size:10pt; }
+    /*
+      | The body of the credential is set in a script face on the printed form.
+      | Dompdf carries no script font, so italic serif stands in -- it keeps the
+      | contrast against the upright entries without needing an embedded font.
+    */
+    .lead  { font-family:"Times New Roman",serif; font-style:italic; font-size:9.5pt; }
+    .plain { font-family:"Times New Roman",serif; font-style:normal; font-size:9.5pt; }
 
     /*
       | One rule for every filled value: same family, same size, same colour,
@@ -81,32 +78,31 @@
       |
       | Upright rather than italic: the form's own wording is script, but an
       | entry written onto a ruled line is upright and easier to read at speed.
-      | Change font-style here if the office prefers it to match the printing.
     */
     .val {
         border-bottom: .7pt solid #000;
         font-family: "Times New Roman", serif;
         font-style: normal;
-        font-size: 10pt;
+        font-size: 9.5pt;
         color: #000;
         text-align: center;
-        padding: 0 1mm .4mm;
+        padding: 0 1mm .3mm;
     }
 
     /* Rows of the certifying sentence. */
-    .sentence td { font-family:"Times New Roman",serif; font-style:italic; font-size:10pt;
-                   padding-bottom:.4mm; }
+    .sentence td { font-family:"Times New Roman",serif; font-style:italic; font-size:9.5pt;
+                   padding-bottom:.3mm; }
     .sentence .val { font-style:normal; }
 
     .sig-line { border-bottom:.7pt solid #000; }
     .sig-cap  { font-size:8pt; padding-top:.8mm; }
-    .sig-name { font-family:"Times New Roman",serif; font-size:10pt; text-align:center;
-                padding-bottom:.5mm; }
+    .sig-name { font-family:"Times New Roman",serif; font-size:9.5pt; text-align:center;
+                padding-bottom:.4mm; }
 
     .sealbox { border:.7pt dashed #000; text-align:center;
-               font-size:7.5pt; line-height:1.5; padding:2mm 1mm; }
+               font-size:7pt; line-height:1.45; padding:1.6mm 1mm; }
 
-    .receipt td   { font-size:8pt; padding:.6mm 0; }
+    .receipt td   { font-size:8pt; padding:.5mm 0; }
     .receipt .val { font-family:"DejaVu Sans",sans-serif; font-size:8pt;
                     text-align:left; padding-left:1mm; }
 
@@ -133,138 +129,140 @@
         <div class="office">OFFICE OF THE REGISTRAR</div>
         <div class="title">TRANSFER CREDENTIAL</div>
 
-        {{-- Date of issue, on its rule. --}}
-        <table style="margin-top:5mm">
+        {{-- Date of issue. Sits right of centre on the printed form. --}}
+        <table style="margin-top:6mm">
             <tr>
-                <td style="width:30%"></td>
-                <td class="val" style="width:44%">{{ $d('issued_on') }}</td>
-                <td style="width:26%"></td>
+                <td style="width:46%"></td>
+                <td class="val" style="width:34%">{{ $d('issued_on') }}</td>
+                <td style="width:20%"></td>
             </tr>
         </table>
 
         <div style="margin-top:6mm; font-size:9pt">To Whom It May Concern:</div>
 
-        {{-- Line one: name and address. --}}
-        <table class="sentence" style="margin-top:3mm">
+        {{--
+            The certifying sentence runs over three lines on the printed form,
+            and the line breaks are part of its look:
+
+              This is to certify that MR. / MS. ______ of ______,
+              a __ year student | graduate of ______ and whose signature appears below
+              has been granted Transfer Credential effective today.
+
+            The trailing phrase belongs on line two, not on a line of its own.
+        --}}
+        <table class="sentence" style="margin-top:3.5mm">
             <tr>
-                <td style="width:6mm"></td>
-                <td style="width:44mm">This is to certify that <span class="plain">MR. / MS.</span></td>
+                <td style="width:5mm"></td>
+                <td style="width:42mm">This is to certify that <span class="plain">MR. / MS.</span></td>
                 <td class="val">{{ $v('full_name') }}</td>
-                <td style="width:6mm; text-align:center">of</td>
-                <td class="val" style="width:44mm">{{ $v('address') }}</td>
+                <td style="width:5mm; text-align:center">of</td>
+                <td class="val" style="width:40mm">{{ $v('address') }}</td>
                 <td style="width:2mm">,</td>
             </tr>
         </table>
 
-        {{-- Line two: year level, standing, course. --}}
         <table class="sentence" style="margin-top:2.5mm">
             <tr>
                 <td style="width:4mm">a</td>
-                <td class="val" style="width:16mm">{{ $v('year_level') }}</td>
-                <td style="width:36mm; text-align:center">{{ $standingText }}</td>
+                <td class="val" style="width:14mm">{{ $v('year_level') }}</td>
+                <td style="width:31mm; text-align:center">{{ $standingText }}</td>
                 <td class="val">{{ $v('program') }}</td>
+                <td style="width:45mm; font-size:9pt; padding-left:1.5mm">and whose signature appears below</td>
             </tr>
         </table>
 
-        <div class="lead" style="margin-top:2.5mm">
-            and whose signature appears below has been granted Transfer Credential
-            effective today.
+        <div class="lead" style="margin-top:1.5mm">
+            has been granted Transfer Credential effective today.
         </div>
 
-        <div class="lead" style="margin-top:3mm">
+        <div class="lead" style="margin-top:4mm">
             <span class="plain">His/Her</span> Transcript of Records will be forwarded only upon
             receipt of the return slip.
         </div>
 
-        {{-- The student signs in ink over their printed name. --}}
-        <table style="margin-top:5mm">
-            <tr><td class="sig-name" style="width:62mm">{{ $v('full_name') }}</td><td></td></tr>
+        {{-- The student signs in ink over their printed name. On the blank form
+             this rule sits directly beneath the sentence above it. --}}
+        <table style="margin-top:1mm">
+            <tr><td class="sig-name" style="width:64mm">{{ $v('full_name') }}</td><td></td></tr>
             <tr><td class="sig-line"></td><td></td></tr>
             <tr><td class="sig-cap">Signature of Student over Printed Name</td><td></td></tr>
         </table>
 
-        {{-- Verification block and the Registrar's signature. --}}
-        <table style="margin-top:4mm">
+        {{-- The Registrar signs on the right, above the printed name. --}}
+        <table style="margin-top:7mm">
             <tr>
-                <td style="width:32mm; vertical-align:top">
-                    <table>
+                <td style="width:38%"></td>
+                <td class="sig-line"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="font-family:'Times New Roman',serif; font-size:9.5pt;
+                           text-align:center; padding-top:.6mm">{{ $registrar }}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="font-size:7.5pt; text-align:center">University Registrar</td>
+            </tr>
+        </table>
+
+        {{--
+            Bottom band, matching the printed form left to right: receipt
+            figures, then the verification block, then the dry seal panel
+            against the cut line.
+
+            The QR is the one addition to the official layout. It goes here
+            because this strip is blank on the printed form, so nothing the
+            University approved is displaced by it.
+        --}}
+        <table style="margin-top:6mm">
+            <tr>
+                <td style="width:36%; vertical-align:bottom">
+                    <table class="receipt">
                         <tr>
-                            <td style="text-align:center; padding-bottom:1mm">
-                                {{-- $qr is a data URI supplied by the generator. A
-                                     dashed placeholder is drawn if it is absent, so
-                                     the layout can be checked before it is wired. --}}
-                                @if (!empty($qr))
-                                    <img src="{{ $qr }}" style="width:21mm;height:21mm">
-                                @else
-                                    <div style="width:21mm;height:21mm;border:.5pt dashed #999;
-                                                font-size:5pt;color:#999;margin:0 auto">
-                                        <div style="padding-top:8mm">QR</div>
-                                    </div>
-                                @endif
-                            </td>
+                            <td style="width:16mm">OR:</td>
+                            <td class="val">{{ $v('or_no') }}</td>
                         </tr>
                         <tr>
-                            <td class="mono" style="text-align:center; font-size:6.6pt">
-                                {{ $certificate->serial_number }}
-                            </td>
+                            <td>Date:</td>
+                            <td class="val">{{ $d('or_date') }}</td>
                         </tr>
                         <tr>
-                            <td style="text-align:center; font-size:5.8pt; color:#444">Scan to verify</td>
+                            <td>Cert. Fee:</td>
+                            <td class="val">Php {{ $v('cert_fee') }}</td>
                         </tr>
                     </table>
                 </td>
 
-                <td style="vertical-align:bottom; padding-left:4mm">
+                <td style="width:30%; vertical-align:bottom; text-align:center">
+                    {{-- $qr is a data URI supplied by the generator. A dashed
+                         placeholder is drawn if it is absent, so the layout can
+                         be checked before it is wired. --}}
+                    @if (!empty($qr))
+                        <img src="{{ $qr }}" style="width:19mm;height:19mm">
+                    @else
+                        <div style="width:19mm;height:19mm;border:.5pt dashed #999;
+                                    font-size:5pt;color:#999;margin:0 auto">
+                            <div style="padding-top:7mm">QR</div>
+                        </div>
+                    @endif
+                    <div class="mono" style="font-size:6.2pt; padding-top:.6mm">
+                        {{ $certificate->serial_number }}
+                    </div>
+                    <div style="font-size:5.6pt; color:#444">Scan to verify</div>
+                </td>
+
+                <td style="width:34%; vertical-align:bottom">
                     <table>
                         <tr>
-                            <td style="width:12mm"></td>
-                            <td class="sig-line" style="width:52mm"></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td style="font-family:'Times New Roman',serif; font-size:10pt;
-                                       text-align:center; padding-top:.6mm">{{ $registrar }}</td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td style="font-size:7.5pt; text-align:center">University Registrar</td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td style="padding-top:4mm">
-                                <table>
-                                    <tr>
-                                        <td style="width:9mm"></td>
-                                        <td class="sealbox" style="width:34mm">
-                                            Documentary<br>Stamp<br>And Dry Seal Here
-                                        </td>
-                                        <td></td>
-                                    </tr>
-                                </table>
-                            </td>
+                            <td style="width:4mm"></td>
+                            <td class="sealbox">Documentary<br>Stamp<br>And Dry Seal Here</td>
                         </tr>
                     </table>
                 </td>
             </tr>
         </table>
 
-        {{-- Receipt figures, bottom left as on the form. --}}
-        <table class="receipt" style="width:52mm; margin-top:3mm">
-            <tr>
-                <td style="width:17mm">OR:</td>
-                <td class="val">{{ $v('or_no') }}</td>
-            </tr>
-            <tr>
-                <td>Date:</td>
-                <td class="val">{{ $d('or_date') }}</td>
-            </tr>
-            <tr>
-                <td>Cert. Fee:</td>
-                <td class="val">Php {{ $v('cert_fee') }}</td>
-            </tr>
-        </table>
-
-        <table class="foot" style="margin-top:2mm">
+        <table class="foot" style="margin-top:3mm">
             <tr>
                 <td style="width:44%">Effectivity Date: January 2, 2025</td>
                 <td style="width:28%; text-align:center">Rev. No: 03</td>
@@ -278,31 +276,51 @@
 
         @include('pdf.partials.tc-header', ['formNo' => 'PSU-F-URO-23-A'])
 
-        <div style="margin-top:4mm">
+        <div style="margin-top:3mm">
             <div class="rs-title">Return Slip</div>
             <div class="rs-sub">(to be filled by requesting school)</div>
         </div>
 
-        <table style="margin-top:8mm; width:88%; margin-left:auto; margin-right:auto">
-            <tr><td class="rs-line"></td></tr>
-            <tr><td class="rs-cap">Name of School</td></tr>
-            <tr><td style="height:4mm"></td></tr>
-            <tr><td class="rs-line"></td></tr>
-            <tr><td class="rs-cap">Address</td></tr>
+        {{-- School and address rules are indented from the left on the printed
+             form, not centred -- the left margin carries no text beside them. --}}
+        <table style="margin-top:7mm">
+            <tr>
+                <td style="width:14%"></td>
+                <td class="rs-line"></td>
+                <td style="width:6%"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td class="rs-cap">Name of School</td>
+                <td></td>
+            </tr>
+            <tr><td colspan="3" style="height:3mm"></td></tr>
+            <tr>
+                <td></td>
+                <td class="rs-line"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td class="rs-cap">Address</td>
+                <td></td>
+            </tr>
         </table>
 
         <table style="margin-top:4mm">
             <tr>
-                <td style="width:48%"></td>
+                <td style="width:50%"></td>
                 <td class="rs-line"></td>
+                <td style="width:6%"></td>
             </tr>
             <tr>
                 <td></td>
                 <td class="rs-cap">Date</td>
+                <td></td>
             </tr>
         </table>
 
-        <div style="margin-top:6mm; font-size:8.5pt; line-height:1.5">
+        <div style="margin-top:6mm; font-size:8.5pt; line-height:1.45">
             <div>The Registrar</div>
             <div>{{ config('celeste.institution.name', 'Partido State University') }}</div>
             <div>Goa, {{ config('celeste.institution.campus', 'Camarines Sur') }}</div>
@@ -312,26 +330,27 @@
 
         <table style="margin-top:2mm">
             <tr>
-                <td style="font-size:8.5pt; line-height:1.7" colspan="2">
+                <td style="font-size:8.5pt; line-height:1.6" colspan="3">
                     This is to acknowledge receipt of the Transfer Credential granted
                 </td>
             </tr>
             <tr>
-                <td style="width:22mm; font-size:8.5pt">to Mr. /Ms.</td>
+                <td style="width:20mm; font-size:8.5pt">to Mr. /Ms.</td>
                 <td class="rs-line"></td>
+                <td style="width:2mm; font-size:8.5pt">.</td>
             </tr>
         </table>
 
-        <table style="margin-top:10mm">
+        <table style="margin-top:9mm">
             <tr>
-                <td style="width:26%"></td>
+                <td style="width:28%"></td>
                 <td class="rs-line"></td>
             </tr>
             <tr>
                 <td></td>
                 <td class="rs-cap">Signature over Printed Name</td>
             </tr>
-            <tr><td colspan="2" style="height:5mm"></td></tr>
+            <tr><td colspan="2" style="height:4mm"></td></tr>
             <tr>
                 <td></td>
                 <td class="rs-line"></td>
@@ -346,21 +365,24 @@
              the transcript returned. All blank: this is their section. --}}
         <table style="margin-top:4mm">
             <tr>
-                <td style="width:52%; vertical-align:top">
+                <td style="width:58%; vertical-align:top">
                     <table class="receipt">
                         <tr><td style="width:22mm">OR No.:</td><td class="val"></td></tr>
                         <tr><td>Date:</td><td class="val"></td></tr>
-                        <tr><td>Cert. Fee:</td><td class="val">Php</td></tr>
+                        <tr>
+                            <td>Cert. Fee:</td>
+                            <td class="val">Php</td>
+                        </tr>
                         <tr><td>T.C.</td><td class="val"></td></tr>
                         <tr><td>Course:</td><td class="val"></td></tr>
                         <tr><td>Year Graduated:</td><td class="val"></td></tr>
                     </table>
                 </td>
-                <td style="width:48%; vertical-align:bottom">
+                <td style="width:42%; vertical-align:bottom">
                     <table>
                         <tr>
                             <td class="tick"></td>
-                            <td style="font-size:8pt; font-style:italic; padding-left:1.5mm">
+                            <td style="font-size:7.5pt; font-style:italic; padding-left:1.5mm">
                                 Please entrust to the bearer.
                             </td>
                         </tr>
@@ -369,7 +391,7 @@
             </tr>
         </table>
 
-        <table class="foot" style="margin-top:2mm">
+        <table class="foot" style="margin-top:3mm">
             <tr>
                 <td style="width:44%">Effectivity Date: January 2, 2025</td>
                 <td style="width:28%; text-align:center">Rev. No: 03</td>

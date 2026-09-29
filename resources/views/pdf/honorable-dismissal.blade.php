@@ -124,7 +124,7 @@
 <tr>
 
     {{-- ═══════════════ LEFT · the credential ═══════════════ --}}
-    <td class="half cut" style="width:60%">
+    <td class="half cut" style="width:50%">
 
         @include('pdf.partials.tc-header', ['formNo' => 'PSU-F-URO-23'])
 
@@ -270,7 +270,7 @@
     </td>
 
     {{-- ═══════════════ RIGHT · the return slip ═══════════════ --}}
-    <td class="half" style="width:40%">
+    <td class="half" style="width:50%">
 
         @include('pdf.partials.tc-header', ['formNo' => 'PSU-F-URO-23-A'])
 
@@ -283,9 +283,9 @@
              form, not centred -- the left margin carries no text beside them. --}}
         <table style="margin-top:5mm">
             <tr>
-                <td style="width:8%"></td>
+                <td style="width:14%"></td>
                 <td class="rs-line"></td>
-                <td style="width:4%"></td>
+                <td style="width:6%"></td>
             </tr>
             <tr>
                 <td></td>
@@ -307,9 +307,9 @@
 
         <table style="margin-top:3mm">
             <tr>
-                <td style="width:42%"></td>
+                <td style="width:50%"></td>
                 <td class="rs-line"></td>
-                <td style="width:4%"></td>
+                <td style="width:6%"></td>
             </tr>
             <tr>
                 <td></td>
@@ -341,7 +341,7 @@
 
         <table style="margin-top:6mm">
             <tr>
-                <td style="width:18%"></td>
+                <td style="width:28%"></td>
                 <td class="rs-line"></td>
             </tr>
             <tr>
@@ -404,20 +404,16 @@
     Absolute rather than in-flow: the panel belongs to neither half, and Dompdf
     cannot make a table cell cross a column boundary. With no positioned
     ancestor, left and top are measured from the page area inside the @page
-    margin.
-
-    The cut line is NOT the middle of the sheet. The credential half is 60% of
-    the 289mm printable width, so the line falls at 4 + 173.4 = 177.4mm, and a
-    42mm panel centred on it starts at 156.4mm. Change both together if the
-    column split ever changes.
+    margin, so the sheet's horizontal centre is at 144.5mm and a 42mm panel
+    starts at 123.5mm.
 
     A white background is needed, not decoration: without it the dashed cut
     line shows through the panel instead of stopping at its edges.
 
     To nudge it, change top (lower number moves it up) and keep left at
-    177.4mm minus half the width.
+    144.5mm minus half the width.
 --}}
-<div style="position:absolute; left:156.4mm; top:163mm; width:42mm; background:#fff">
+<div style="position:absolute; left:123.5mm; top:163mm; width:42mm; background:#fff">
     <div class="sealbox">Documentary<br>Stamp<br>And Dry Seal Here</div>
 </div>
 

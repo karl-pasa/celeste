@@ -259,14 +259,6 @@
                 <td style="width:22%"></td>
             </tr>
         </table>
-
-        <table class="foot" style="margin-top:3mm">
-            <tr>
-                <td style="width:44%">Effectivity Date: January 2, 2025</td>
-                <td style="width:28%; text-align:center">Rev. No: 03</td>
-                <td style="width:28%; text-align:right">Page 1 of 1</td>
-            </tr>
-        </table>
     </td>
 
     {{-- ═══════════════ RIGHT · the return slip ═══════════════ --}}

@@ -218,7 +218,7 @@
         --}}
         <table style="margin-top:6mm">
             <tr>
-                <td style="width:36%; vertical-align:bottom">
+                <td style="width:38%; vertical-align:bottom">
                     <table class="receipt">
                         <tr>
                             <td style="width:16mm">OR:</td>
@@ -235,7 +235,7 @@
                     </table>
                 </td>
 
-                <td style="width:30%; vertical-align:bottom; text-align:center">
+                <td style="width:40%; vertical-align:bottom; text-align:center">
                     {{-- $qr is a data URI supplied by the generator. A dashed
                          placeholder is drawn if it is absent, so the layout can
                          be checked before it is wired. --}}
@@ -253,14 +253,10 @@
                     <div style="font-size:5.6pt; color:#444">Scan to verify</div>
                 </td>
 
-                <td style="width:34%; vertical-align:bottom">
-                    <table>
-                        <tr>
-                            <td style="width:4mm"></td>
-                            <td class="sealbox">Documentary<br>Stamp<br>And Dry Seal Here</td>
-                        </tr>
-                    </table>
-                </td>
+                {{-- The dry seal panel is not here: it straddles the cut line,
+                     and a table cell cannot cross into the next column. It is
+                     positioned absolutely at the foot of this file. --}}
+                <td style="width:22%"></td>
             </tr>
         </table>
 
@@ -401,6 +397,10 @@
 
 </tr>
 </table>
+
+<div style="position:absolute; left:123.5mm; top:163mm; width:42mm; background:#fff">
+    <div class="sealbox">Documentary<br>Stamp<br>And Dry Seal Here</div>
+</div>
 
 </body>
 </html>

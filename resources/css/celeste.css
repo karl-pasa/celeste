@@ -309,13 +309,15 @@ h1, h2, h3, h4, h5, .display {
 }
 
 .sidebar .brand .mark {
-    width: 34px; height: 34px;
-    border-radius: 9px;
-    background: rgba(255, 255, 255, .1);
+    width: 44px; height: 44px;
+    border-radius: 11px;
+    background: rgba(255, 255, 255, .16);
     display: grid; place-items: center;
-    font-weight: 700; font-size: .8125rem; color: #fff;
+    font-weight: 700; font-size: 1.05rem; color: #fff;
     letter-spacing: .02em;
 }
+
+.sidebar .brand .mark i { font-size: 1.3rem; }
 
 .sidebar .brand .name { font-weight: 700; color: #fff; font-size: .9375rem; letter-spacing: .04em; line-height: 1.1; }
 .sidebar .brand .sub { font-size: .6875rem; color: rgba(255, 255, 255, .55); letter-spacing: .04em; }

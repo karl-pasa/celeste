@@ -86,6 +86,12 @@
             </button>
         </form>
 
+        <div class="d-flex align-items-center my-3">
+            <hr class="flex-grow-1 m-0">
+            <span class="px-3 small text-muted-celeste">OR</span>
+            <hr class="flex-grow-1 m-0">
+        </div>
+
         <a href="{{ route('verify') }}" class="btn btn-psu-outline w-100">
             <i class="bi bi-patch-check"></i> Verify a document without signing in
         </a>

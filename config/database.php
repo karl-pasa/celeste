@@ -27,9 +27,6 @@ return [
             'prefix'   => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
         ],
-        'options' => [
-            PDO::ATTR_EMULATE_PREPARES => true,
-        ],
     ],
 
     'migrations' => [

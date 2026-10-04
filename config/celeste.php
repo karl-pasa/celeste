@@ -120,6 +120,21 @@ return [
         ],
     ],
 
+    'academics' => [
+        'year_levels' => [
+            '1st Year',
+            '2nd Year',
+            '3rd Year',
+            '4th Year',
+            'Irregular',
+        ],
+
+        'sections' => [
+            'A', 'B', 'C', 'D', 'E', 'F',
+        ],
+    ],
+
+
     'documents' => [
         'diploma'                  => 'University Diploma',
         'honorable_dismissal'      => 'Honorable Dismissal',

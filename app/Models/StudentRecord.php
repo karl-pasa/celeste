@@ -12,7 +12,7 @@ class StudentRecord extends Model
 
     protected $fillable = [
         'student_number', 'first_name', 'middle_name', 'last_name', 'suffix',
-        'birth_date', 'college', 'program', 'major', 'status', 'year_level',
+        'birth_date', 'college', 'program', 'major', 'status', 'year_level', 'section',
         'academic_year', 'semester', 'date_admitted', 'date_graduated',
         'latin_honor', 'general_weighted_average', 'grades', 'address', 'year_level', 'email',
         'gender', 'nationality', 'birth_date', 'birthplace',
@@ -22,7 +22,7 @@ class StudentRecord extends Model
         'adm_tr_credential',
         'date_conferred', 'board_resolution_no', 'board_resolution_date', 'awards',
         'nstp_serial_no', 'program_accreditation',
-        'granted_transfer_credentials', 'remarks',
+        'granted_transfer_credentials', 'remarks', 
     ];
 
     protected function casts(): array

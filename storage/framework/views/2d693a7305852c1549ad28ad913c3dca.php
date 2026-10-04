@@ -70,9 +70,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             <option value="<?php echo e($value); ?>"><?php echo e($label); ?></option>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </select>
-
+                </div>
                     <div class="divider-label my-3">Narrow the list</div>
-
                     <label for="college" class="form-label">College</label>
                     <select id="college" wire:model.live="college" class="form-select mb-2">
                         <option value="">All colleges</option>

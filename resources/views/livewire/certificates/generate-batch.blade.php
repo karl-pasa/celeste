@@ -55,9 +55,14 @@
                             <option value="{{ $value }}">{{ $label }}</option>
                         @endforeach
                     </select>
-                </div>
+
                     <div class="divider-label my-3">Narrow the list</div>
 
+                    {{-- Each filter below is only meaningful inside the one above
+                         it, so a dropdown stays disabled until its parent is set.
+                         The placeholder text carries the instruction -- a greyed
+                         box reading "All programs" looks broken rather than
+                         deliberate. --}}
                     <label for="college" class="form-label">College</label>
                     <select id="college" wire:model.live="college" class="form-select mb-2">
                         <option value="">All colleges</option>
@@ -92,7 +97,9 @@
                             <option value="{{ $option }}">{{ $option }}</option>
                         @endforeach
                     </select>
-                    
+                </div>
+            </div>
+
             <div class="card-celeste">
                 <div class="card-header">Or upload a list</div>
                 <div class="p-3">
@@ -158,7 +165,7 @@
                                     <div class="empty">
                                         <div class="empty-icon"><i class="bi bi-funnel"></i></div>
                                         <h6>No records match these filters</h6>
-                                        <p>Widen the college, program, or status filter to see more students.</p>
+                                        <p>Widen the college, program, year level, or section filter to see more students.</p>
                                     </div>
                                 </td></tr>
                             @endforelse

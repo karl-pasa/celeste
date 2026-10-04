@@ -44,9 +44,9 @@
                 <div class="card-header">Batch settings</div>
                 <div class="p-3">
                     <label for="label" class="form-label">Batch name</label>
-                    <input type="text" id="label" wire:model="label"
+                    <input type="text" id="label" wire:model.blur="label"
                            class="form-control mb-3 @error('label') is-invalid @enderror"
-                           placeholder="e.g. CAS graduates, Class of 2026">
+                           placeholder="Fills in from the filters, or type your own">
                     @error('label') <div class="invalid-feedback d-block mb-2">{{ $message }}</div> @enderror
 
                     <label for="batchType" class="form-label">Document to generate</label>
@@ -67,25 +67,32 @@
                     </select>
 
                     <label for="program" class="form-label">Program</label>
-                    <select id="program" wire:model.live="program" class="form-select mb-2">
-                        <option value="">All programs</option>
+                    <select id="program" wire:model.live="program" class="form-select mb-2"
+                            @disabled($college === '')>
+                        <option value="">{{ $college === '' ? 'Choose a college first' : 'All programs' }}</option>
                         @foreach ($programs as $option)
                             <option value="{{ $option }}">{{ $option }}</option>
                         @endforeach
                     </select>
 
-                    <label for="statusFilter" class="form-label">Status</label>
-                    <select id="statusFilter" wire:model.live="status" class="form-select">
-                        <option value="">Any status</option>
-                        <option disabled>──────────</option>
-                        <option value="enrolled">Enrolled</option>
-                        <option value="graduated">Graduated</option>
-                        <option value="transferred">Transferred</option>
-                        <option value="inactive">Inactive</option>
+                    <label for="yearLevel" class="form-label">Year level</label>
+                    <select id="yearLevel" wire:model.live="yearLevel" class="form-select mb-2"
+                            @disabled($program === '')>
+                        <option value="">{{ $program === '' ? 'Choose a program first' : 'All year levels' }}</option>
+                        @foreach ($yearLevels as $option)
+                            <option value="{{ $option }}">{{ $option }}</option>
+                        @endforeach
                     </select>
-                </div>
-            </div>
 
+                    <label for="section" class="form-label">Section</label>
+                    <select id="section" wire:model.live="section" class="form-select"
+                            @disabled($yearLevel === '')>
+                        <option value="">{{ $yearLevel === '' ? 'Choose a year level first' : 'All sections' }}</option>
+                        @foreach ($sections as $option)
+                            <option value="{{ $option }}">{{ $option }}</option>
+                        @endforeach
+                    </select>
+                    
             <div class="card-celeste">
                 <div class="card-header">Or upload a list</div>
                 <div class="p-3">

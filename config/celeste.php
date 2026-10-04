@@ -121,19 +121,9 @@ return [
     ],
 
     'academics' => [
-        'year_levels' => [
-            '1st Year',
-            '2nd Year',
-            '3rd Year',
-            '4th Year',
-            'Irregular',
-        ],
-
-        'sections' => [
-            'A', 'B', 'C', 'D', 'E', 'F',
-        ],
+        'year_levels' => ['1st Year', '2nd Year', '3rd Year', '4th Year'],
+        'sections'    => ['A', 'B', 'C', 'D', 'E'],
     ],
-
 
     'documents' => [
         'diploma'                  => 'University Diploma',

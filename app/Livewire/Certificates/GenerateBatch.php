@@ -18,7 +18,8 @@ class GenerateBatch extends Component
     public string $label = '';
     public string $college = '';
     public string $program = '';
-    public string $status = '';
+    public string $yearLevel = '';
+    public string $section = '';
     public string $search = '';
 
     /** @var array<int> */
@@ -30,7 +31,7 @@ class GenerateBatch extends Component
 
     public function mount(): void
     {
-        $this->label = 'Batch run ' . now()->format('M j, Y');
+        $this->label = '';
 
         // No status filter by default. Preselecting "graduated" quietly hid
         // every enrolled student, which is wrong for a Certificate of
@@ -94,7 +95,8 @@ class GenerateBatch extends Component
         return StudentRecord::query()
             ->when($this->college, fn ($q) => $q->where('college', $this->college))
             ->when($this->program, fn ($q) => $q->where('program', $this->program))
-            ->when($this->status, fn ($q) => $q->where('status', $this->status))
+            ->when($this->yearLevel !== '', fn ($q) => $q->where('year_level', $this->yearLevel))
+            ->when($this->section !== '', fn ($q) => $q->where('section', $this->section))
             ->when($this->search, function ($q) {
                 $q->where(function ($s) {
                     $s->where('last_name', 'ilike', "%{$this->search}%")
@@ -185,6 +187,73 @@ class GenerateBatch extends Component
             'types'    => Certificate::types(),
             'colleges' => $this->collegeOptions(),
             'programs' => $this->programOptions(),
+            'yearLevels' => config('celeste.academics.year_levels', []),
+            'sections'   => config('celeste.academics.sections', []),
         ]);
     }
+    public function updatedCollege(): void
+    {
+        $this->program = '';
+        $this->yearLevel = '';
+        $this->section = '';
+        $this->afterFilterChange();
+    }
+
+    public function updatedProgram(): void
+    {
+        $this->yearLevel = '';
+        $this->section = '';
+        $this->afterFilterChange();
+    }
+
+    public function updatedYearLevel(): void
+    {
+        $this->section = '';
+        $this->afterFilterChange();
+    }
+
+    public function updatedSection(): void
+    {
+        $this->afterFilterChange();
+    }
+
+    protected function afterFilterChange(): void
+    {
+        $this->resetPage();
+        $this->selected = [];
+        $this->suggestLabel();
+    }
+        /**
+     * Once the registrar types a name of their own, the filters stop
+     * overwriting it. Clearing the box hands control back to the suggestion.
+     */
+    public bool $labelEdited = false;
+
+    public function updatedLabel(): void
+    {
+        $this->labelEdited = trim($this->label) !== '';
+    }
+
+    protected function suggestLabel(): void
+    {
+        if ($this->labelEdited) {
+            return;
+        }
+
+        $this->label = trim($this->program . ' ' . $this->cohortCode());
+    }
+
+    protected function cohortCode(): string
+    {
+        if ($this->yearLevel === '' && $this->section === '') {
+            return '';
+        }
+
+        if (preg_match('/\d+/', $this->yearLevel, $match)) {
+            return $match[0] . $this->section;
+        }
+
+        return trim($this->yearLevel . ' ' . $this->section);
+    }
 }
+

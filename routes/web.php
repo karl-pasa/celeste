@@ -68,7 +68,3 @@ Route::middleware('auth')->group(function () {
     Route::get('/certificates/{certificate}/qr', [CertificateController::class, 'qr'])
         ->name('certificates.qr');
 });
-
-Route::get('/students', \App\Livewire\Students\ManageRecords::class)
-    ->middleware(['auth'])       // plus your registrar-role middleware
-    ->name('students.index');

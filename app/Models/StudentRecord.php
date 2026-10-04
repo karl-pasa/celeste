@@ -11,18 +11,40 @@ class StudentRecord extends Model
     use HasFactory;
 
     protected $fillable = [
+        // identity
         'student_number', 'first_name', 'middle_name', 'last_name', 'suffix',
-        'birth_date', 'college', 'program', 'major', 'status', 'year_level', 'section',
-        'academic_year', 'semester', 'date_admitted', 'date_graduated',
-        'latin_honor', 'general_weighted_average', 'grades', 'address', 'year_level', 'email',
-        'gender', 'nationality', 'birth_date', 'birthplace',
-        'admission_type',
-        'adm_new_school', 'adm_new_address', 'adm_new_course', 'adm_new_year_graduated',
-        'adm_tr_school', 'adm_tr_address', 'adm_tr_course', 'adm_tr_year_graduated',
-        'adm_tr_credential',
-        'date_conferred', 'board_resolution_no', 'board_resolution_date', 'awards',
+        'gender', 'civil_status', 'birth_date', 'birthplace', 'nationality',
+        'religion', 'email', 'contact_number', 'address',
+
+        // permanent address
+        'perm_province', 'perm_city', 'perm_barangay', 'perm_zip',
+
+        // temporary address
+        'temp_province', 'temp_city', 'temp_barangay', 'temp_zip',
+
+        // person to contact in an emergency
+        'emergency_name', 'emergency_contact_number',
+        'emergency_address', 'emergency_relationship',
+
+        // academic
+        'college', 'program', 'major', 'status',
+        'year_level', 'section', 'academic_year', 'semester',
+        'general_weighted_average', 'grades',
+
+        // admission
+        'admission_type', 'date_admitted',
+        'adm_new_school', 'adm_new_address', 'adm_new_course',
+        'adm_new_year_graduated',
+        'adm_tr_school', 'adm_tr_address', 'adm_tr_course',
+        'adm_tr_year_graduated', 'adm_tr_credential',
+
+        // graduation
+        'date_graduated', 'date_conferred', 'board_resolution_no',
+        'board_resolution_date', 'latin_honor', 'awards',
+
+        // other
         'nstp_serial_no', 'program_accreditation',
-        'granted_transfer_credentials', 'remarks', 
+        'granted_transfer_credentials', 'remarks',
     ];
 
     protected function casts(): array

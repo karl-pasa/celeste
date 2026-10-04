@@ -55,7 +55,7 @@
                             <option value="{{ $value }}">{{ $label }}</option>
                         @endforeach
                     </select>
-
+                </div>
                     <div class="divider-label my-3">Narrow the list</div>
 
                     <label for="college" class="form-label">College</label>

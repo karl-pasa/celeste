@@ -70,8 +70,10 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             <option value="<?php echo e($value); ?>"><?php echo e($label); ?></option>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </select>
-                </div>
+
                     <div class="divider-label my-3">Narrow the list</div>
+
+                    
                     <label for="college" class="form-label">College</label>
                     <select id="college" wire:model.live="college" class="form-select mb-2">
                         <option value="">All colleges</option>
@@ -106,7 +108,9 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             <option value="<?php echo e($option); ?>"><?php echo e($option); ?></option>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </select>
-                    
+                </div>
+            </div>
+
             <div class="card-celeste">
                 <div class="card-header">Or upload a list</div>
                 <div class="p-3">
@@ -186,7 +190,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                     <div class="empty">
                                         <div class="empty-icon"><i class="bi bi-funnel"></i></div>
                                         <h6>No records match these filters</h6>
-                                        <p>Widen the college, program, or status filter to see more students.</p>
+                                        <p>Widen the college, program, year level, or section filter to see more students.</p>
                                     </div>
                                 </td></tr>
                             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>

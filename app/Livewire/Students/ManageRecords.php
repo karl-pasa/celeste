@@ -9,14 +9,6 @@ use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-/**
- * Student Records — add, edit and remove the records documents are drawn from.
- *
- * Saves go straight to the configured database, which in this deployment is
- * PostgreSQL on Supabase. Nothing is held in session between steps: the form
- * writes on submit and the list re-reads, so two staff working at once see
- * each other's changes on their next action rather than overwriting them.
- */
 class ManageRecords extends Component
 {
     use WithPagination;

@@ -1,4 +1,4 @@
-@php
+<?php
     $p = $certificate->payload ?? [];
 
     $v = fn (string $k, string $else = '') => filled($p[$k] ?? null) ? $p[$k] : $else;
@@ -110,12 +110,12 @@
     $seal       = $asset('images/psu-seal.png');
     $signRegist = $asset('images/sig-registrar.png');
     $signPres   = $asset('images/sig-president.png');
-@endphp
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>{{ $certificate->serial_number }}</title>
+<title><?php echo e($certificate->serial_number); ?></title>
 <style>
     /*
       | ─────────────────────────────────────────────────────────────────────
@@ -183,14 +183,14 @@
         font-family: 'Blackletter';
         font-style: normal;
         font-weight: normal;
-        src: url('{{ public_path("fonts/UnifrakturMaguntia-Regular.ttf") }}') format('truetype');
+        src: url('<?php echo e(public_path("fonts/UnifrakturMaguntia-Regular.ttf")); ?>') format('truetype');
     }
 
     @font-face {
         font-family: 'Script';
         font-style: normal;
         font-weight: normal;
-        src: url('{{ public_path("fonts/GreatVibes-Regular.ttf") }}') format('truetype');
+        src: url('<?php echo e(public_path("fonts/GreatVibes-Regular.ttf")); ?>') format('truetype');
     }
 
     html, body {
@@ -364,14 +364,14 @@
 </head>
 <body>
 
-@if ($border)
-    <img class="border-art" src="{{ $border }}" alt="">
-@else
+<?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($border): ?>
+    <img class="border-art" src="<?php echo e($border); ?>" alt="">
+<?php else: ?>
     <div class="border-rule"></div>
     <div class="border-rule-inner"></div>
-@endif
+<?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-{{-- ── Heading ──────────────────────────────────────────────────────── --}}
+
 
 <div class="at fraktur t-republic" style="top:27.3mm">Republic of the Philippines</div>
 <div class="at fraktur t-uni"      style="top:35mm">Partido State University</div>
@@ -383,7 +383,7 @@
 
 <div class="at fraktur t-greetings" style="top:69mm">Greetings</div>
 
-{{-- ── Conferral ────────────────────────────────────────────────────── --}}
+
 
 <div class="at roman t-beitknown" style="top:88mm">
     BE IT KNOWN <span class="script">that the</span> BOARD OF REGENTS <span class="script">of</span><br>
@@ -395,26 +395,25 @@
     of the Academic Council has conferred upon
 </div>
 
-<div class="at fraktur" style="top:116.8mm;font-size:{{ $nameSize }}pt">{{ $fullName }}</div>
+<div class="at fraktur" style="top:116.8mm;font-size:<?php echo e($nameSize); ?>pt"><?php echo e($fullName); ?></div>
 
 <div class="at script t-fulfilled" style="top:133mm">
     who has fulfilled all the requirements thereof the degree of
 </div>
 
-<div class="at script" style="top:143mm;font-size:{{ $degreeSize }}pt">{{ $degree }}</div>
+<div class="at script" style="top:143mm;font-size:<?php echo e($degreeSize); ?>pt"><?php echo e($degree); ?></div>
 
-@if ($honor)
-    {{-- Honours appear on some diplomas only, between the degree and the
-         rights paragraph, which is where the office writes them in. --}}
-    <div class="at script t-honor" style="top:152.5mm">{{ $honor }}</div>
-@endif
+<?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($honor): ?>
+    
+    <div class="at script t-honor" style="top:152.5mm"><?php echo e($honor); ?></div>
+<?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
 <div class="at script t-rights" style="top:158.2mm">
     with all the rights, honors and privileges as well as the obligations<br>
     and responsibilities thereunto appertaining.
 </div>
 
-{{-- ── Attestation ──────────────────────────────────────────────────── --}}
+
 
 <div class="at roman t-testimony" style="top:175.4mm">IN TESTIMONY WHEREOF,</div>
 
@@ -424,57 +423,57 @@
 </div>
 
 <div class="at script t-given" style="top:199.4mm">
-    Given at Goa, Camarines Sur, Philippines this {{ $dayNumber }}<span class="ordinal">{{ $daySuffix }}</span> day of {{ $monthName }}<br>
-    in the year of our Lord, {{ $yearName }}.
+    Given at Goa, Camarines Sur, Philippines this <?php echo e($dayNumber); ?><span class="ordinal"><?php echo e($daySuffix); ?></span> day of <?php echo e($monthName); ?><br>
+    in the year of our Lord, <?php echo e($yearName); ?>.
 </div>
 
-{{-- ── Seal and signatures ──────────────────────────────────────────── --}}
 
-@if ($seal)
-    <div class="seal-wrap"><img src="{{ $seal }}" alt=""></div>
-@endif
+
+<?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($seal): ?>
+    <div class="seal-wrap"><img src="<?php echo e($seal); ?>" alt=""></div>
+<?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
 <table class="sig-table">
     <tr>
         <td style="width:60mm">
-            @if ($signRegist)<img class="sig-ink" src="{{ $signRegist }}" alt="">@endif
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($signRegist): ?><img class="sig-ink" src="<?php echo e($signRegist); ?>" alt=""><?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </td>
         <td style="width:58mm"></td>
         <td style="width:60mm">
-            @if ($signPres)<img class="sig-ink" src="{{ $signPres }}" alt="">@endif
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($signPres): ?><img class="sig-ink" src="<?php echo e($signPres); ?>" alt=""><?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </td>
     </tr>
     <tr>
-        <td class="sig-name">{{ $registrar }}</td>
+        <td class="sig-name"><?php echo e($registrar); ?></td>
         <td></td>
-        <td class="sig-name">{{ $president }}</td>
+        <td class="sig-name"><?php echo e($president); ?></td>
     </tr>
     <tr>
-        <td class="sig-title">{{ $registrarT }}</td>
+        <td class="sig-title"><?php echo e($registrarT); ?></td>
         <td></td>
-        <td class="sig-title">{{ $presidentT }}</td>
+        <td class="sig-title"><?php echo e($presidentT); ?></td>
     </tr>
 </table>
 
-{{-- ── Verification ─────────────────────────────────────────────────── --}}
+
 
 <div class="qr-block">
-    @if (!empty($qr))<img src="{{ $qr }}" alt="">@endif
-    <div class="qr-serial">{{ $certificate->serial_number }}</div>
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($qr)): ?><img src="<?php echo e($qr); ?>" alt=""><?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+    <div class="qr-serial"><?php echo e($certificate->serial_number); ?></div>
 </div>
 
-@if ($resolutionNo || $resolutionDate)
+<?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($resolutionNo || $resolutionDate): ?>
     <div class="resolution">
-        @if ($resolutionNo)
-            Board Resolution No. <em>{{ $resolutionNo }}</em><br>
-        @endif
-        @if ($resolutionDate)
-            Date: <em>{{ $resolutionDate }}</em>
-        @endif
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($resolutionNo): ?>
+            Board Resolution No. <em><?php echo e($resolutionNo); ?></em><br>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($resolutionDate): ?>
+            Date: <em><?php echo e($resolutionDate); ?></em>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
     </div>
-@endif
+<?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-<div class="hash-line">SHA-256 {{ $certificate->content_hash ?? '' }}</div>
+<div class="hash-line">SHA-256 <?php echo e($certificate->content_hash ?? ''); ?></div>
 
 </body>
-</html>
+</html><?php /**PATH C:\laragon\www\celeste\resources\views/pdf/diploma.blade.php ENDPATH**/ ?>

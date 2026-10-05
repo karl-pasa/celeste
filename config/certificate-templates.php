@@ -34,9 +34,6 @@ use App\Models\Certificate;
 
 return [
 
-    /*
-     | Stamped onto the approved PDF form.
-     */
     Certificate::TYPE_DIPLOMA => [
         'page'        => 'A4',
         'orientation' => 'landscape',
@@ -72,9 +69,6 @@ return [
         ],
     ],
 
-    /*
-     | Stamped onto the approved PDF form.
-     */
     Certificate::TYPE_ENROLMENT => [
         'template'    => storage_path('templates/certificate-of-enrolment.pdf'),
         'page'        => 'A4',
@@ -94,30 +88,11 @@ return [
         ],
     ],
 
-    /*
-     | Rendered from resources/views/pdf/honorable-dismissal.blade.php.
-     |
-     | No 'template' key, so hasTemplate() returns false and the generator
-     | takes the Blade path. The form is reconstructed rather than stamped
-     | because it carries two halves on one sheet, divided by a cut line, and
-     | placing that by coordinates would be considerably harder to maintain
-     | than a table-based layout.
-     |
-     | The paper size must also be set in buildDompdf(), which is where the
-     | Blade path reads it from.
-     */
     Certificate::TYPE_DISMISSAL => [
         'page'        => 'A4',
         'orientation' => 'landscape',
     ],
 
-    /*
-     | Rendered from resources/views/pdf/transcript-of-records.blade.php.
-     |
-     | Printed on long bond, 216 by 330 mm, which buildDompdf() expresses in
-     | points because Dompdf has no name for that size. The 'page' value here
-     | is not read by the Blade path and is recorded for reference only.
-     */
     Certificate::TYPE_TOR => [
         'page'        => 'Long bond (216 x 330 mm)',
         'orientation' => 'portrait',

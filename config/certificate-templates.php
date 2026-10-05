@@ -38,7 +38,6 @@ return [
      | Stamped onto the approved PDF form.
      */
     Certificate::TYPE_DIPLOMA => [
-        'template'    => storage_path('templates/diploma.pdf'),
         'page'        => 'A4',
         'orientation' => 'landscape',
 

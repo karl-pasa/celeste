@@ -26,6 +26,7 @@
     "CACHE_STORE": "array",
     "SESSION_DRIVER": "cookie",
     "LOG_CHANNEL": "stderr",
-    "FILESYSTEM_LOCAL_ROOT": "/tmp/celeste-storage"
+    "FILESYSTEM_LOCAL_ROOT": "/tmp/celeste-storage",
+    "DOMPDF_FONT_DIR": "/tmp/dompdf-fonts"
   }
 }

@@ -31,13 +31,6 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->trustProxies(at: '*');
     })
-->withExceptions(function (Exceptions $exceptions) {
-    $exceptions->render(function (\Throwable $e, $request) {
-        if (env('SHOW_ERR') === '1') {
-            return response(
-                get_class($e) . "\n" . $e->getMessage() . "\n" . $e->getFile() . ':' . $e->getLine(),
-                500
-            )->header('Content-Type', 'text/plain');
-        }
-    });
-});
+    ->withExceptions(function (Exceptions $exceptions) {
+        //
+    })->create();

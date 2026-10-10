@@ -31,15 +31,6 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->trustProxies(at: '*');
     })
-    ->withExceptions(function (Exceptions $exceptions) {
-        // TEMPORARY: prints the real error as plain text while SHOW_ERR=1.
-        // Remove this block (and the SHOW_ERR variable) once the site works.
-        $exceptions->render(function (\Throwable $e, $request) {
-            if (env('SHOW_ERR') === '1') {
-                return response(
-                    get_class($e) . "\n" . $e->getMessage() . "\n" . $e->getFile() . ':' . $e->getLine(),
-                    500
-                )->header('Content-Type', 'text/plain');
-            }
-        });
-    })->create();
+->withExceptions(function (Exceptions $exceptions) {
+    //
+});

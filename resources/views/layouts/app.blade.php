@@ -21,9 +21,10 @@
 
     <aside class="sidebar" :class="{ 'open': nav }">
         <div class="brand">
+            {{-- Icon size: change --brand-icon to resize the seal and its fallback. --}}
             <img src="{{ asset('images/psu-seal-white.png') }}" alt=""
-                 style="width:34px;height:34px;object-fit:contain"
-                 onerror="this.outerHTML='&lt;div class=&quot;mark&quot;&gt;CE&lt;/div&gt;'">
+                 style="--brand-icon:54px;width:var(--brand-icon);height:var(--brand-icon);flex:0 0 auto;object-fit:contain"
+                 onerror="this.outerHTML='&lt;div class=&quot;mark&quot; style=&quot;width:54px;height:54px;flex:0 0 auto;font-size:1.25rem&quot;&gt;CE&lt;/div&gt;'">
             <div>
                 <div class="name">CELESTE</div>
                 <div class="sub">{{ config('celeste.institution.short') }}</div>

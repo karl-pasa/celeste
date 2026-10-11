@@ -1,12 +1,17 @@
 <div wire:key="analytics-{{ $days }}">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-        <p class="text-muted-celeste mb-0" style="font-size:.875rem">
+    {{-- The toggle is pinned to the right edge (margin-left:auto) and never
+         shrinks or wraps its labels. Without that, the bold "active" label
+         made "Last 30 days" break onto two lines and shifted the whole
+         control depending on which period was selected. --}}
+    <div class="d-flex align-items-center flex-wrap gap-2 mb-3">
+        <p class="text-muted-celeste mb-0" style="font-size:.875rem;flex:1 1 280px;min-width:0">
             Every verification attempt against a {{ config('celeste.institution.short') }} document, including the ones that failed.
         </p>
-        <div class="role-tabs" style="width:auto">
+        <div class="role-tabs" style="width:auto;flex:0 0 auto;margin-left:auto;display:inline-flex;white-space:nowrap">
             @foreach ([7 => 'Last 7 days', 30 => 'Last 30 days', 90 => 'Last 90 days'] as $value => $label)
                 <button type="button" wire:click="setPeriod({{ $value }})"
-                        class="role-tab {{ $days === $value ? 'active' : '' }}" style="padding:.4rem .9rem">
+                        class="role-tab {{ $days === $value ? 'active' : '' }}"
+                        style="padding:.4rem .9rem;flex:0 0 auto;white-space:nowrap">
                     {{ $label }}
                 </button>
             @endforeach

@@ -185,8 +185,9 @@
                     <div class="col-sm-5">
                         <label for="issuedOn" class="form-label">Date of issue</label>
                         <input type="date" id="issuedOn" wire:model="issuedOn"
+                               min="{{ now()->toDateString() }}"
                                class="form-control @error('issuedOn') is-invalid @enderror">
-                        @error('issuedOn') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        @error('issuedOn') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-sm-7">
                         <label for="purpose" class="form-label">Purpose <span class="text-muted-celeste">(optional)</span></label>

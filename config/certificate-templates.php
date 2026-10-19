@@ -70,23 +70,10 @@ return [
     ],
 
     Certificate::TYPE_ENROLMENT => [
-        'template'    => storage_path('templates/certificate-of-enrolment.pdf'),
         'page'        => 'A4',
         'orientation' => 'portrait',
-
-        'fields' => [
-            ['value' => 'full_name',      'x' => 60, 'y' => 92,  'width' => 120, 'style' => 'B', 'size' => 11, 'upper' => true],
-            ['value' => 'student_number', 'x' => 60, 'y' => 100, 'width' => 120, 'size' => 10],
-            ['value' => 'program',        'x' => 60, 'y' => 110, 'width' => 130, 'size' => 10],
-            ['value' => 'college',        'x' => 60, 'y' => 118, 'width' => 130, 'size' => 10],
-            ['value' => 'year_level',     'x' => 60, 'y' => 126, 'width' => 60,  'size' => 10],
-            ['value' => 'semester',       'x' => 60, 'y' => 134, 'width' => 80,  'size' => 10],
-            ['value' => 'academic_year',  'x' => 60, 'y' => 142, 'width' => 60,  'size' => 10],
-            ['type'  => 'qr',             'x' => 20, 'y' => 240, 'size' => 24],
-            ['text'  => '{serial}',       'x' => 18, 'y' => 266, 'width' => 30, 'align' => 'C', 'font' => 'Courier', 'size' => 6],
-            ['text'  => 'SHA-256 {hash}', 'x' => 50, 'y' => 268, 'width' => 150, 'font' => 'Courier', 'size' => 4.5, 'color' => [138, 148, 173]],
-        ],
     ],
+
 
     Certificate::TYPE_DISMISSAL => [
         'page'        => 'A4',

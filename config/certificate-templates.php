@@ -70,10 +70,9 @@ return [
     ],
 
     Certificate::TYPE_ENROLMENT => [
-        'page'        => 'A4',
+        'page'        => 'Letter',
         'orientation' => 'portrait',
     ],
-
 
     Certificate::TYPE_DISMISSAL => [
         'page'        => 'A4',

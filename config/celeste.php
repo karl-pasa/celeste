@@ -131,4 +131,22 @@ return [
         'certificate_of_enrolment' => 'Certificate of Enrolment',
         'transcript_of_records'    => 'Transcript of Records',
     ],
+
+    'enrolment' => [
+    'tuition_per_unit'   => 175.00,   // "21 x 175/unit"
+    'lab_per_subject'    => 350.00,   // "5 x 350/subject" -- subjects whose Lab is above 0
+ 
+    'misc_fees' => [
+        'Registration'         => 50.00,
+        'Athletic Fee'         => 65.00,
+        'Publication Fee'      => 40.00,
+        'Culture and Arts Fee' => 70.00,
+        'Medical Fee'          => 25.00,
+        'Audio Visual Fee'     => 25.00,
+        'Library Fee'          => 100.00,
+        'Scuaa Fee'            => 50.00,
+        'Dental Fee'           => 25.00,
+        'Student Activity Fee' => 180.00,
+        ],
+    ],
 ];

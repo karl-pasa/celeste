@@ -372,7 +372,7 @@ class CertificateGenerator
             $original->studentRecord,
             $original->document_type,
             $registrar,
-            ['payload' => ['supersedes' => $original->serial_number]],
+            ['force' => true, 'payload' => ['supersedes' => $original->serial_number]],
         );
 
         $replacement->update(['supersedes_id' => $original->id]);

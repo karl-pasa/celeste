@@ -62,13 +62,17 @@ return [
             'Bachelor of Secondary Education major in Values Education',
         ],
 
-        'College of Engineering and Computational Sciences' => [
-            'Bachelor of Science in Information Technology',
-            'Bachelor of Science in Computer Science',
-            'Bachelor of Science in Civil Engineering',
-            'Bachelor of Science in Sanitary Engineering',
-            'Bachelor of Engineering Technology major in Electrical Engineering Technology',
-        ],
+    'Bachelor of Science in Information Technology'  => 'BSIT',
+    'Bachelor of Science in Computer Science'        => 'BSCS',
+    'Bachelor of Science in Mathematics'             => 'BSMATH',
+    'Bachelor of Science in Civil Engineering'       => 'BSCE',
+    'Bachelor of Science in Sanitary Engineering'    => 'BSSE',
+    'Bachelor of Engineering Technology in Electrical Engineering Technology'
+        => 'BET-EET',
+    'Bachelor of Engineering Technology in Mechanical Engineering Technology major in Automotive Technology'
+        => 'BET-MET-AUTO',
+    'Bachelor of Engineering Technology in Mechanical Engineering Technology major in Refrigeration and Air-Conditioning Technology'
+        => 'BET-MET-RAC',
 
         'College of Business and Management' => [
             'Bachelor of Science in Accountancy',

@@ -1,0 +1,61 @@
+program,year,term,code,title,unit,lec,lab,ch,prereq,sort
+BET-MET-RAC,1,1st,I-1,General Chemistry,1,0,3,3,None,1
+BET-MET-RAC,1,1st,I-2,Pre-Calculus,4,4,0,4,None,2
+BET-MET-RAC,1,1st,GE2,Readings in Philippine History,3,3,0,3,None,3
+BET-MET-RAC,1,1st,GE4,Mathematics in the Modern World,3,3,0,3,None,4
+BET-MET-RAC,1,1st,GE7,"Science, Technology and Society",3,3,0,3,None,5
+BET-MET-RAC,1,1st,PCET1,Orientation to Bachelor of Engineering Technology,2,2,0,2,None,6
+BET-MET-RAC,1,1st,GEE4,Gender and Society with Peace Studies,3,3,0,3,None,7
+BET-MET-RAC,1,1st,PATHFit1,Movement Competency Training,2,2,0,2,None,8
+BET-MET-RAC,1,1st,NSTP1,CWTS 1/ROTC 1/ LTS 1,3,3,0,3,None,9
+BET-MET-RAC,1,2nd,I-3,General Physics,1,0,3,3,None,10
+BET-MET-RAC,1,2nd,M-1,Calculus 1,3,3,0,3,I-2,11
+BET-MET-RAC,1,2nd,S-1,Chemistry for Engineers,4,3,3,6,I-1,12
+BET-MET-RAC,1,2nd,GE1,Understanding the Self,3,3,0,3,None,13
+BET-MET-RAC,1,2nd,GE3,The Contemporary World,3,3,0,3,None,14
+BET-MET-RAC,1,2nd,GE9,Life and Works of Rizal,3,3,0,3,None,15
+BET-MET-RAC,1,2nd,GEE2,Indigenous Peoples' (IP) Studies,3,3,0,3,None,16
+BET-MET-RAC,1,2nd,PATHFit2,Exercise-based Fitness Activities,2,2,0,2,None,17
+BET-MET-RAC,1,2nd,NSTP2,CWTS 2/ROTC 2/ LTS 2,3,3,0,3,NSTP1,18
+BET-MET-RAC,1,Summer,M-2,Calculus 2,3,3,0,3,M-1,19
+BET-MET-RAC,1,Summer,S-2,Physics for Engineers (Calculus Based),4,3,3,6,I-3 & M-2,20
+BET-MET-RAC,2,1st,M-3,Engineering Data Analysis,3,3,0,3,M-1,21
+BET-MET-RAC,2,1st,E-2,Engineering Drawing and Plans,1,0,3,3,None,22
+BET-MET-RAC,2,1st,E-3,Computer Fundamentals and Programming,2,0,6,6,2nd Year Standing,23
+BET-MET-RAC,2,1st,E-4,Statics of Rigid Bodies,3,3,0,3,S-2 & M-2,24
+BET-MET-RAC,2,1st,ACET1,Materials Science and Engineering,3,2,3,5,None,25
+BET-MET-RAC,2,1st,PCR1,Heat Transfer,3,3,0,3,None,26
+BET-MET-RAC,2,1st,GE5,Purposive Communication,3,3,0,3,None,27
+BET-MET-RAC,2,1st,GE6,Art Appreciation,3,3,0,3,None,28
+BET-MET-RAC,2,1st,PATHFit3,Dance,2,2,0,2,None,29
+BET-MET-RAC,2,2nd,A-1,Basic Electrical Engineering,3,3,0,3,S-2,30
+BET-MET-RAC,2,2nd,E-5,Computer Aided Drafting,1,0,3,3,E-2 & E-3,31
+BET-MET-RAC,2,2nd,E-6,Engineering Economics,3,3,0,3,2nd Year Standing,32
+BET-MET-RAC,2,2nd,E-7,Dynamics of Rigid Bodies,2,2,0,2,E-4 & E-8,33
+BET-MET-RAC,2,2nd,E-8,Mechanics of Deformable Bodies,4,4,0,4,E-4 & E-7,34
+BET-MET-RAC,2,2nd,ACET2,Thermodynamics,3,3,0,3,S-2,35
+BET-MET-RAC,2,2nd,GE8,Ethics,3,3,0,3,None,36
+BET-MET-RAC,2,2nd,GEE5,People and the Earth's Ecosystem,3,3,0,3,None,37
+BET-MET-RAC,2,2nd,PATHFit4-B,Outdoor and Adventure Activities,2,2,0,2,None,38
+BET-MET-RAC,3,1st,ACET3,Basic Occupational Safety and Health,3,3,0,3,None,39
+BET-MET-RAC,3,1st,ACET4,Basic Electronics,3,2,3,5,None,40
+BET-MET-RAC,3,1st,PCET2,Project Development 1,2,1,3,4,None,41
+BET-MET-RAC,3,1st,PCET3,Direct Current and Alternating Current Machinery,3,2,3,5,None,42
+BET-MET-RAC,3,1st,PCET4,Fluid Mechanics,3,3,0,3,S-2,43
+BET-MET-RAC,3,1st,PCR2,Workshop Practice 1,2,0,6,6,None,44
+BET-MET-RAC,3,1st,E-9,Engineering Management,2,2,0,2,3rd Year Standing,45
+BET-MET-RAC,3,2nd,PCET5,Project Development 2,2,0,6,6,PCET2,46
+BET-MET-RAC,3,2nd,PCET6,Metrology,3,3,0,3,None,47
+BET-MET-RAC,3,2nd,PCET7,Quality Control and Inspection System,3,3,0,3,None,48
+BET-MET-RAC,3,2nd,PCR3,Applied Fluid Mechanics,3,3,0,3,S-2 & PCR1,49
+BET-MET-RAC,3,2nd,PCR4,Workshop Practice 2,2,0,6,6,PCR2,50
+BET-MET-RAC,3,2nd,PCR5,Refrigeration Fundamentals and Application,2,2,0,2,None,51
+BET-MET-RAC,3,2nd,E-10,Technopreneurship 101,3,3,0,3,E-9,52
+BET-MET-RAC,4,1st,E-11,Environmental Science and Engineering (for Engineering Technology),3,3,0,3,None,53
+BET-MET-RAC,4,1st,PCET8,Welding Process,3,2,3,5,None,54
+BET-MET-RAC,4,1st,PCET9,"Mechanical Engineering Laws, Ethics, Code and Standards",2,2,0,2,None,55
+BET-MET-RAC,4,1st,PCET10,Machine Tools and Processes,4,3,3,6,None,56
+BET-MET-RAC,4,1st,PCET11,Instrumentation and Control System,3,2,3,5,None,57
+BET-MET-RAC,4,1st,PCR6,Airconditioning Fundamentals and Application,4,3,3,6,None,58
+BET-MET-RAC,4,1st,PCR7,"Heating, Ventilation, Airconditioning/Refrigeration Codes and Standards",2,2,0,2,None,59
+BET-MET-RAC,4,2nd,OJT-BET,On-the-Job Training (720 hours),10,0,0,0,4th Year Standing,60

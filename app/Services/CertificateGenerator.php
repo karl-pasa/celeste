@@ -169,12 +169,7 @@ class CertificateGenerator
                 'address'        => $student->address,
                 'year_level'     => $student->year_level,
             ],
-            Certificate::TYPE_ENROLMENT => $base + [
-                'year_level'    => $student->year_level,
-                'semester'      => $student->semester,
-                'academic_year' => $student->academic_year,
-                'status'        => $student->status,
-            ],
+            Certificate::TYPE_ENROLMENT => $base + $this->enrolmentPayload($student, $issuedOn),
             Certificate::TYPE_TOR => $base + [
                 // Personal information
                 'address'     => $student->address,
@@ -223,6 +218,42 @@ class CertificateGenerator
     }
 
 
+    /**
+     * Enrollment and Assessment Form data. Subjects come from the program of
+     * study (curriculum_subjects) for the student's program, year level and
+     * semester; rates and miscellaneous fees are copied from config at issuance
+     * so a later rate change never alters a form already issued. Anything here
+     * can be overridden per issue with $overrides['payload'].
+     */
+    protected function enrolmentPayload(StudentRecord $student, Carbon $issuedOn): array
+    {
+        $cfg = config('celeste.enrolment', []);
+
+        $misc = [];
+        foreach ($cfg['misc_fees'] ?? [] as $name => $amount) {
+            $misc[] = ['name' => $name, 'amount' => number_format((float) $amount, 2, '.', '')];
+        }
+
+        return [
+            'course_code'   => CurriculumSubjects::programCode($student->program),
+            'year_level'    => $student->year_level,
+            'semester'      => $student->semester,
+            'academic_year' => $student->academic_year,
+            'status'        => $student->status,
+            'enrolled_on'   => $issuedOn->toDateString(),
+
+            'subjects' => CurriculumSubjects::forStudent($student),
+
+            'rates' => [
+                'tuition_per_unit' => number_format((float) ($cfg['tuition_per_unit'] ?? 0), 2, '.', ''),
+                'lab_per_subject'  => number_format((float) ($cfg['lab_per_subject'] ?? 0), 2, '.', ''),
+            ],
+            'misc_fees'        => $misc,
+            'previous_balance' => '0.00',
+            'downpayment'      => '0.00',
+        ];
+    }
+
     public function renderPdf(Certificate $certificate): string
     {
         $certificate->loadMissing('studentRecord', 'issuer');
@@ -249,6 +280,7 @@ class CertificateGenerator
             Certificate::TYPE_DIPLOMA => ['a4', 'landscape'],
             Certificate::TYPE_TOR => [[0, 0, 612, 936], 'portrait'],
             Certificate::TYPE_DISMISSAL => ['a4', 'landscape'],
+            Certificate::TYPE_ENROLMENT => ['letter', 'portrait'],
 
             default => ['a4', 'portrait'],
         };

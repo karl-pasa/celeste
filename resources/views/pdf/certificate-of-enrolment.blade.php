@@ -87,9 +87,36 @@
     $downpayment = (float) ($p['downpayment'] ?? 0);
     $receivable  = max(0, $discounted + $previous - $downpayment);
 
-    // "BSIT 3": the course code and the year number, as the form prints them.
+    /*
+      | "BSIT 3": the short course code and the year number, as the form prints
+      | them. The form wants BSIT, BSCS, BSCE -- never the full programme name.
+      |
+      | If the payload carries a short code it is used as it is. If it carries
+      | a name (anything with a space in it), the code is made from the initials
+      | of its words, stopping at "major": "Bachelor of Science in Information
+      | Technology" gives BSIT, "...in Civil Engineering" gives BSCE. A
+      | programme whose initials are not its usual code (Bachelor of Elementary
+      | Education is BEEd, not BEE) is listed in config('celeste.programs').
+    */
+    $courseCode = function (string $raw): string {
+        $raw = trim($raw);
+        if ($raw === '' || ! preg_match('/\s/', $raw)) return $raw;
+
+        $listed = config('celeste.programs', []);
+        if (isset($listed[$raw])) return $listed[$raw];
+
+        $skip = ['of', 'in', 'and', 'the', 'for', 'a', 'an'];
+        $out  = '';
+        foreach (preg_split('/[\s,()\/-]+/u', $raw, -1, PREG_SPLIT_NO_EMPTY) as $w) {
+            if (mb_strtolower($w) === 'major') break;
+            if (in_array(mb_strtolower($w), $skip, true)) continue;
+            $out .= mb_strtoupper(mb_substr($w, 0, 1));
+        }
+        return $out;
+    };
+
     $yearNo = preg_match('/\d+/', (string) ($p['year_level'] ?? ''), $m) ? $m[0] : ($p['year_level'] ?? '');
-    $course = trim(($p['course_code'] ?? $p['program'] ?? '') . ' ' . $yearNo);
+    $course = trim($courseCode((string) ($p['course_code'] ?? $p['program'] ?? '')) . ' ' . $yearNo);
 
     $period = trim(($p['semester'] ?? '') . (filled($p['academic_year'] ?? null) ? ' AY ' . $p['academic_year'] : ''));
 @endphp

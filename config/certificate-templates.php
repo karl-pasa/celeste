@@ -69,11 +69,6 @@ return [
         ],
     ],
 
-    Certificate::TYPE_ENROLMENT => [
-        'page'        => 'Letter',
-        'orientation' => 'portrait',
-    ],
-
     Certificate::TYPE_DISMISSAL => [
         'page'        => 'A4',
         'orientation' => 'landscape',

@@ -106,25 +106,6 @@
                     </select>
                 </div>
             </div>
-
-            <div class="card-celeste">
-                <div class="card-header">Or upload a list</div>
-                <div class="p-3">
-                    <p class="text-muted-celeste mb-2" style="font-size:.8125rem">
-                        A CSV with student numbers in the first column. A header row is fine.
-                    </p>
-                    <input type="file" wire:model="csv" class="form-control mb-2" accept=".csv,text/csv">
-                    @error('csv') <div class="invalid-feedback d-block mb-2">{{ $message }}</div> @enderror
-
-                    <button wire:click="importCsv" class="btn btn-psu-outline btn-sm w-100" wire:loading.attr="disabled" wire:target="csv,importCsv">
-                        <i class="bi bi-upload"></i> Match and select
-                    </button>
-
-                    @if (session('batch-import'))
-                        <p class="mb-0 mt-2" style="font-size:.8125rem;color:var(--psu-navy-600)">{{ session('batch-import') }}</p>
-                    @endif
-                </div>
-            </div>
         </div>
 
         <div class="col-xl-8">

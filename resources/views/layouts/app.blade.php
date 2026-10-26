@@ -20,13 +20,13 @@
 <div class="app-shell" x-data="{ nav: false }">
 
     <aside class="sidebar" :class="{ 'open': nav }">
-        <div class="brand">
-            <img src="{{ asset('images/psu-seal-white.png') }}" alt=""
-                 style="width:34px;height:34px;object-fit:contain"
+        <div class="brand" style="gap:.75rem;padding-top:1.25rem;padding-bottom:1.25rem">
+            <img src="{{ asset('images/psu-seal-white.png') }}" alt="Partido State University seal"
+                 style="width:60px;height:60px;flex:0 0 60px;object-fit:contain"
                  onerror="this.outerHTML='&lt;div class=&quot;mark&quot;&gt;CE&lt;/div&gt;'">
-            <div>
-                <div class="name">CELESTE</div>
-                <div class="sub">{{ config('celeste.institution.short') }}</div>
+            <div style="min-width:0">
+                <div class="name" style="font-size:1.25rem;line-height:1.15">CELESTE</div>
+                <div class="sub" style="font-size:.75rem;line-height:1.25">{{ config('celeste.institution.short') }}</div>
             </div>
         </div>
 

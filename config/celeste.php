@@ -62,14 +62,14 @@ return [
             'Bachelor of Science in Mathematics',
             'Bachelor of Science in Civil Engineering',
             'Bachelor of Science in Sanitary Engineering',
-            'Bachelor of Engineering Technology in Electrical Engineering Technology',
-            'Bachelor of Engineering Technology in Mechanical Engineering Technology major in Automotive Technology',
-            'Bachelor of Engineering Technology in Mechanical Engineering Technology major in Refrigeration and Air-Conditioning Technology',
+            'Bschelor of Automotive Technology',
+            'Bachelor of Engineering Technology in Mechanical Engineering Technology-major in Automotive Technology',
+            'Bachelor of Engineering Technology in Mechanical Engineering Technology-major in Refrigeration and Air-Conditioning Technology',
         ],
 
         'College of Business and Management' => [
             'Bachelor of Science in Accountancy',
-            'Bachelor of Science in Business Administration major in Financial Management',
+            'Bachelor of Science in Business Administration',
             'Bachelor of Science in Entrepreneurship',
             'Bachelor of Science in Economics',
             'Bachelor of Science in Office Administration',
@@ -78,13 +78,11 @@ return [
         'College of Science' => [
             'Bachelor of Science in Biology',
             'Bachelor of Science in Geology',
-            'Bachelor of Science in Mathematics',
-            'Bachelor of Science in Environmental Science',
         ],
 
         'College of Arts and Humanities' => [
+            'Bachelor of Public Administration',
             'Bachelor of Arts in Communication',
-            'Bachelor of Arts in English Language Studies',
         ],
 
         'College of Hospitality and Tourism Management-San Jose Campus' => [
@@ -93,14 +91,14 @@ return [
         ],
 
         'College of Agribusiness and Community Development-Salogon Campus' => [
-            'Bachelor of Science in Agriculture',
             'Bachelor of Science in Agribusiness',
             'Bachelor of Science in Community Development',
         ],
 
         'College of Public Safety and Community Health-Lagonoy Campus' => [
             'Bachelor of Science in Criminology',
-            'Bachelor of Science in Public Health',
+            'Bachelor of Science in Industrial Security Management',
+            'Bachelor of Science in Nutrition and Dietetics',
         ],
 
         'College of Fisheries and Marines Science-Sagñay Campus' => [
@@ -110,10 +108,16 @@ return [
 
         'College of Environmental Science and Design-Tinambac Campus' => [
             'Bachelor of Science in Environmental Science',
+            'Bachelor of Science in Environmental Planning',
+            'Bachelor of Science in Forestry',
         ],
 
         'College of Sustainable Communities and Ecosystems-Caramoan Campus' => [
-            'Bachelor of Science in Community Development',
+            'Bachelor of Automotive Technology',
+            'Bachelor of Engineering Technology major in Mechanical Engineering Technology-Automotive Technology',
+            'Bachelor of Science in Hospitality Manangement',
+            'Bachelor of Science in Biology-Conservation and Restoration Ecology',
+            'Bachelor of Science in Tourism Management-Ecotourism',
         ],
     ],
 

@@ -1,0 +1,46 @@
+program,year,term,code,title,unit,lec,lab,ch,prereq,sort
+BPA,1,1st,GE1,Understanding the Self,3,3,0,3,None,1
+BPA,1,1st,GE2,Readings in Philippine History,3,3,0,3,None,2
+BPA,1,1st,GEE1,Peace Studies,3,3,0,3,None,3
+BPA,1,1st,GE3,The Contemporary World,3,3,0,3,None,4
+BPA,1,1st,GEE2,Indigenous Peoples' (IP),3,3,0,3,None,5
+BPA,1,1st,PA1,Introduction to Public Administration,3,3,0,3,None,6
+BPA,1,1st,PATHFIT1,Movement Competency,2,2,0,2,None,7
+BPA,1,1st,NSTP1,CWTS1/ROTC1/LTS1,3,3,0,3,None,8
+BPA,1,2nd,GE4,Mathematics in the Modern World,3,3,0,3,None,9
+BPA,1,2nd,GEE3,Living in the IT Era,3,3,0,3,None,10
+BPA,1,2nd,GE5,Purposive Communication,3,3,0,3,None,11
+BPA,1,2nd,GE6,Art Appreciation,3,3,0,3,None,12
+BPA,1,2nd,PA2,Philippine Administrative Thought and Institutions,3,3,0,3,PA1,13
+BPA,1,2nd,PA3,Administrative Law,3,3,0,3,PA1,14
+BPA,1,2nd,PATHFIT2,Fitness Exercise,2,2,0,2,PATHFIT1,15
+BPA,1,2nd,NSTP2,CWTS2/ROTC2/LTS2,3,3,0,3,NSTP1,16
+BPA,2,1st,GE7,"Science, Technology and Society",3,3,0,3,None,17
+BPA,2,1st,GE8,Ethics,3,3,0,3,None,18
+BPA,2,1st,GE9,Life and Works of Rizal,3,3,0,3,None,19
+BPA,2,1st,PA4,Governance and Development,3,3,0,3,None,20
+BPA,2,1st,PA5,Politics and Administration,3,3,0,3,PA2,21
+BPA,2,1st,PA6,Knowledge Management and the ICT for PA,3,3,0,3,GEE3,22
+BPA,2,1st,SC1,Basic Accounting,3,3,0,3,None,23
+BPA,2,1st,PATHFIT3,Dance,2,2,0,2,PATHFIT2,24
+BPA,2,2nd,PA7,Ethics and Accountability in the Public Service,3,3,0,3,None,25
+BPA,2,2nd,PA8,Local and Regional Governance,3,3,0,3,None,26
+BPA,2,2nd,SC2,Basic Statistics,3,3,0,3,None,27
+BPA,2,2nd,SC3,Good Governance and Social Responsibility,3,3,0,3,None,28
+BPA,2,2nd,PA1 Elec,Project Development and Management,3,3,0,3,None,29
+BPA,2,2nd,PA9,Public Personnel Administration,3,3,0,3,PA1,30
+BPA,2,2nd,PATHFIT4,Outdoor Adventure Activities,2,2,0,2,PATHFIT3,31
+BPA,3,1st,PA10,Public Fiscal Administration,3,3,0,3,PA1,32
+BPA,3,1st,PA11,Human Behavior in Organizations,3,3,0,3,None,33
+BPA,3,1st,PA2 Elec,Resource Management,3,3,0,3,None,34
+BPA,3,1st,SC4,Economics,3,3,0,3,None,35
+BPA,3,1st,SC5,Technical Writing,3,3,0,3,None,36
+BPA,3,1st,PA3 Elec,Records and Property Management,3,3,0,3,None,37
+BPA,3,2nd,PA12,Public Accounting and Budgeting,3,3,0,3,PA12,38
+BPA,3,2nd,PA13,Research Methods in PA1,3,3,0,3,PA1 & SC2,39
+BPA,3,2nd,PA14,Organization and Management,3,3,0,3,PA1,40
+BPA,3,2nd,PA15,Public Policy and Program Administration,3,3,0,3,PA1,41
+BPA,3,2nd,PA4 Elec,Environmental Management,3,3,0,3,None,42
+BPA,4,1st,PA16,Research Methods in PA2,3,3,0,3,PA13,43
+BPA,4,1st,PA17,Public Administration and the Economic System,3,3,0,3,None,44
+BPA,4,2nd,PA18,Practicum/OJT - Work Integrated Learning for Public Administration (400hrs),6,6,0,6,4th year Standing,45

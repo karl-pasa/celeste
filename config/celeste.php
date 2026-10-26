@@ -133,6 +133,8 @@ return [
         'Bachelor of Engineering Technology in Mechanical Engineering Technology major in Automotive Technology' => 'BET-MET-AUTO',
         'Bachelor of Engineering Technology in Mechanical Engineering Technology major in Refrigeration and Air-Conditioning Technology' => 'BET-MET-RAC',
         'Bachelor of Elementary Education'               => 'BEEd',
+        'Bachelor of Arts in Communication'              => 'BACOMM',
+        'Bachelor of Public Administration'              => 'BPA',
         'Bachelor of Secondary Education major in English'          => 'BSED-ENG',
         'Bachelor of Secondary Education major in Filipino'         => 'BSED-FIL',
         'Bachelor of Secondary Education major in Mathematics'      => 'BSED-MATH',

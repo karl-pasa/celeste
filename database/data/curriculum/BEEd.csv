@@ -1,0 +1,54 @@
+program,year,term,code,title,unit,lec,lab,ch,prereq,sort
+BEEd,1,1st,GE1,Understanding the Self,3,3,0,3,None,1
+BEEd,1,1st,GE2,Readings in Philippine History,3,3,0,3,None,2
+BEEd,1,1st,GE3,The Contemporary World,3,3,0,3,None,3
+BEEd,1,1st,GEE8,Gender and Society,3,3,0,3,None,4
+BEEd,1,1st,FTC1,The Child and Adolescent Learners and Learning Principles,3,3,0,3,None,5
+BEEd,1,1st,EE1,Teaching Science in the Primary Grades (Biology and Chemistry),3,3,0,3,None,6
+BEEd,1,1st,EE3,Teaching Math in the Primary Grades,3,3,0,3,None,7
+BEEd,1,1st,PATH-Fit1,Movement Competency Training,2,2,0,2,None,8
+BEEd,1,1st,NSTP1A,LTS 1,3,3,0,3,None,9
+BEEd,1,2nd,GE4,Mathematics in the Modern World,3,3,0,3,None,10
+BEEd,1,2nd,GE5,Purposive Communication,3,3,0,3,None,11
+BEEd,1,2nd,GEE2,Philippine Indigenous Communities,3,3,0,3,None,12
+BEEd,1,2nd,FTC3,Foundation of Special and Inclusive Education,3,3,0,3,None,13
+BEEd,1,2nd,EE2,"Teaching Science in the Intermediate Grades (Physics, Earth and Space Science)",3,3,0,3,None,14
+BEEd,1,2nd,EE7,Teaching Math in the Intermediate Grades,3,3,0,3,None,15
+BEEd,1,2nd,EE11,Content and Pedagogy in the Mother-Tongue,3,3,0,3,None,16
+BEEd,1,2nd,PATH-Fit2,Exercise-based Fitness Activities,2,2,0,2,None,17
+BEEd,1,2nd,NSTP2A,LTS 2,3,3,0,3,NSTP1A,18
+BEEd,2,1st,GE6,Art Appreciation,3,3,0,3,None,19
+BEEd,2,1st,GE7,"Science, Technology and Society",3,3,0,3,None,20
+BEEd,2,1st,GE8,Ethics,3,3,0,3,None,21
+BEEd,2,1st,FTC2,The Teaching Profession,3,3,0,3,None,22
+BEEd,2,1st,EE4,Teaching Social Studies in Primary Grades (Philippine History and Government),3,3,0,3,None,23
+BEEd,2,1st,EE5,Pagtuturo ng Filipino sa Elementarya I - Estruktura at Gamit ng Wikang Filipino,3,3,0,3,None,24
+BEEd,2,1st,EE8,Teaching English in the Elementary Grades (Language Arts),3,3,0,3,None,25
+BEEd,2,1st,EE13,Teaching PE and Health in the Elementary Grades,3,3,0,3,None,26
+BEEd,2,1st,PATH-Fit3,Dance,2,2,0,2,None,27
+BEEd,2,2nd,GE9,Life and Works of Rizal,3,3,0,3,None,28
+BEEd,2,2nd,FTC4,"The Teacher and the Community, School Culture and Organizational Leadership",3,3,0,3,None,29
+BEEd,2,2nd,PCK4,The Teacher and the School Curriculum,3,3,0,3,None,30
+BEEd,2,2nd,EE9,Pagtuturo ng Filipino sa Elementarya II - Panitikan ng Pilipinas,3,3,0,3,None,31
+BEEd,2,2nd,EE10,Teaching Social Studies in Intermediate Grades (Culture and Basic Geography),3,3,0,3,None,32
+BEEd,2,2nd,EE14,Teaching Arts in the Elementary Grades,3,3,0,3,None,33
+BEEd,2,2nd,EE15,Teaching Literacy in the Elementary Grades Through Literature,3,3,0,3,None,34
+BEEd,2,2nd,PATH-Fit4,Sports,2,2,0,2,None,35
+BEEd,3,1st,GEE5,People and the Earth's Ecosystems,3,3,0,3,None,36
+BEEd,3,1st,PCK1,Facilitating Learner-Centered Teaching,3,3,0,3,None,37
+BEEd,3,1st,PCK2,Technology for Teaching and Learning 1,3,3,0,3,None,38
+BEEd,3,1st,PCK3,Assessment in Learning 1,3,3,0,3,None,39
+BEEd,3,1st,EE12,Edukasyong Pantahanan at Pangkabuhayan (1),3,3,0,3,None,40
+BEEd,3,1st,EE19,Research in Education,3,3,0,3,None,41
+BEEd,3,2nd,PCK5,Assessment in Learning 2,3,3,0,3,None,42
+BEEd,3,2nd,PCK6,Building and Enhancing New Literacies Across the Curriculum,3,3,0,3,None,43
+BEEd,3,2nd,EE6,Technology for Teaching and Learning in the Elementary Grades,3,3,0,3,None,44
+BEEd,3,2nd,EE16,Good Manners and Right Conduct (Edukasyon sa Pagpapakatao),3,3,0,3,None,45
+BEEd,3,2nd,EE18,Edukasyong Pantahanan at Pangkabuhayan with Entrepreneurship,3,3,0,3,None,46
+BEEd,3,2nd,EE17,Teaching Music in the Elementary Grades,3,3,0,3,None,47
+BEEd,3,2nd,EEE1,Teaching Multi-grade Classes,3,3,0,3,None,48
+BEEd,4,1st,EC1,Enrichment Classes 1 (non-credit),0,0,0,0,None,49
+BEEd,4,1st,EC2,Enrichment Classes 2 (non-credit),0,0,0,0,None,50
+BEEd,4,1st,EL1,Field Study 1 - Observations of Teaching-Learning in Actual School Environment,3,3,0,3,"All GE, Prof Ed & Major Subjects",51
+BEEd,4,1st,EL2,Field Study 2 - Participation and Teaching Assistantship,3,3,0,3,"All GE, Prof Ed & Major Subjects",52
+BEEd,4,2nd,EL3,Teaching Internship (40 hours per week),6,0,0,0,EL1 & EL2,53

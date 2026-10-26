@@ -6,7 +6,7 @@ return [
         'short'           => env('CELESTE_INSTITUTION_SHORT', 'Partido State University'),
         'campus'          => env('CELESTE_CAMPUS', 'Camarines Sur'),
         'registrar_email' => env('CELESTE_REGISTRAR_EMAIL', 'registrar@parsu.edu.ph'),
-        'email_domain'    => env('CELESTE_EMAIL_DOMAIN', 'parsu.edu.ph'), 
+        'email_domain'    => env('CELESTE_EMAIL_DOMAIN', 'parsu.edu.ph'),
     ],
 
     'officials' => [
@@ -18,10 +18,7 @@ return [
     'hash_pepper' => env('CELESTE_HASH_PEPPER'),
 
     'analytics' => [
-        // Raise a flag once failed checks pass this share of all checks.
         'failure_threshold' => (float) env('CELESTE_FAILURE_THRESHOLD', 0.15),
-
-        // Flag a single certificate verified from this many distinct addresses.
         'spread_threshold'  => (int) env('CELESTE_SPREAD_THRESHOLD', 12),
     ],
 
@@ -34,14 +31,11 @@ return [
     ],
 
     'colleges' => [
-        // Goa main campus
         'College of Education',
         'College of Engineering and Computational Sciences',
         'College of Business and Management',
         'College of Science',
         'College of Arts and Humanities',
-
-        // Satellite campuses
         'College of Hospitality and Tourism Management-San Jose Campus',
         'College of Agribusiness and Community Development-Salogon Campus',
         'College of Public Safety and Community Health-Lagonoy Campus',
@@ -62,17 +56,16 @@ return [
             'Bachelor of Secondary Education major in Values Education',
         ],
 
-    'Bachelor of Science in Information Technology'  => 'BSIT',
-    'Bachelor of Science in Computer Science'        => 'BSCS',
-    'Bachelor of Science in Mathematics'             => 'BSMATH',
-    'Bachelor of Science in Civil Engineering'       => 'BSCE',
-    'Bachelor of Science in Sanitary Engineering'    => 'BSSE',
-    'Bachelor of Engineering Technology in Electrical Engineering Technology'
-        => 'BET-EET',
-    'Bachelor of Engineering Technology in Mechanical Engineering Technology major in Automotive Technology'
-        => 'BET-MET-AUTO',
-    'Bachelor of Engineering Technology in Mechanical Engineering Technology major in Refrigeration and Air-Conditioning Technology'
-        => 'BET-MET-RAC',
+        'College of Engineering and Computational Sciences' => [
+            'Bachelor of Science in Information Technology',
+            'Bachelor of Science in Computer Science',
+            'Bachelor of Science in Mathematics',
+            'Bachelor of Science in Civil Engineering',
+            'Bachelor of Science in Sanitary Engineering',
+            'Bachelor of Engineering Technology in Electrical Engineering Technology',
+            'Bachelor of Engineering Technology in Mechanical Engineering Technology major in Automotive Technology',
+            'Bachelor of Engineering Technology in Mechanical Engineering Technology major in Refrigeration and Air-Conditioning Technology',
+        ],
 
         'College of Business and Management' => [
             'Bachelor of Science in Accountancy',
@@ -124,6 +117,26 @@ return [
         ],
     ],
 
+    // Program name (as stored in student_records.program) => short code on the
+    // Certificate of Enrolment and the curriculum file name.
+    'program_codes' => [
+        'Bachelor of Science in Information Technology'  => 'BSIT',
+        'Bachelor of Science in Computer Science'        => 'BSCS',
+        'Bachelor of Science in Mathematics'             => 'BSMATH',
+        'Bachelor of Science in Civil Engineering'       => 'BSCE',
+        'Bachelor of Science in Sanitary Engineering'    => 'BSSE',
+        'Bachelor of Engineering Technology in Electrical Engineering Technology' => 'BET-EET',
+        'Bachelor of Engineering Technology in Mechanical Engineering Technology major in Automotive Technology' => 'BET-MET-AUTO',
+        'Bachelor of Engineering Technology in Mechanical Engineering Technology major in Refrigeration and Air-Conditioning Technology' => 'BET-MET-RAC',
+        'Bachelor of Elementary Education'               => 'BEEd',
+        'Bachelor of Secondary Education major in English'          => 'BSED-ENG',
+        'Bachelor of Secondary Education major in Filipino'         => 'BSED-FIL',
+        'Bachelor of Secondary Education major in Mathematics'      => 'BSED-MATH',
+        'Bachelor of Secondary Education major in Science'          => 'BSED-SCI',
+        'Bachelor of Secondary Education major in Social Studies'   => 'BSED-SS',
+        'Bachelor of Secondary Education major in Values Education' => 'BSED-VE',
+    ],
+
     'academics' => [
         'year_levels' => ['1st Year', '2nd Year', '3rd Year', '4th Year'],
         'sections'    => ['A', 'B', 'C', 'D', 'E'],
@@ -137,20 +150,20 @@ return [
     ],
 
     'enrolment' => [
-    'tuition_per_unit'   => 175.00,   // "21 x 175/unit"
-    'lab_per_subject'    => 350.00,   // "5 x 350/subject" -- subjects whose Lab is above 0
- 
-    'misc_fees' => [
-        'Registration'         => 50.00,
-        'Athletic Fee'         => 65.00,
-        'Publication Fee'      => 40.00,
-        'Culture and Arts Fee' => 70.00,
-        'Medical Fee'          => 25.00,
-        'Audio Visual Fee'     => 25.00,
-        'Library Fee'          => 100.00,
-        'Scuaa Fee'            => 50.00,
-        'Dental Fee'           => 25.00,
-        'Student Activity Fee' => 180.00,
+        'tuition_per_unit' => 175.00,
+        'lab_per_subject'  => 350.00,
+
+        'misc_fees' => [
+            'Registration'         => 50.00,
+            'Athletic Fee'         => 65.00,
+            'Publication Fee'      => 40.00,
+            'Culture and Arts Fee' => 70.00,
+            'Medical Fee'          => 25.00,
+            'Audio Visual Fee'     => 25.00,
+            'Library Fee'          => 100.00,
+            'Scuaa Fee'            => 50.00,
+            'Dental Fee'           => 25.00,
+            'Student Activity Fee' => 180.00,
         ],
     ],
 ];

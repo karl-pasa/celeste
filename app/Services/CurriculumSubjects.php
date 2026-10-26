@@ -16,10 +16,10 @@ use RuntimeException;
  */
 class CurriculumSubjects
 {
-    /** "Bachelor of Science in Information Technology" -> BSIT; config('celeste.programs') overrides. */
+    /** "Bachelor of Science in Information Technology" -> BSIT; config('celeste.program_codes') overrides. */
     public static function programCode(string $program): string
     {
-        $map = config('celeste.programs', []);
+        $map = config('celeste.program_codes', []);
         if (isset($map[$program])) return $map[$program];
         if (preg_match('/^[A-Z]{2,8}$/', $program)) return $program;
         $stop = ['in', 'of', 'and', 'the', 'major'];

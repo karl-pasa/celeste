@@ -1,0 +1,57 @@
+program,year,term,code,title,unit,lec,lab,ch,prereq,sort
+BSED-SS,1,1st,GE1,Understanding the Self,3,3,0,3,None,1
+BSED-SS,1,1st,GE2,Readings in Philippine History,3,3,0,3,None,2
+BSED-SS,1,1st,GE3,The Contemporary World,3,3,0,3,None,3
+BSED-SS,1,1st,GEE2,Philippine Indigenous Communities,3,3,0,3,None,4
+BSED-SS,1,1st,FTC1,The Child and Adolescent Learners and Learning Principles,3,3,0,3,None,5
+BSED-SS,1,1st,SSED1,Foundation of Social Studies,3,3,0,3,None,6
+BSED-SS,1,1st,SSED2,World History 1 (Ancient and Medieval Era),3,3,0,3,None,7
+BSED-SS,1,1st,PATH-Fit1,Movement Competency Training,2,2,0,2,None,8
+BSED-SS,1,1st,NSTP1A,LTS 1,3,3,0,3,None,9
+BSED-SS,1,2nd,GE4,Mathematics in the Modern World,3,3,0,3,None,10
+BSED-SS,1,2nd,GE5,Purposive Communication,3,3,0,3,None,11
+BSED-SS,1,2nd,GEE8,Gender and Society,3,3,0,3,None,12
+BSED-SS,1,2nd,FTC3,Foundation of Special and Inclusive Education,3,3,0,3,None,13
+BSED-SS,1,2nd,SSED3,Places and Landscapes in a Changing World,3,3,0,3,None,14
+BSED-SS,1,2nd,SSED4,Integrative Methods in Teaching Social Science Discipline in Basic Education,3,3,0,3,None,15
+BSED-SS,1,2nd,SSED5,World History II (Modern and Contemporary Era),3,3,0,3,None,16
+BSED-SS,1,2nd,PATH-Fit2,Exercise-based Fitness Activities,2,2,0,2,None,17
+BSED-SS,1,2nd,NSTP2A,LTS 2,3,3,0,3,NSTP1A,18
+BSED-SS,2,1st,GE6,Art Appreciation,3,3,0,3,None,19
+BSED-SS,2,1st,GE7,"Science, Technology and Society",3,3,0,3,None,20
+BSED-SS,2,1st,GE8,Ethics,3,3,0,3,None,21
+BSED-SS,2,1st,FTC2,The Teaching Profession,3,3,0,3,None,22
+BSED-SS,2,1st,SSED6,Teaching Approaches in Secondary Social Studies,3,3,0,3,None,23
+BSED-SS,2,1st,SSED7,Geography 1 (Human Geography),3,3,0,3,None,24
+BSED-SS,2,1st,SSED8,Asian Studies,3,3,0,3,None,25
+BSED-SS,2,1st,SSED9,Trends and Issues in Social Studies,3,3,0,3,None,26
+BSED-SS,2,1st,PATH-Fit3,Dance,2,2,0,2,None,27
+BSED-SS,2,2nd,GE9,Life and Works of Rizal,3,3,0,3,None,28
+BSED-SS,2,2nd,PCK4,The Teacher and the School Curriculum,3,3,0,3,None,29
+BSED-SS,2,2nd,FTC4,"The Teacher and the Community, School Culture and Organizational Leadership",3,3,0,3,None,30
+BSED-SS,2,2nd,SSED10,Socio-Cultural Anthropology,3,3,0,3,None,31
+BSED-SS,2,2nd,SSED11,Production of Social Studies Instructional Materials,3,3,0,3,None,32
+BSED-SS,2,2nd,SSED12,Geography 2 (Physical Geography),3,3,0,3,None,33
+BSED-SS,2,2nd,SSED13,Micro Economics,3,3,0,3,None,34
+BSED-SS,2,2nd,PATH-Fit4,Sports,2,2,0,2,None,35
+BSED-SS,3,1st,GEE5,People and the Earth's Ecosystems,3,3,0,3,None,36
+BSED-SS,3,1st,PCK1,Facilitating Learner-Centered Teaching,3,3,0,3,None,37
+BSED-SS,3,1st,PCK2,Technology for Teaching and Learning 1,3,3,0,3,None,38
+BSED-SS,3,1st,PCK3,Assessment in Learning 1,3,3,0,3,None,39
+BSED-SS,3,1st,SSED14,Comparative Government and Politics,3,3,0,3,None,40
+BSED-SS,3,1st,SSED15,Law-Related Studies,3,3,0,3,None,41
+BSED-SS,3,1st,SSED16,Assessment and Evaluation in the Social Sciences,3,3,0,3,None,42
+BSED-SS,3,1st,SSED21,Research in Social Studies,3,3,0,3,None,43
+BSED-SS,3,1st,SSEDE1,Elective 1 - Basic of School Management and Administration,3,3,0,3,None,44
+BSED-SS,3,2nd,PCK5,Assessment in Learning 2,3,3,0,3,None,45
+BSED-SS,3,2nd,PCK6,Building and Enhancing New Literacies Across the Curriculum,3,3,0,3,None,46
+BSED-SS,3,2nd,SSED17,Macro Economics,3,3,0,3,None,47
+BSED-SS,3,2nd,SSED18,Technology for Teaching and Learning 2,3,3,0,3,"PCK2, PCK3, & All Principles of Teaching Courses",48
+BSED-SS,3,2nd,SSED19,Geography 3 (Urban Geography),3,3,0,3,None,49
+BSED-SS,3,2nd,SSED20,Comparative Economic Planning,3,3,0,3,None,50
+BSED-SS,3,2nd,SSEDE2,Elective 2 - Human Resources Management,3,3,0,3,None,51
+BSED-SS,4,1st,EC1,Enrichment Classes 1 (non-credit),0,0,0,0,None,52
+BSED-SS,4,1st,EC2,Enrichment Classes 2 (non-credit),0,0,0,0,None,53
+BSED-SS,4,1st,EL1,Field Study 1 - Observations of Teaching-Learning in Actual School Environment,3,3,0,3,"All GE, Prof Ed & Major Subjects",54
+BSED-SS,4,1st,EL2,Field Study 2 - Participation and Teaching Assistantship,3,3,0,3,"All GE, Prof Ed & Major Subjects",55
+BSED-SS,4,2nd,EL3,Teaching Internship (40 hours per week),6,0,0,0,EL1 & EL2,56

@@ -1,0 +1,56 @@
+program,year,term,code,title,unit,lec,lab,ch,prereq,sort
+BSED-FIL,1,1st,GEF1,Pag-unawa sa Sarili,3,3,0,3,None,1
+BSED-FIL,1,1st,GEF2,Mga Babasahin Hinggil sa Kasaysayan ng Pilipinas,3,3,0,3,None,2
+BSED-FIL,1,1st,GEF3,Ang Kasalukuyang Daigdig,3,3,0,3,None,3
+BSED-FIL,1,1st,GEE2,Philippine Indigenous Communities,3,3,0,3,None,4
+BSED-FIL,1,1st,FTC1,The Child and Adolescent Learners and Learning Principles,3,3,0,3,None,5
+BSED-FIL,1,1st,FILI2,Ang Filipino sa Kurikulum ng Batayang Edukasyon,3,3,0,3,None,6
+BSED-FIL,1,1st,FILI1,Introduksyon sa Pag-aaral ng Wika,3,3,0,3,None,7
+BSED-FIL,1,1st,PATH-Fit1,Movement Competency Training,2,2,0,2,None,8
+BSED-FIL,1,1st,NSTP1A,LTS 1,3,3,0,3,None,9
+BSED-FIL,1,2nd,GEF4,Matematika sa Makabagong Daigdig,3,3,0,3,None,10
+BSED-FIL,1,2nd,GEF5,Malayuning Komunikasyon,3,3,0,3,None,11
+BSED-FIL,1,2nd,GEE8,Gender and Society,3,3,0,3,None,12
+BSED-FIL,1,2nd,FTC3,Foundation of Special and Inclusive Education,3,3,0,3,None,13
+BSED-FIL,1,2nd,FILI3,Panimulang Linggwistika,3,3,0,3,None,14
+BSED-FIL,1,2nd,FILI4,Pagtuturo at Pagtataya ng Makrong Kasanayang Pangwika,3,3,0,3,None,15
+BSED-FIL,1,2nd,FILI5,"Ugnayan ng Wika, Kultura at Lipunan",3,3,0,3,None,16
+BSED-FIL,1,2nd,PATH-Fit2,Exercise-based Fitness Activities,2,2,0,2,None,17
+BSED-FIL,1,2nd,NSTP2A,LTS 2,3,3,0,3,NSTP1A,18
+BSED-FIL,2,1st,GEE5,People and the Earth's Ecosystem,3,3,0,3,None,19
+BSED-FIL,2,1st,GEF6,Pagpapahalaga sa Sining,3,3,0,3,None,20
+BSED-FIL,2,1st,GEF7,"Agham, Teknolohiya, at Lipunan",3,3,0,3,None,21
+BSED-FIL,2,1st,GEF8,Etika,3,3,0,3,None,22
+BSED-FIL,2,1st,FTC2,The Teaching Profession,3,3,0,3,None,23
+BSED-FIL,2,1st,FILI6,Mga Natatanging Diskurso sa Wika at Panitikan,3,3,0,3,None,24
+BSED-FIL,2,1st,FILI7,Introduksyon sa Pamamahayag,3,3,0,3,None,25
+BSED-FIL,2,1st,FILI8,Kulturang Popular,3,3,0,3,None,26
+BSED-FIL,2,1st,PATH-Fit3,Dance,2,2,0,2,None,27
+BSED-FIL,2,2nd,GEF9,Ang Buhay at mga Akda ni Rizal,3,3,0,3,None,28
+BSED-FIL,2,2nd,PCK4,The Teacher and the School Curriculum,3,3,0,3,None,29
+BSED-FIL,2,2nd,FTC4,"The Teacher and the Community, School Culture and Organizational Leadership",3,3,0,3,None,30
+BSED-FIL,2,2nd,FILI9,Paghahanda at Ebalwasyon ng Kagamitang Panturo,3,3,0,3,None,31
+BSED-FIL,2,2nd,FILI10,Introduksyon sa Pagsasalin,3,3,0,3,None,32
+BSED-FIL,2,2nd,FILI11,Maikling Kuwento at Nobelang Filipino,3,3,0,3,None,33
+BSED-FIL,2,2nd,FILI12,Panulaang Filipino,3,3,0,3,None,34
+BSED-FIL,2,2nd,PATH-Fit4,Sports,2,2,0,2,None,35
+BSED-FIL,3,1st,PCK1,Facilitating Learner-Centered Teaching,3,3,0,3,None,36
+BSED-FIL,3,1st,PCK2,Technology for Teaching and Learning 1,3,3,0,3,None,37
+BSED-FIL,3,1st,PCK3,Assessment in Learning 1,3,3,0,3,None,38
+BSED-FIL,3,1st,FILI13,Panunuring Pampanitikan,3,3,0,3,None,39
+BSED-FIL,3,1st,FILI14,Sanaysay at Talumpati,3,3,0,3,None,40
+BSED-FIL,3,1st,FILI15,Estruktura ng Wikang Filipino,3,3,0,3,None,41
+BSED-FIL,3,1st,FILI17,Introduksyon sa Pananaliksik-Wika at Panitikan,3,3,0,3,None,42
+BSED-FIL,3,1st,FILE1,Elektib 1 - Malikhaing Pagsulat,3,3,0,3,None,43
+BSED-FIL,3,2nd,PCK5,Assessment in Learning 2,3,3,0,3,None,44
+BSED-FIL,3,2nd,PCK6,Building and Enhancing Literacies Across the Curriculum,3,3,0,3,None,45
+BSED-FIL,3,2nd,FILI16,Barayti at Baryasyon ng Wika,3,3,0,3,None,46
+BSED-FIL,3,2nd,FILI18,Dulang Filipino,3,3,0,3,None,47
+BSED-FIL,3,2nd,FILI19,Technology for Teaching and Learning 2 (Technology in Secondary Language Education),3,3,0,3,"PCK2, PCK3, All Principles of Teaching Courses",48
+BSED-FIL,3,2nd,FILI20,Pantikan ng Rehiyon,3,3,0,3,None,49
+BSED-FIL,3,2nd,FILE2,Elektib 2 - Pagsasalin sa Iba't Ibang Disiplina,3,3,0,3,None,50
+BSED-FIL,4,1st,EC1,Enrichment Classes 1 (non-credit),0,0,0,0,None,51
+BSED-FIL,4,1st,EC2,Enrichment Classes 2 (non-credit),0,0,0,0,None,52
+BSED-FIL,4,1st,EL1,Field Study 1 - Observations of Teaching-Learning in Actual School Environment,3,3,0,3,"All GE, Prof Ed & Major Subjects",53
+BSED-FIL,4,1st,EL2,Field Study 2 - Participation and Teaching Assistantship,3,3,0,3,"All GE, Prof Ed & Major Subjects",54
+BSED-FIL,4,2nd,EL3,Teaching Internship (40 hours per week),6,0,0,0,EL1 & EL2,55

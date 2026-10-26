@@ -1,0 +1,57 @@
+program,year,term,code,title,unit,lec,lab,ch,prereq,sort
+BSED-ENG,1,1st,GE1,Understanding the Self,3,3,0,3,None,1
+BSED-ENG,1,1st,GE2,Readings in Philippine History,3,3,0,3,None,2
+BSED-ENG,1,1st,GE3,The Contemporary World,3,3,0,3,None,3
+BSED-ENG,1,1st,FTC1,The Child and Adolescent Learners and Learning Principles,3,3,0,3,None,4
+BSED-ENG,1,1st,ENG1,Introduction to Linguistics,3,3,0,3,None,5
+BSED-ENG,1,1st,ENG2,"Language, Culture and Society",3,3,0,3,ENG1,6
+BSED-ENG,1,1st,ENGE1,Elective 1 - Stylistic and Discourse Analysis,3,3,0,3,None,7
+BSED-ENG,1,1st,PATH-Fit1,Movement Competency Training,2,2,0,2,None,8
+BSED-ENG,1,1st,NSTP1A,LTS 1,3,3,0,3,None,9
+BSED-ENG,1,2nd,GEE2,Philippine Indigenous Communities,3,3,0,3,None,10
+BSED-ENG,1,2nd,GEE8,Gender and Society,3,3,0,3,None,11
+BSED-ENG,1,2nd,FTC3,Foundation of Special and Inclusive Education,3,3,0,3,None,12
+BSED-ENG,1,2nd,ENG3,Structures of English,3,3,0,3,ENG1,13
+BSED-ENG,1,2nd,ENG4,Principles and Theories of Language Acquisition and Learning,3,3,0,3,ENG2,14
+BSED-ENG,1,2nd,ENG5,Mythology and Folklore,3,3,0,3,ENG2,15
+BSED-ENG,1,2nd,ENGE2,Elective 2 - Creative Writing,3,3,0,3,None,16
+BSED-ENG,1,2nd,PATH-Fit2,Exercise-based Fitness Activities,2,2,0,2,None,17
+BSED-ENG,1,2nd,NSTP2A,LTS 2,3,3,0,3,NSTP1A,18
+BSED-ENG,2,1st,GE4,Mathematics in the Modern World,3,3,0,3,None,19
+BSED-ENG,2,1st,GE5,Purposive Communication,3,3,0,3,None,20
+BSED-ENG,2,1st,FTC2,The Teaching Profession,3,3,0,3,None,21
+BSED-ENG,2,1st,ENG6,Teaching and Assessment of the Macroskills,3,3,0,3,ENG2,22
+BSED-ENG,2,1st,ENG7,Teaching and Assesment of the Grammar,3,3,0,3,ENG3,23
+BSED-ENG,2,1st,ENG8,Speech and Theater Arts,3,3,0,3,ENG3,24
+BSED-ENG,2,1st,ENG9,Children and Adolescent Literature,3,3,0,3,ENG4,25
+BSED-ENG,2,1st,ENG10,Language Programs and Policies in Multilingual Societies,3,3,0,3,ENG4,26
+BSED-ENG,2,1st,PATH-Fit3,Dance,2,2,0,2,None,27
+BSED-ENG,2,2nd,GE6,Art Appreciation,3,3,0,3,None,28
+BSED-ENG,2,2nd,FTC4,"The Teacher and the Community, School Culture and Organizational Leadership",3,3,0,3,None,29
+BSED-ENG,2,2nd,PCK4,The Teacher and the School Curriculum,3,3,0,3,None,30
+BSED-ENG,2,2nd,ENG11,Technical Writing,3,3,0,3,ENG3,31
+BSED-ENG,2,2nd,ENG12,Survey of Philippine Literature in English,3,3,0,3,ENG9,32
+BSED-ENG,2,2nd,ENG13,Survey of Afro-Asian Literature,3,3,0,3,ENG9,33
+BSED-ENG,2,2nd,ENG14,Survey of English and American Literature,3,3,0,3,ENG9,34
+BSED-ENG,2,2nd,ENG15,"Contemporary, Popular and Emergent Literature",3,3,0,3,ENG9,35
+BSED-ENG,2,2nd,PATH-Fit4,Sports,2,2,0,2,None,36
+BSED-ENG,3,1st,PCK1,Facilitating Learner-Centered Teaching,3,3,0,3,None,37
+BSED-ENG,3,1st,PCK2,Technology for Teaching and Learning 1,3,3,0,3,None,38
+BSED-ENG,3,1st,PCK3,Assessment in Learning 1,3,3,0,3,None,39
+BSED-ENG,3,1st,GEE5,People and the Earth's Ecosystem,3,3,0,3,None,40
+BSED-ENG,3,1st,GE7,"Science, Technology and Society",3,3,0,3,None,41
+BSED-ENG,3,1st,GE8,Ethics,3,3,0,3,None,42
+BSED-ENG,3,1st,ENG18,Literary Criticism,3,3,0,3,"ENG5, ENG9, ENG12, ENG13, ENG14 & ENG15",43
+BSED-ENG,3,2nd,PCK5,Assessment in Learning 2,3,3,0,3,None,44
+BSED-ENG,3,2nd,PCK6,Building and Enhancing New Literacies Across the Curriculum,3,3,0,3,None,45
+BSED-ENG,3,2nd,GE9,Life and Works of Rizal,3,3,0,3,None,46
+BSED-ENG,3,2nd,ENG16,Technology for Teaching and Learning 2 (Technology in Secondary Language Education),3,3,0,3,"PCK2, ENG4",47
+BSED-ENG,3,2nd,ENG17,Language Education Research,3,3,0,3,ENG4,48
+BSED-ENG,3,2nd,ENG19,Campus Journalism,3,3,0,3,ENG11,49
+BSED-ENG,3,2nd,ENG20,Language Learning Materials Development,3,3,0,3,ENG4 & ENG16,50
+BSED-ENG,3,2nd,ENG21,Teaching and Assessment of Literature Studies,3,3,0,3,ENG18,51
+BSED-ENG,4,1st,EC1,Enrichment Classes 1 (non-credit),0,0,0,0,None,52
+BSED-ENG,4,1st,EC2,Enrichment Classes 2 (non-credit),0,0,0,0,None,53
+BSED-ENG,4,1st,EL1,Field Study 1 - Observations of Teaching-Learning in Actual School Environment,3,3,0,3,"All GE, Prof Ed & Major Subjects",54
+BSED-ENG,4,1st,EL2,Field Study 2 - Participation and Teaching Assistantship,3,3,0,3,"All GE, Prof Ed & Major Subjects",55
+BSED-ENG,4,2nd,EL3,Teaching Internship (40 hours per week),6,0,0,0,EL1 & EL2,56

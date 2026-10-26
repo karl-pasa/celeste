@@ -20,15 +20,12 @@
 <body>
 <div class="celeste-field">
     <nav class="container py-3 d-flex align-items-center justify-content-between">
-        <a href="{{ route('home') }}" class="d-flex align-items-center gap-2 text-decoration-none">
-            <span class="d-grid" style="width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.12);place-items:center;overflow:hidden">
-                <img src="{{ asset('images/psu-seal-white.png') }}" alt=""
-                    style="width:26px;height:26px;object-fit:contain"
-                    onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-            </span>
+        <a href="{{ route('home') }}" class="d-flex align-items-center gap-3 text-decoration-none">
+            <img src="{{ asset('images/celeste-logo-white.svg') }}" alt="CELESTE"
+                 style="width:52px;height:52px;flex:0 0 52px;object-fit:contain">
             <span>
-                <span class="d-block text-white fw-bold" style="letter-spacing:.04em;line-height:1.1">CELESTE</span>
-                <span class="d-block" style="color:rgba(255,255,255,.6);font-size:.6875rem">{{ config('celeste.institution.short') }}</span>
+                <span class="d-block text-white fw-bold" style="letter-spacing:.04em;line-height:1.1;font-size:1.25rem">CELESTE</span>
+                <span class="d-block" style="color:rgba(255,255,255,.6);font-size:.75rem">{{ config('celeste.institution.short') }}</span>
             </span>
         </a>
         <div class="d-flex align-items-center gap-2">

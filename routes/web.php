@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BatchDownloadController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmailVerificationController;
@@ -45,6 +46,7 @@ Route::middleware(['auth', 'role:registrar'])->prefix('registrar')->name('regist
     Route::get('/certificates', [CertificateController::class, 'index'])->name('certificates');
     Route::get('/certificates/generate', [CertificateController::class, 'create'])->name('certificates.generate');
     Route::get('/certificates/batch', [CertificateController::class, 'batch'])->name('certificates.batch');
+    Route::get('/certificates/batch/{batch}/download', BatchDownloadController::class)->name('batches.download');
     Route::get('/certificates/{certificate}', [CertificateController::class, 'show'])->name('certificates.show');
 
     Route::get('/students', [CertificateController::class, 'students'])->name('students');

@@ -1,4 +1,24 @@
 <div>
+    @if ($activeBatch)
+        <div class="card-celeste mb-3">
+            <div class="p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                    <div><i class="bi bi-collection"></i> <strong>{{ $activeBatch->label }}</strong>
+                        <span class="text-muted-celeste">({{ $activeBatch->reference }})</span></div>
+                    <div class="text-muted-celeste" style="font-size:.8125rem">
+                        Showing only the documents of this batch.
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('registrar.batches.download', $activeBatch->id) }}" class="btn btn-sm btn-psu">
+                        <i class="bi bi-file-earmark-zip"></i> Download all (ZIP)
+                    </a>
+                    <button wire:click="$set('batch', '')" class="btn btn-sm btn-psu-outline">Show all documents</button>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="card-celeste">
         <div class="p-3 border-bottom">
             <div class="row g-2 align-items-end">
@@ -66,6 +86,9 @@
                         <tr wire:key="cert-{{ $certificate->id }}">
                             <td>
                                 <div class="serial">{{ $certificate->serial_number }}</div>
+                                @if ($certificate->batch)
+                                    <div class="text-muted-celeste" style="font-size:.75rem">{{ $certificate->batch->label }}</div>
+                                @endif
                                 @unless ($integrity[$certificate->id])
                                     <span class="badge-celeste badge-tampered mt-1">
                                         <i class="bi bi-exclamation-octagon"></i> Fingerprint mismatch

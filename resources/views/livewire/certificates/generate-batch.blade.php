@@ -3,9 +3,16 @@
         <div class="card-celeste mb-3" wire:key="batch-{{ $this->batch->id }}">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <span><i class="bi bi-check-circle-fill" style="color:var(--psu-green)"></i> {{ $this->batch->reference }} finished</span>
-                <a href="{{ route('registrar.certificates') }}?q={{ $this->batch->reference }}" class="btn btn-sm btn-psu-outline">
-                    View the documents
-                </a>
+                <div class="d-flex gap-2">
+                    @if ($this->batch->generated > 0)
+                        <a href="{{ route('registrar.batches.download', $this->batch->id) }}" class="btn btn-sm btn-psu">
+                            <i class="bi bi-file-earmark-zip"></i> Download all (ZIP)
+                        </a>
+                    @endif
+                    <a href="{{ route('registrar.certificates', ['batch' => $this->batch->id]) }}" class="btn btn-sm btn-psu-outline">
+                        View the documents
+                    </a>
+                </div>
             </div>
             <div class="p-3 p-md-4">
                 <div class="row g-3 text-center">

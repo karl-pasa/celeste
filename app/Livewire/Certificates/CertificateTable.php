@@ -4,6 +4,7 @@ namespace App\Livewire\Certificates;
 
 use App\Models\AuditLog;
 use App\Models\Certificate;
+use App\Models\CertificateBatch;
 use App\Services\CertificateGenerator;
 use App\Services\CertificateHashService;
 use Livewire\Attributes\Url;
@@ -29,6 +30,10 @@ class CertificateTable extends Component
     #[Url]
     public string $year = '';
 
+    /** Show only the documents of one batch (?batch=ID). */
+    #[Url]
+    public string $batch = '';
+
     public string $sort = 'created_at';
     public string $direction = 'desc';
 
@@ -39,7 +44,7 @@ class CertificateTable extends Component
 
     public function updating($field): void
     {
-        if (in_array($field, ['search', 'type', 'status', 'year'], true)) {
+        if (in_array($field, ['search', 'type', 'status', 'year', 'batch'], true)) {
             $this->resetPage();
         }
     }
@@ -52,7 +57,7 @@ class CertificateTable extends Component
 
     public function clearFilters(): void
     {
-        $this->reset(['search', 'type', 'status', 'year']);
+        $this->reset(['search', 'type', 'status', 'year', 'batch']);
         $this->resetPage();
     }
 
@@ -108,8 +113,15 @@ class CertificateTable extends Component
 
     public function render(CertificateHashService $hasher)
     {
-        $certificates = Certificate::with(['studentRecord', 'issuer'])
-            ->search($this->search)
+        $certificates = Certificate::with(['studentRecord', 'issuer', 'batch'])
+            ->when($this->batch !== '', fn ($q) => $q->where('batch_id', (int) $this->batch))
+            ->when($this->search !== '', fn ($q) => $q->where(function ($w) {
+                // Serial, name and number as before, plus the batch's name or reference.
+                $w->search($this->search)
+                  ->orWhereHas('batch', fn ($b) => $b
+                      ->where('reference', 'ilike', "%{$this->search}%")
+                      ->orWhere('label', 'ilike', "%{$this->search}%"));
+            }))
             ->ofType($this->type ?: null)
             ->when($this->status, fn ($q) => $q->where('status', $this->status))
             ->when($this->year, fn ($q) => $q->whereYear('issued_on', $this->year))
@@ -124,6 +136,7 @@ class CertificateTable extends Component
         return view('livewire.certificates.certificate-table', [
             'certificates' => $certificates,
             'integrity'    => $integrity,
+            'activeBatch'  => $this->batch !== '' ? CertificateBatch::find((int) $this->batch) : null,
             'types'        => Certificate::types(),
             'years'        => Certificate::selectRaw('EXTRACT(YEAR FROM issued_on) as y')
                 ->distinct()->orderByDesc('y')->pluck('y'),

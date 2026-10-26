@@ -5,7 +5,9 @@
 @section('content')
 <div class="auth-card">
     <div class="auth-head lockup">
-        <img src="{{ asset('images/celeste-logo.svg') }}" alt="" class="seal" onerror="this.style.display='none'">
+        <img src="{{ asset('images/celeste-logo-navy.svg') }}" alt="CELESTE" class="seal"
+             style="width:140px;height:140px;max-width:none;object-fit:contain;margin-bottom:.75rem"
+             onerror="this.onerror=null;this.src='{{ asset('images/celeste-logo.svg') }}'">
         <p class="university">{{ config('celeste.institution.name') }}</p>
         <p class="campus">{{ config('celeste.institution.campus') }}</p>
         <h1 class="system-name">CELESTE</h1>

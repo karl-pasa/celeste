@@ -13,9 +13,23 @@ class AnalyticsDashboard extends Component
 
     public string $resultFilter = '';
 
-    public function setPeriod(int $days): void
+    public function setPeriod(int $days, AnalyticsService $analytics): void
     {
         $this->days = in_array($days, [7, 30, 90], true) ? $days : 30;
+
+        // The charts live in wire:ignore blocks, so Livewire does not redraw
+        // them. Hand them the new numbers instead.
+        $this->dispatch('analytics-refresh', charts: $this->chartData($analytics));
+    }
+
+    protected function chartData(AnalyticsService $analytics): array
+    {
+        return [
+            'series' => $analytics->volumeSeries($this->days),
+            'byType' => collect($analytics->byDocumentType($this->days))
+                ->map(fn ($t) => ['label' => $t['label'], 'total' => $t['total']])
+                ->values()->all(),
+        ];
     }
 
     public function render(AnalyticsService $analytics)

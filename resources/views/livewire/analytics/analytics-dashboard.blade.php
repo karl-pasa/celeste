@@ -1,4 +1,4 @@
-<div wire:key="analytics-{{ $days }}">
+<div>
     {{-- The toggle is pinned to the right edge (margin-left:auto) and never
          shrinks or wraps its labels. Without that, the bold "active" label
          made "Last 30 days" break onto two lines and shifted the whole
@@ -49,14 +49,14 @@
         <div class="col-xl-8">
             <div class="card-celeste mb-3">
                 <div class="card-header">Verification volume</div>
-                <div class="p-3"><canvas id="analyticsVolume" height="105"></canvas></div>
+                <div class="p-3" wire:ignore><canvas id="analyticsVolume" height="105"></canvas></div>
             </div>
 
             <div class="row g-3 mb-3">
                 <div class="col-md-7">
                     <div class="card-celeste h-100">
                         <div class="card-header">Checks by document type</div>
-                        <div class="p-3"><canvas id="analyticsType" height="170"></canvas></div>
+                        <div class="p-3" wire:ignore><canvas id="analyticsType" height="170"></canvas></div>
                     </div>
                 </div>
                 <div class="col-md-5">
@@ -174,22 +174,24 @@
 
     @script
     <script>
-        const paint = () => {
+        const font = { family: 'Poppins', size: 11 };
+
+        const paint = (charts) => {
             ['analyticsVolume', 'analyticsType'].forEach(id => {
                 const existing = Chart.getChart(id);
                 if (existing) existing.destroy();
             });
 
-            const font = { family: 'Poppins', size: 11 };
+            const s = charts.series;
 
             new Chart(document.getElementById('analyticsVolume'), {
                 type: 'line',
                 data: {
-                    labels: @json($series['labels']),
+                    labels: s.labels,
                     datasets: [
-                        { label: 'Passed', data: @json($series['authentic']), borderColor: '#22a94a',
+                        { label: 'Passed', data: s.authentic, borderColor: '#22a94a',
                           backgroundColor: 'rgba(34,169,74,.12)', fill: true, tension: .35, borderWidth: 2, pointRadius: 0 },
-                        { label: 'Failed', data: @json($series['failed']), borderColor: '#c9354a',
+                        { label: 'Failed', data: s.failed, borderColor: '#c9354a',
                           backgroundColor: 'rgba(201,53,74,.1)', fill: true, tension: .35, borderWidth: 2, pointRadius: 0 },
                     ],
                 },
@@ -206,9 +208,9 @@
             new Chart(document.getElementById('analyticsType'), {
                 type: 'bar',
                 data: {
-                    labels: @json(collect($byType)->pluck('label')),
+                    labels: charts.byType.map(t => t.label),
                     datasets: [{
-                        data: @json(collect($byType)->pluck('total')),
+                        data: charts.byType.map(t => t.total),
                         backgroundColor: ['#12224f', '#24417f', '#1d6fd0', '#22a94a'],
                         borderRadius: 6, barThickness: 26,
                     }],
@@ -224,8 +226,9 @@
             });
         };
 
-        paint();
-        Livewire.hook('morph.updated', () => paint());
+        paint({ series: @json($series), byType: @json(collect($byType)->map(fn ($t) => ['label' => $t['label'], 'total' => $t['total']])->values()) });
+
+        $wire.on('analytics-refresh', ({ charts }) => paint(charts));
     </script>
     @endscript
 </div>

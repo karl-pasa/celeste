@@ -7,12 +7,11 @@ use App\Models\CertificateBatch;
 use App\Models\StudentRecord;
 use App\Services\CertificateGenerator;
 use Livewire\Component;
-use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
 class GenerateBatch extends Component
 {
-    use WithPagination, WithFileUploads;
+    use WithPagination;
 
     public string $documentType = Certificate::TYPE_DIPLOMA;
     public string $label = '';
@@ -20,111 +19,87 @@ class GenerateBatch extends Component
     public string $program = '';
     public string $yearLevel = '';
     public string $section = '';
-    public string $search = '';
 
-    /** @var array<int> */
-    public array $selected = [];
-    public bool $selectPage = false;
-
-    public $csv;
     public ?int $batchId = null;
 
-    public function mount(): void
-    {
-        $this->label = '';
-
-        // No status filter by default. Preselecting "graduated" quietly hid
-        // every enrolled student, which is wrong for a Certificate of
-        // Enrolment run and easy to miss.
-        $this->status = '';
-    }
-
-    public function updatedSelectPage(bool $value): void
-    {
-        $ids = $this->students->pluck('id')->all();
-
-        $this->selected = $value
-            ? array_values(array_unique(array_merge($this->selected, $ids)))
-            : array_values(array_diff($this->selected, $ids));
-    }
-
-    public function updating($field): void
-    {
-        if (in_array($field, ['college', 'program', 'status', 'search'], true)) {
-            $this->resetPage();
-            $this->selectPage = false;
-        }
-
-        // A program from the previous college would keep filtering the list
-        // after the college changed, showing nothing and looking broken.
-        if ($field === 'college') {
-            $this->program = '';
-        }
-    }
-
     /**
-     * Upload a CSV of student numbers to pre-select a cohort.
-     * One column, header optional.
+     * Once the registrar types a name of their own, the filters stop
+     * overwriting it. Clearing the box hands control back to the suggestion.
      */
-    public function importCsv(): void
+    public bool $labelEdited = false;
+
+    public function updatedLabel(): void
     {
-        $this->validate(['csv' => ['required', 'file', 'mimes:csv,txt', 'max:2048']]);
-
-        $rows = array_filter(array_map('trim', file($this->csv->getRealPath())));
-        $numbers = collect($rows)
-            ->map(fn ($row) => trim(explode(',', $row)[0], " \t\n\r\0\x0B\"'"))
-            ->reject(fn ($n) => $n === '' || strtolower($n) === 'student_number')
-            ->all();
-
-        $matched = StudentRecord::whereIn('student_number', $numbers)->pluck('id')->all();
-        $missing = count($numbers) - count($matched);
-
-        $this->selected = array_values(array_unique(array_merge($this->selected, $matched)));
-        $this->csv = null;
-
-        session()->flash(
-            'batch-import',
-            $missing > 0
-                ? count($matched) . ' records matched. ' . $missing . ' student numbers were not found.'
-                : count($matched) . ' records matched and selected.'
-        );
+        $this->labelEdited = trim($this->label) !== '';
     }
 
-    public function getStudentsProperty()
+    public function updatedCollege(): void
+    {
+        $this->program = '';
+        $this->yearLevel = '';
+        $this->section = '';
+        $this->suggestLabel();
+    }
+
+    public function updatedProgram(): void
+    {
+        $this->yearLevel = '';
+        $this->section = '';
+        $this->suggestLabel();
+    }
+
+    public function updatedYearLevel(): void
+    {
+        $this->section = '';
+        $this->suggestLabel();
+    }
+
+    public function updatedSection(): void
+    {
+        $this->suggestLabel();
+    }
+
+    /** Every student the current filters match. */
+    protected function studentQuery()
     {
         return StudentRecord::query()
             ->when($this->college, fn ($q) => $q->where('college', $this->college))
             ->when($this->program, fn ($q) => $q->where('program', $this->program))
             ->when($this->yearLevel !== '', fn ($q) => $q->where('year_level', $this->yearLevel))
-            ->when($this->section !== '', fn ($q) => $q->where('section', $this->section))
-            ->when($this->search, function ($q) {
-                $q->where(function ($s) {
-                    $s->where('last_name', 'ilike', "%{$this->search}%")
-                      ->orWhere('student_number', 'ilike', "%{$this->search}%");
-                });
-            })
-            ->orderBy('last_name')
-            ->paginate(10);
+            ->when($this->section !== '', fn ($q) => $q->where('section', $this->section));
+    }
+
+    public function getMatchCountProperty(): int
+    {
+        // Nothing is counted until a college is chosen, so the whole student
+        // body is never issued to by accident.
+        return $this->college === '' ? 0 : $this->studentQuery()->count();
     }
 
     public function generate(CertificateGenerator $generator): void
     {
-        $this->validate([
-            'selected'     => ['required', 'array', 'min:1'],
-            'label'        => ['required', 'string', 'max:120'],
-            'documentType' => ['required', 'in:' . implode(',', array_keys(Certificate::types()))],
-        ], ['selected.required' => 'Select at least one student record.']);
+        $this->label = trim($this->label);
 
-        $batch = $generator->issueBatch(
-            $this->selected,
-            $this->documentType,
-            auth()->user(),
-            $this->label,
-        );
+        $this->validate([
+            'label'        => ['required', 'string', 'max:120'],
+            'college'      => ['required', 'string'],
+            'documentType' => ['required', 'in:' . implode(',', array_keys(Certificate::types()))],
+        ], [
+            'label.required'   => 'Give the batch a name before generating.',
+            'college.required' => 'Choose at least a college so the batch has students.',
+        ]);
+
+        $ids = $this->studentQuery()->pluck('id')->all();
+
+        if ($ids === []) {
+            $this->addError('college', 'No student records match these filters.');
+            return;
+        }
+
+        $batch = $generator->issueBatch($ids, $this->documentType, auth()->user(), $this->label);
 
         $this->batchId = $batch->id;
-        $this->selected = [];
-        $this->selectPage = false;
+        $this->resetPage('history');
     }
 
     public function getBatchProperty(): ?CertificateBatch
@@ -132,34 +107,16 @@ class GenerateBatch extends Component
         return $this->batchId ? CertificateBatch::find($this->batchId) : null;
     }
 
-    /**
-     * The official college list, and only that.
-     *
-     * Sourced from config/celeste.php rather than from the records, so a
-     * college name left over in student_records -- an old title, or a
-     * spelling that arrived with an import -- cannot appear in the filter.
-     *
-     * Those students are still reachable: the search box on this page matches
-     * on name and student number regardless of college. Only the dropdown is
-     * restricted.
-     */
-    protected function collegeOptions()
+    public function getHistoryProperty()
     {
-        return collect(config('celeste.colleges', []))
-            ->filter()
-            ->values();
+        return CertificateBatch::query()->latest('id')->paginate(8, ['*'], 'history');
     }
 
-    /**
-     * Programs for the chosen college.
-     *
-     * Config first, so a program can be selected before any student carrying
-     * it has been imported. A college with no config entry falls back to the
-     * programs actually present in its records, which keeps an unlisted or
-     * newly added college usable without a code change.
-     *
-     * With no college chosen, every configured program is offered.
-     */
+    protected function collegeOptions()
+    {
+        return collect(config('celeste.colleges', []))->filter()->values();
+    }
+
     protected function programOptions()
     {
         $map = collect(config('celeste.programs', []));
@@ -179,59 +136,6 @@ class GenerateBatch extends Component
             ->distinct()
             ->orderBy('program')
             ->pluck('program');
-    }
-
-    public function render()
-    {
-        return view('livewire.certificates.generate-batch', [
-            'types'    => Certificate::types(),
-            'colleges' => $this->collegeOptions(),
-            'programs' => $this->programOptions(),
-            'yearLevels' => config('celeste.academics.year_levels', []),
-            'sections'   => config('celeste.academics.sections', []),
-        ]);
-    }
-    public function updatedCollege(): void
-    {
-        $this->program = '';
-        $this->yearLevel = '';
-        $this->section = '';
-        $this->afterFilterChange();
-    }
-
-    public function updatedProgram(): void
-    {
-        $this->yearLevel = '';
-        $this->section = '';
-        $this->afterFilterChange();
-    }
-
-    public function updatedYearLevel(): void
-    {
-        $this->section = '';
-        $this->afterFilterChange();
-    }
-
-    public function updatedSection(): void
-    {
-        $this->afterFilterChange();
-    }
-
-    protected function afterFilterChange(): void
-    {
-        $this->resetPage();
-        $this->selected = [];
-        $this->suggestLabel();
-    }
-        /**
-     * Once the registrar types a name of their own, the filters stop
-     * overwriting it. Clearing the box hands control back to the suggestion.
-     */
-    public bool $labelEdited = false;
-
-    public function updatedLabel(): void
-    {
-        $this->labelEdited = trim($this->label) !== '';
     }
 
     protected function suggestLabel(): void
@@ -255,5 +159,15 @@ class GenerateBatch extends Component
 
         return trim($this->yearLevel . ' ' . $this->section);
     }
-}
 
+    public function render()
+    {
+        return view('livewire.certificates.generate-batch', [
+            'types'      => Certificate::types(),
+            'colleges'   => $this->collegeOptions(),
+            'programs'   => $this->programOptions(),
+            'yearLevels' => config('celeste.academics.year_levels', []),
+            'sections'   => config('celeste.academics.sections', []),
+        ]);
+    }
+}

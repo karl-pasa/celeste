@@ -431,11 +431,19 @@ class StudentRecords extends Component
             : [...$this->closedColleges, $key];
     }
 
+    /**
+     * Accordion: opening a program closes whichever one was open, and the
+     * sections that were open under it. Closing the open one just closes it.
+     */
     public function toggleProgram(string $key): void
     {
-        $this->openPrograms = in_array($key, $this->openPrograms, true)
-            ? array_values(array_diff($this->openPrograms, [$key]))
-            : [...$this->openPrograms, $key];
+        if (in_array($key, $this->openPrograms, true)) {
+            $this->openPrograms = array_values(array_diff($this->openPrograms, [$key]));
+            return;
+        }
+
+        $this->openPrograms = [$key];
+        $this->openSections = [];
     }
 
     public function expandAll(): void

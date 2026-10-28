@@ -58,13 +58,21 @@
                                 <i class="bi bi-box-arrow-up-right"></i> Open full size
                             </a>
                         </div>
-                        <iframe src="{{ route('verify.preview', $certificate->verification_token) }}#toolbar=0&navpanes=0"
-                                title="Issued document {{ $certificate->serial_number }}"
-                                style="width:100%;height:560px;border:1px solid #e3e8f1;border-radius:.5rem;background:#f4f6fa"
-                                loading="lazy"></iframe>
+                        {{-- Drawn with PDF.js rather than a browser frame: phone
+                             browsers (Android Chrome, iOS Safari) will not show a
+                             PDF inside a frame and offer a bare "Open" button
+                             instead. Each page is painted onto a canvas, which
+                             works on every device. --}}
+                        <div id="pdfPages"
+                             data-src="{{ route('verify.preview', $certificate->verification_token) }}"
+                             style="max-height:70vh;overflow:auto;border:1px solid #e3e8f1;border-radius:.5rem;background:#f4f6fa;padding:.5rem">
+                            <p id="pdfStatus" class="text-muted-celeste text-center my-4" style="font-size:.8125rem">
+                                Loading document…
+                            </p>
+                        </div>
                         <p class="text-muted-celeste mt-2 mb-0" style="font-size:.75rem">
-                            Compare this with the copy you were given. If the preview does not
-                            appear on your phone, use “Open full size”.
+                            Compare this with the copy you were given. Use “Open full size”
+                            to see it larger.
                         </p>
                     </div>
                 @endif
@@ -97,4 +105,52 @@
         @endif
     </div>
 </div>
+
+@if ($result === 'authentic' && $certificate?->verification_token)
+<script>
+    (function () {
+        const box = document.getElementById('pdfPages');
+        if (!box) return;
+        const status = document.getElementById('pdfStatus');
+        const CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+
+        function fail() {
+            status.innerHTML = 'The preview could not be shown here. Use “Open full size” above.';
+        }
+
+        const s = document.createElement('script');
+        s.src = CDN + 'pdf.min.js';
+        s.onerror = fail;
+        s.onload = async function () {
+            try {
+                pdfjsLib.GlobalWorkerOptions.workerSrc = CDN + 'pdf.worker.min.js';
+                const pdf = await pdfjsLib.getDocument(box.dataset.src).promise;
+                status.remove();
+
+                const width = box.clientWidth - 18;
+                const ratio = window.devicePixelRatio || 1;
+
+                for (let n = 1; n <= pdf.numPages; n++) {
+                    const page = await pdf.getPage(n);
+                    const base = page.getViewport({ scale: 1 });
+                    const scale = width / base.width;
+                    const vp = page.getViewport({ scale: scale * ratio });
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = vp.width;
+                    canvas.height = vp.height;
+                    canvas.style.cssText = 'display:block;margin:0 auto .5rem;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.15);'
+                        + 'width:' + width + 'px;height:' + (vp.height / ratio) + 'px';
+                    box.appendChild(canvas);
+
+                    await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+                }
+            } catch (e) {
+                fail();
+            }
+        };
+        document.head.appendChild(s);
+    })();
+</script>
+@endif
 @endsection

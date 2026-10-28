@@ -46,6 +46,28 @@
                         @endif
                     </dl>
                 </div>
+                @if ($result === 'authentic' && $certificate->verification_token)
+                    {{-- Only shown for a document that checks out. The viewer
+                         is the issued file itself, so the verifier can compare
+                         it with the paper copy in their hands. --}}
+                    <div class="px-3 px-md-4 pb-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h6 class="mb-0" style="font-size:.875rem"><i class="bi bi-file-earmark-text"></i> Issued document</h6>
+                            <a href="{{ route('verify.preview', $certificate->verification_token) }}" target="_blank" rel="noopener"
+                               class="btn btn-sm btn-psu-outline">
+                                <i class="bi bi-box-arrow-up-right"></i> Open full size
+                            </a>
+                        </div>
+                        <iframe src="{{ route('verify.preview', $certificate->verification_token) }}#toolbar=0&navpanes=0"
+                                title="Issued document {{ $certificate->serial_number }}"
+                                style="width:100%;height:560px;border:1px solid #e3e8f1;border-radius:.5rem;background:#f4f6fa"
+                                loading="lazy"></iframe>
+                        <p class="text-muted-celeste mt-2 mb-0" style="font-size:.75rem">
+                            Compare this with the copy you were given. If the preview does not
+                            appear on your phone, use “Open full size”.
+                        </p>
+                    </div>
+                @endif
             @else
                 <div class="p-3 p-md-4">
                     <p class="text-muted-celeste mb-0" style="font-size:.875rem">

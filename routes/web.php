@@ -18,6 +18,9 @@ Route::get('/scan', [PublicVerificationController::class, 'scanner'])->name('ver
 Route::get('/verify/{token}', [PublicVerificationController::class, 'token'])
     ->middleware('throttle:60,1')
     ->name('verify.token');
+Route::get('/verify/{token}/preview', [PublicVerificationController::class, 'preview'])
+    ->middleware('throttle:60,1')
+    ->name('verify.preview');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

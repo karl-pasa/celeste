@@ -3,15 +3,6 @@
 @section('title', $certificate->serial_number)
 @section('subtitle', $certificate->type_label . ' · issued ' . $certificate->issued_on?->format('F j, Y'))
 
-@section('actions')
-    <a href="{{ route('certificates.print', $certificate) }}" target="_blank" class="btn btn-sm btn-psu-outline">
-        <i class="bi bi-printer"></i> Print
-    </a>
-    <a href="{{ route('certificates.download', $certificate) }}" class="btn btn-sm btn-psu">
-        <i class="bi bi-download"></i> Download
-    </a>
-@endsection
-
 @section('content')
 <div class="row g-3">
     <div class="col-lg-8">
@@ -105,12 +96,14 @@
                 <img src="{{ $qr }}" alt="QR code for {{ $certificate->serial_number }}" class="img-fluid mb-3" style="max-width:200px">
                 <p class="text-muted-celeste mb-2" style="font-size:.8125rem">This code is printed on the document.</p>
                 <div class="hash-chip d-block mb-3" style="word-break:break-all">{{ $certificate->verificationUrl() }}</div>
-                <a href="{{ $certificate->verificationUrl() }}" target="_blank" class="btn btn-psu-outline btn-sm w-100">
-                    <i class="bi bi-box-arrow-up-right"></i> Open the public result
-                </a>
-                <a href="{{ route('certificates.qr', $certificate) }}" download class="btn btn-psu-outline btn-sm w-100 mt-2">
-                    <i class="bi bi-download"></i> Download the QR image
-                </a>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('certificates.print', $certificate) }}" target="_blank" class="btn btn-psu-outline btn-sm flex-fill">
+                        <i class="bi bi-printer"></i> Print
+                    </a>
+                    <a href="{{ route('certificates.download', $certificate) }}" class="btn btn-psu btn-sm flex-fill">
+                        <i class="bi bi-download"></i> Download
+                    </a>
+                </div>
             </div>
         </div>
 

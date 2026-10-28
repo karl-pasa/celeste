@@ -414,18 +414,18 @@
                  the QR code and serial are what vouch for this copy. --}}
             <table style="margin-top:1.4mm">
                 <tr>
-                    <td style="width:15mm; vertical-align:top">
+                    <td style="width:31mm; vertical-align:top">
                         @if (!empty($qr))
-                            <img src="{{ $qr }}" style="width:14mm;height:14mm" alt="">
+                            <img src="{{ $qr }}" style="width:30mm;height:30mm" alt="">
                         @else
-                            <div style="width:14mm;height:14mm;border:.5pt dashed #999;font-size:5pt;color:#999;text-align:center">
-                                <div style="padding-top:5.5mm">QR</div>
+                            <div style="width:30mm;height:30mm;border:.5pt dashed #999;font-size:7pt;color:#999;text-align:center">
+                                <div style="padding-top:12mm">QR</div>
                             </div>
                         @endif
                     </td>
                     <td style="vertical-align:middle; padding-left:1.5mm">
-                        <div style="font-family:'Courier',monospace; font-size:6.4pt">{{ $certificate->serial_number }}</div>
-                        <div style="font-size:5.8pt; color:#444; padding-top:.6mm">Scan to verify</div>
+                        <div style="font-family:'Courier',monospace; font-size:7.4pt">{{ $certificate->serial_number }}</div>
+                        <div style="font-size:6.6pt; color:#444; padding-top:.8mm">Scan to verify</div>
                     </td>
                 </tr>
             </table>

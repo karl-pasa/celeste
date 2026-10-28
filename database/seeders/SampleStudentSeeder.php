@@ -6,16 +6,15 @@ use App\Models\StudentRecord;
 use Illuminate\Database\Seeder;
 
 /**
- * Adds 10 sample students to every program that has a program of study
- * loaded (a CSV in database/data/curriculum named after the program's code).
+ * Sample students for every program that has a program of study loaded
+ * (a CSV in database/data/curriculum named after the program's code).
  *
- * College, program, year levels and sections are read from config/celeste.php,
- * so every value matches the dropdowns exactly.
+ * Per program: 4 year levels x 5 sections x 10 students = 200 students,
+ * all enrolled, with every field the documents print. College, program,
+ * year levels and sections come from config/celeste.php, so each value
+ * matches the dropdowns exactly.
  *
- * Per program: 6 enrolled students spread over the year levels (enrolment
- * certificate) and 4 graduated students with full graduation data (diploma,
- * transcript, honorable dismissal). Safe to run again: students are matched
- * on student_number, so nothing is duplicated.
+ * Safe to run again: rows are matched on student_number.
  *
  *   php artisan db:seed --class=SampleStudentSeeder
  */
@@ -37,11 +36,19 @@ class SampleStudentSeeder extends Seeder
 
     public function run(): void
     {
-        $years    = array_values(config('celeste.academics.year_levels', ['1st Year', '2nd Year', '3rd Year', '4th Year']));
-        $sections = array_values(config('celeste.academics.sections', ['A', 'B']));
-        $codes    = config('celeste.program_codes', []);
-        $seq      = 0;
-        $made     = 0;
+        $years = array_slice(array_values(
+            config('celeste.academics.year_levels', ['1st Year', '2nd Year', '3rd Year', '4th Year'])), 0, 4);
+
+        $sections = array_slice(array_values(
+            config('celeste.academics.sections', [])), 0, 5);
+        if (count($sections) < 5) {
+            $sections = ['A', 'B', 'C', 'D', 'E'];
+        }
+
+        $codes = config('celeste.program_codes', []);
+        $now   = now()->toDateTimeString();
+        $rows  = [];
+        $n     = 0;
 
         foreach (config('celeste.programs', []) as $college => $programs) {
             foreach ($programs as $program) {
@@ -51,48 +58,47 @@ class SampleStudentSeeder extends Seeder
                     continue;   // no program of study loaded for this one
                 }
 
-                for ($i = 0; $i < 10; $i++) {
-                    $seq++;
-                    $this->student($seq, $i, $college, $program, $code, $years, $sections);
-                    $made++;
+                foreach ($years as $yearIdx => $yearLevel) {
+                    foreach ($sections as $section) {
+                        for ($k = 0; $k < 10; $k++) {
+                            $n++;
+                            $rows[] = $this->student($n, $college, $program, $yearIdx, $yearLevel, $section)
+                                + ['created_at' => $now, 'updated_at' => $now];
+                        }
+                    }
                 }
             }
         }
 
-        $this->command?->info("{$made} sample students added or refreshed.");
+        // One upsert per 200 rows instead of one query per student: the
+        // database is remote, and thousands of single inserts would crawl.
+        foreach (array_chunk($rows, 200) as $chunk) {
+            StudentRecord::upsert(
+                $chunk,
+                ['student_number'],
+                array_values(array_diff(array_keys($chunk[0]), ['student_number', 'created_at'])),
+            );
+        }
+
+        $this->command?->info(count($rows) . ' sample students added or refreshed.');
     }
 
-    private function student(int $n, int $i, string $college, string $program, string $code,
-                             array $years, array $sections): void
+    private function student(int $n, string $college, string $program,
+                             int $yearIdx, string $yearLevel, string $section): array
     {
         $female   = $n % 2 === 0;
         $first    = ($female ? self::FEMALE : self::MALE)[intdiv($n, 2) % 20];
-        $last     = self::SURNAMES[($n * 7) % count(self::SURNAMES)];
-        $middle   = self::MIDDLE[($n * 3) % count(self::MIDDLE)];
+        $last     = self::SURNAMES[($n * 7 + intdiv($n, 20)) % count(self::SURNAMES)];
+        $middle   = self::MIDDLE[($n * 3 + intdiv($n, 50)) % count(self::MIDDLE)];
         [$city, $barangays, $zip] = self::PLACES[$n % count(self::PLACES)];
         $barangay = $barangays[$n % count($barangays)];
 
-        // 0-5 enrolled across year levels, 6-9 graduated
-        $graduated = $i >= 6;
-        $yearIdx   = $graduated ? 3 : [0, 0, 1, 1, 2, 3][$i];
-        $yearLevel = $years[min($yearIdx, count($years) - 1)] ?? '1st Year';
-        $section   = $sections[$n % count($sections)] ?? null;
-
-        // Entry year: enrolled students by year level, graduates in 2022
-        $entry = $graduated ? 2022 : 2026 - $yearIdx;
-        $studentNumber = sprintf('%d-%05d', $entry, 100 + $n);
+        // Entry year follows the year level: 1st year entered in 2026, 4th in 2023.
+        $entry = 2026 - $yearIdx;
+        $studentNumber = sprintf('%d-%05d', $entry, $n);
 
         $birth = sprintf('%d-%02d-%02d', $entry - 18 - ($n % 3), 1 + $n % 12, 1 + ($n * 5) % 27);
         $admitted = $entry . '-08-' . sprintf('%02d', 8 + $n % 10);
-
-        $gwa = round(1.15 + (($n * 13) % 60) / 100, 3);       // 1.15 - 1.74
-        $honor = match (true) {
-            ! $graduated => null,
-            $gwa <= 1.25 => 'Summa Cum Laude',
-            $gwa <= 1.45 => 'Magna Cum Laude',
-            $gwa <= 1.75 => 'Cum Laude',
-            default      => null,
-        };
 
         $slug  = strtolower(preg_replace('/[^a-z]/i', '', $first . $last));
         $email = substr($slug, 0, 14) . sprintf('%03d', $n) . '.pbox@parsu.edu.ph';
@@ -123,9 +129,9 @@ class SampleStudentSeeder extends Seeder
             'major'         => null,
             'year_level'    => $yearLevel,
             'section'       => $section,
-            'academic_year' => $graduated ? '2025-2026' : '2026-2027',
-            'semester'      => $graduated ? '2nd Semester' : '1st Semester',
-            'status'        => $graduated ? 'graduated' : 'enrolled',
+            'academic_year' => '2026-2027',
+            'semester'      => '1st Semester',
+            'status'        => 'enrolled',
 
             'admission_type'         => 'New',
             'date_admitted'          => $admitted,
@@ -140,25 +146,15 @@ class SampleStudentSeeder extends Seeder
             'remarks'               => null,
         ];
 
-        if ($graduated) {
-            $data += [
-                'date_graduated'           => '2026-06-12',
-                'date_conferred'           => '2026-07-18',
-                'board_resolution_no'      => 'BOR Res. No. ' . (30 + $n % 20) . ', s. 2026',
-                'board_resolution_date'    => '2026-06-26',
-                'latin_honor'              => $honor,
-                'awards'                   => $honor ? "Academic Excellence Awardee" : null,
-                'general_weighted_average' => $gwa,
-            ];
-        } else {
-            $data += [
-                'date_graduated' => null, 'date_conferred' => null,
-                'board_resolution_no' => null, 'board_resolution_date' => null,
-                'latin_honor' => null, 'awards' => null,
-                'general_weighted_average' => null,
-            ];
-        }
+        // Graduation fields stay empty for students still enrolled. They are
+        // listed so every row has the same columns, which upsert requires.
+        $data += [
+            'date_graduated' => null, 'date_conferred' => null,
+            'board_resolution_no' => null, 'board_resolution_date' => null,
+            'latin_honor' => null, 'awards' => null,
+            'general_weighted_average' => null,
+        ];
 
-        StudentRecord::updateOrCreate(['student_number' => $studentNumber], $data);
+        return ['student_number' => $studentNumber] + $data;
     }
 }

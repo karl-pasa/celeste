@@ -76,10 +76,7 @@
                             Issued
                             @if ($sort === 'issued_on') <i class="bi bi-caret-{{ $direction === 'asc' ? 'up' : 'down' }}-fill"></i> @endif
                         </th>
-                        <th role="button" wire:click="sortBy('created_at')">
-                            Time
-                            @if ($sort === 'created_at') <i class="bi bi-caret-{{ $direction === 'asc' ? 'up' : 'down' }}-fill"></i> @endif
-                        </th>
+                        <th>Time</th>
                         <th role="button" wire:click="sortBy('verification_count')">Checks</th>
                         <th>Status</th>
                         <th class="text-end">Actions</th>

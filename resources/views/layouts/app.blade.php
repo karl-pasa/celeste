@@ -97,8 +97,16 @@
                     <p class="page-sub">@yield('subtitle', '')</p>
                 </div>
             </div>
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-3">
                 @yield('actions')
+
+                {{-- Live date and time, Philippine time, on every page. The
+                     server renders the first value so nothing flashes blank;
+                     the script at the bottom updates it every second. --}}
+                <div class="text-end lh-sm d-none d-sm-block">
+                    <div id="clockTime" class="fw-semibold" style="font-size:1.05rem">{{ now('Asia/Manila')->format('g:i:s A') }}</div>
+                    <div id="clockDate" class="text-muted-celeste" style="font-size:.75rem">{{ now('Asia/Manila')->format('l, F j, Y') }}</div>
+                </div>
             </div>
         </header>
 
@@ -118,6 +126,26 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
 @livewireScripts
+<script>
+    (function () {
+        const time = document.getElementById('clockTime');
+        const date = document.getElementById('clockDate');
+        if (!time || !date) return;
+        const timeFmt = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'Asia/Manila', hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true,
+        });
+        const dateFmt = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'Asia/Manila', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+        });
+        function tick() {
+            const now = new Date();
+            time.textContent = timeFmt.format(now);
+            date.textContent = dateFmt.format(now);
+        }
+        tick();
+        setInterval(tick, 1000);
+    })();
+</script>
 @stack('scripts')
 </body>
 </html>

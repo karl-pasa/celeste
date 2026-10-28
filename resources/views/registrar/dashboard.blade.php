@@ -3,16 +3,6 @@
 @section('title', 'Dashboard')
 @section('subtitle', 'Office of the University Registrar · ' . config('celeste.institution.short'))
 
-@section('actions')
-    {{-- Live date and time in Philippine time. The first value is rendered
-         by the server so there is no blank flash; the script below then
-         updates it every second. --}}
-    <div class="text-end lh-sm">
-        <div id="clockTime" class="fw-semibold" style="font-size:1.05rem">{{ now('Asia/Manila')->format('g:i:s A') }}</div>
-        <div id="clockDate" class="text-muted-celeste" style="font-size:.75rem">{{ now('Asia/Manila')->format('l, F j, Y') }}</div>
-    </div>
-@endsection
-
 @section('content')
 <div class="row g-3 mb-3">
     @foreach ([
@@ -145,25 +135,6 @@
 @endsection
 
 @push('scripts')
-<script>
-    (function () {
-        const time = document.getElementById('clockTime');
-        const date = document.getElementById('clockDate');
-        const timeFmt = new Intl.DateTimeFormat('en-US', {
-            timeZone: 'Asia/Manila', hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true,
-        });
-        const dateFmt = new Intl.DateTimeFormat('en-US', {
-            timeZone: 'Asia/Manila', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-        });
-        function tick() {
-            const now = new Date();
-            if (time) time.textContent = timeFmt.format(now);
-            if (date) date.textContent = dateFmt.format(now);
-        }
-        tick();
-        setInterval(tick, 1000);
-    })();
-</script>
 <script>
     const ctx = document.getElementById('volumeChart');
     new Chart(ctx, {

@@ -21,7 +21,14 @@ class GenerateBatch extends Component
     public string $section = '';
     public string $search = '';
 
-    /** @var array<int> */
+    /**
+     * Student ids as STRINGS. A checkbox's value in the browser is always a
+     * string, and Livewire only draws the tick when the value is found in
+     * this array with the same type -- integers here left the box empty
+     * even though the "N selected" count went up.
+     *
+     * @var array<int, string>
+     */
     public array $selected = [];
     public bool $selectPage = false;
 
@@ -35,7 +42,7 @@ class GenerateBatch extends Component
 
     public function updatedSelectPage(bool $value): void
     {
-        $ids = $this->students->pluck('id')->all();
+        $ids = $this->students->pluck('id')->map(fn ($id) => (string) $id)->all();
 
         $this->selected = $value
             ? array_values(array_unique(array_merge($this->selected, $ids)))
@@ -118,7 +125,7 @@ class GenerateBatch extends Component
         ]);
 
         $batch = $generator->issueBatch(
-            $this->selected,
+            array_map('intval', $this->selected),
             $this->documentType,
             auth()->user(),
             $this->label,

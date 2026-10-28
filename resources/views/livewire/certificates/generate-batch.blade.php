@@ -134,7 +134,8 @@
                                 <tr wire:key="student-{{ $record->id }}">
                                     <td>
                                         <input type="checkbox" class="form-check-input" value="{{ $record->id }}"
-                                               wire:model.live="selected" aria-label="Select {{ $record->full_name }}">
+                                               wire:model.live="selected" aria-label="Select {{ $record->full_name }}"
+                                               @checked(in_array((string) $record->id, $selected, true))>
                                     </td>
                                     <td>{{ $record->full_name }}</td>
                                     <td class="serial">{{ $record->student_number }}</td>

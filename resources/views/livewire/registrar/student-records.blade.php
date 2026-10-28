@@ -185,7 +185,7 @@
             </div>
         @endif
 
-        {{-- Grouped College -> Program. Open/closed state lives in component
+        {{-- Grouped College -> Program -> Year/Section. Open/closed state lives in component
              properties, so it works without Alpine. While a search is
              active every program is opened so the matches are visible. --}}
         @php
@@ -240,51 +240,62 @@
                             </button>
 
                             @if ($programOpen)
-                                <div class="table-responsive">
-                                    <table class="table table-celeste mb-0">
-                                        <thead>
-                                            <tr>
-                                                <th>Student</th>
-                                                <th>Number</th>
-                                                <th>Year / Section</th>
-                                                <th>Status</th>
-                                                <th>Documents</th>
-                                                <th class="text-end"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($program['students'] as $record)
-                                                <tr wire:key="student-{{ $record->id }}">
-                                                    <td>{{ $record->full_name }}</td>
-                                                    <td class="serial">{{ $record->student_number }}</td>
-                                                    <td class="text-muted-celeste">
-                                                        {{ $record->year_level ?: '—' }}@if ($record->section) / {{ $record->section }}@endif
-                                                    </td>
-                                                    <td>
-                                                        <span class="badge-celeste badge-type text-capitalize">{{ $record->status }}</span>
-                                                    </td>
-                                                    <td>{{ $record->certificates_count }}</td>
-                                                    <td class="text-end text-nowrap">
-                                                        @if ($pendingDeleteId === $record->id)
-                                                            {{-- The confirmation replaces the buttons in place,
-                                                                 so the row being deleted is the row being read. --}}
-                                                            <span class="small me-2">Delete this record?</span>
-                                                            <button type="button" class="btn btn-sm btn-danger"
-                                                                    wire:click="delete">Yes, delete</button>
-                                                            <button type="button" class="btn btn-sm btn-light"
-                                                                    wire:click="cancelDelete">Cancel</button>
-                                                        @else
-                                                            <button type="button" class="btn btn-sm btn-psu-outline"
-                                                                    wire:click="edit({{ $record->id }})">
-                                                                <i class="bi bi-pencil"></i> Edit
-                                                            </button>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
+                                @foreach ($program['sections'] as $section)
+                                    @php $sectionOpen = ! in_array($section['key'], $closedSections, true); @endphp
+
+                                    <div class="border-top" wire:key="section-{{ $section['key'] }}">
+                                        <button type="button"
+                                                class="w-100 border-0 bg-transparent d-flex align-items-center gap-2 py-2 px-3 text-start"
+                                                style="padding-left:3rem !important"
+                                                wire:click="toggleSection('{{ $section['key'] }}')">
+                                            <i class="bi {{ $sectionOpen ? 'bi-chevron-down' : 'bi-chevron-right' }} small"></i>
+                                            <span class="flex-grow-1 small fw-semibold">{{ $section['name'] }}</span>
+                                            <span class="badge-celeste badge-type">{{ $section['count'] }}</span>
+                                        </button>
+
+                                        @if ($sectionOpen)
+                                            <div class="table-responsive">
+                                                <table class="table table-celeste mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Student</th>
+                                                            <th>Number</th>
+                                                            <th>Status</th>
+                                                            <th>Documents</th>
+                                                            <th class="text-end"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($section['students'] as $record)
+                                                            <tr wire:key="student-{{ $record->id }}">
+                                                                <td>{{ $record->full_name }}</td>
+                                                                <td class="serial">{{ $record->student_number }}</td>
+                                                                <td>
+                                                                    <span class="badge-celeste badge-type text-capitalize">{{ $record->status }}</span>
+                                                                </td>
+                                                                <td>{{ $record->certificates_count }}</td>
+                                                                <td class="text-end text-nowrap">
+                                                                    @if ($pendingDeleteId === $record->id)
+                                                                        <span class="small me-2">Delete this record?</span>
+                                                                        <button type="button" class="btn btn-sm btn-danger"
+                                                                                wire:click="delete">Yes, delete</button>
+                                                                        <button type="button" class="btn btn-sm btn-light"
+                                                                                wire:click="cancelDelete">Cancel</button>
+                                                                    @else
+                                                                        <button type="button" class="btn btn-sm btn-psu-outline"
+                                                                                wire:click="edit({{ $record->id }})">
+                                                                            <i class="bi bi-pencil"></i> Edit
+                                                                        </button>
+                                                                    @endif
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
                             @endif
                         </div>
                     @endforeach

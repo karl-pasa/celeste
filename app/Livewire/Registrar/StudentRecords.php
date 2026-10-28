@@ -340,11 +340,44 @@ class StudentRecords extends Component
             $programs = [];
             foreach ($programNames as $programName) {
                 $students = $byProgram[$programName];
+
+                // Third level: year level + section, e.g. "1st Year - A".
+                // Year levels and sections follow the config order too.
+                $bySection = $students->groupBy(fn ($r) => json_encode([
+                    trim((string) $r->year_level),
+                    trim((string) $r->section),
+                ]));
+
+                $yearOrder    = array_flip(array_values($this->yearLevels()));
+                $sectionOrder = array_flip(array_values($this->sections()));
+
+                $sectionKeys = $bySection->keys()->map(fn ($k) => (string) $k)->all();
+                usort($sectionKeys, function ($a, $b) use ($yearOrder, $sectionOrder) {
+                    [$ya, $sa] = json_decode($a, true);
+                    [$yb, $sb] = json_decode($b, true);
+                    return [$yearOrder[$ya] ?? PHP_INT_MAX, $ya, $sectionOrder[$sa] ?? PHP_INT_MAX, $sa]
+                       <=> [$yearOrder[$yb] ?? PHP_INT_MAX, $yb, $sectionOrder[$sb] ?? PHP_INT_MAX, $sb];
+                });
+
+                $sections = [];
+                foreach ($sectionKeys as $sk) {
+                    [$year, $sec] = json_decode($sk, true);
+                    $label = trim(($year !== '' ? $year : 'No year level')
+                        . ($sec !== '' ? ' - Section ' . $sec : ' - No section'));
+                    $inSection = $bySection[$sk];
+                    $sections[] = [
+                        'key'      => md5($collegeName . '|' . $programName . '|' . $sk),
+                        'name'     => $label,
+                        'count'    => $inSection->count(),
+                        'students' => $inSection,
+                    ];
+                }
+
                 $programs[] = [
                     'key'      => md5($collegeName . '|' . $programName),
                     'name'     => $programName,
                     'count'    => $students->count(),
-                    'students' => $students,
+                    'sections' => $sections,
                 ];
             }
 
@@ -381,6 +414,16 @@ class StudentRecords extends Component
     /** @var array<int, string> keys of programs the user has opened */
     public array $openPrograms = [];
 
+    /** @var array<int, string> keys of sections the user has collapsed */
+    public array $closedSections = [];
+
+    public function toggleSection(string $key): void
+    {
+        $this->closedSections = in_array($key, $this->closedSections, true)
+            ? array_values(array_diff($this->closedSections, [$key]))
+            : [...$this->closedSections, $key];
+    }
+
     public function toggleCollege(string $key): void
     {
         $this->closedColleges = in_array($key, $this->closedColleges, true)
@@ -398,6 +441,7 @@ class StudentRecords extends Component
     public function expandAll(): void
     {
         $this->closedColleges = [];
+        $this->closedSections = [];
         $this->openPrograms = collect($this->groups)
             ->flatMap(fn ($c) => collect($c['programs'])->pluck('key'))
             ->all();

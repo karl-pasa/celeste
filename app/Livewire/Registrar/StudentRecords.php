@@ -414,14 +414,14 @@ class StudentRecords extends Component
     /** @var array<int, string> keys of programs the user has opened */
     public array $openPrograms = [];
 
-    /** @var array<int, string> keys of sections the user has collapsed */
-    public array $closedSections = [];
+    /** @var array<int, string> keys of sections the user has opened */
+    public array $openSections = [];
 
     public function toggleSection(string $key): void
     {
-        $this->closedSections = in_array($key, $this->closedSections, true)
-            ? array_values(array_diff($this->closedSections, [$key]))
-            : [...$this->closedSections, $key];
+        $this->openSections = in_array($key, $this->openSections, true)
+            ? array_values(array_diff($this->openSections, [$key]))
+            : [...$this->openSections, $key];
     }
 
     public function toggleCollege(string $key): void
@@ -441,9 +441,12 @@ class StudentRecords extends Component
     public function expandAll(): void
     {
         $this->closedColleges = [];
-        $this->closedSections = [];
-        $this->openPrograms = collect($this->groups)
-            ->flatMap(fn ($c) => collect($c['programs'])->pluck('key'))
+
+        $programs = collect($this->groups)->flatMap(fn ($c) => $c['programs']);
+
+        $this->openPrograms = $programs->pluck('key')->all();
+        $this->openSections = $programs
+            ->flatMap(fn ($p) => collect($p['sections'])->pluck('key'))
             ->all();
     }
 
@@ -451,6 +454,7 @@ class StudentRecords extends Component
     {
         $this->closedColleges = collect($this->groups)->pluck('key')->all();
         $this->openPrograms = [];
+        $this->openSections = [];
     }
 
     /**

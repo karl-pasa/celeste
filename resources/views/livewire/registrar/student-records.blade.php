@@ -241,7 +241,7 @@
 
                             @if ($programOpen)
                                 @foreach ($program['sections'] as $section)
-                                    @php $sectionOpen = ! in_array($section['key'], $closedSections, true); @endphp
+                                    @php $sectionOpen = $searching || in_array($section['key'], $openSections, true); @endphp
 
                                     <div class="border-top" wire:key="section-{{ $section['key'] }}">
                                         <button type="button"

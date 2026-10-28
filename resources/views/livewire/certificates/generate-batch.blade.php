@@ -102,6 +102,17 @@
         </div>
 
         <div class="col-xl-8">
+          {{-- Nothing is listed until a college is chosen in Batch settings;
+               after that the list follows college, program, year level and section. --}}
+          @if ($college === '')
+            <div class="card-celeste">
+                <div class="empty">
+                    <div class="empty-icon"><i class="bi bi-funnel"></i></div>
+                    <h6>No students to show yet</h6>
+                    <p>Choose a college in Batch settings to list its students.</p>
+                </div>
+            </div>
+          @else
             <div class="card-celeste">
                 <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <span>Student records</span>
@@ -171,6 +182,7 @@
                     <div class="px-3 pb-3 text-muted-celeste" style="font-size:.75rem">Enter a batch name to enable Generate.</div>
                 @endif
             </div>
+          @endif
         </div>
     </div>
 

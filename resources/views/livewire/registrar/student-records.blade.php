@@ -185,74 +185,125 @@
             </div>
         @endif
 
-        <div class="card-celeste">
-            <div class="table-responsive">
-                <table class="table table-celeste">
-                    <thead>
-                        <tr>
-                            <th>Student</th>
-                            <th>Number</th>
-                            <th>College</th>
-                            <th>Program</th>
-                            <th>Year / Section</th>
-                            <th>Status</th>
-                            <th>Documents</th>
-                            <th class="text-end"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($this->records as $record)
-                            <tr wire:key="student-{{ $record->id }}">
-                                <td>{{ $record->full_name }}</td>
-                                <td class="serial">{{ $record->student_number }}</td>
-                                <td class="text-muted-celeste">{{ $record->college }}</td>
-                                <td class="text-muted-celeste">{{ $record->program }}</td>
-                                <td class="text-muted-celeste">
-                                    {{ $record->year_level ?: '—' }}@if ($record->section) / {{ $record->section }}@endif
-                                </td>
-                                <td>
-                                    <span class="badge-celeste badge-type text-capitalize">{{ $record->status }}</span>
-                                </td>
-                                <td>{{ $record->certificates_count }}</td>
-                                <td class="text-end text-nowrap">
-                                    @if ($pendingDeleteId === $record->id)
-                                        {{-- The confirmation replaces the buttons in place,
-                                             so the row being deleted is the row being read. --}}
-                                        <span class="small me-2">Delete this record?</span>
-                                        <button type="button" class="btn btn-sm btn-danger"
-                                                wire:click="delete">Yes, delete</button>
-                                        <button type="button" class="btn btn-sm btn-light"
-                                                wire:click="cancelDelete">Cancel</button>
-                                    @else
-                                        <button type="button" class="btn btn-sm btn-psu-outline"
-                                                wire:click="edit({{ $record->id }})">
-                                            <i class="bi bi-pencil"></i> Edit
-                                        </button>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="8">
-                                <div class="empty">
-                                    <div class="empty-icon"><i class="bi bi-people"></i></div>
-                                    @if (strlen(trim($search)) >= 2 || $statusFilter !== '')
-                                        <h6>No record matches your search</h6>
-                                        <p>Try a different student number or last name.</p>
-                                    @else
-                                        <h6>No student records yet</h6>
-                                        <p>Use Add student to create the first one.</p>
-                                    @endif
-                                </div>
-                            </td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        {{-- Grouped College -> Program. Open/closed state lives in component
+             properties, so it works without Alpine. While a search is
+             active every program is opened so the matches are visible. --}}
+        @php
+            $groups    = $this->groups;
+            $searching = strlen(trim($search)) >= 2;
+            $total     = collect($groups)->sum('count');
+        @endphp
 
-        <div class="mt-3">
-            {{ $this->records->links('pagination::bootstrap-5') }}
-        </div>
+        @if ($total > 0)
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                <div class="small text-muted-celeste">
+                    {{ $total }} {{ Str::plural('student', $total) }}
+                    in {{ count($groups) }} {{ Str::plural('college', count($groups)) }}
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-light" wire:click="expandAll">
+                        <i class="bi bi-arrows-expand"></i> Expand all
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light" wire:click="collapseAll">
+                        <i class="bi bi-arrows-collapse"></i> Collapse all
+                    </button>
+                </div>
+            </div>
+        @endif
+
+        @forelse ($groups as $college)
+            @php $collegeOpen = ! in_array($college['key'], $closedColleges, true); @endphp
+
+            <div class="card-celeste mb-3" wire:key="college-{{ $college['key'] }}">
+                <button type="button"
+                        class="w-100 border-0 bg-transparent d-flex align-items-center gap-2 p-3 text-start"
+                        wire:click="toggleCollege('{{ $college['key'] }}')">
+                    <i class="bi {{ $collegeOpen ? 'bi-chevron-down' : 'bi-chevron-right' }}"></i>
+                    <span class="fw-bold flex-grow-1">{{ $college['name'] }}</span>
+                    <span class="small text-muted-celeste">
+                        {{ count($college['programs']) }} {{ Str::plural('program', count($college['programs'])) }}
+                    </span>
+                    <span class="badge-celeste badge-type">{{ $college['count'] }}</span>
+                </button>
+
+                @if ($collegeOpen)
+                    @foreach ($college['programs'] as $program)
+                        @php $programOpen = $searching || in_array($program['key'], $openPrograms, true); @endphp
+
+                        <div class="border-top" wire:key="program-{{ $program['key'] }}">
+                            <button type="button"
+                                    class="w-100 border-0 bg-transparent d-flex align-items-center gap-2 py-2 px-3 ps-4 text-start"
+                                    wire:click="toggleProgram('{{ $program['key'] }}')">
+                                <i class="bi {{ $programOpen ? 'bi-chevron-down' : 'bi-chevron-right' }} small"></i>
+                                <span class="flex-grow-1">{{ $program['name'] }}</span>
+                                <span class="badge-celeste badge-type">{{ $program['count'] }}</span>
+                            </button>
+
+                            @if ($programOpen)
+                                <div class="table-responsive">
+                                    <table class="table table-celeste mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Student</th>
+                                                <th>Number</th>
+                                                <th>Year / Section</th>
+                                                <th>Status</th>
+                                                <th>Documents</th>
+                                                <th class="text-end"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($program['students'] as $record)
+                                                <tr wire:key="student-{{ $record->id }}">
+                                                    <td>{{ $record->full_name }}</td>
+                                                    <td class="serial">{{ $record->student_number }}</td>
+                                                    <td class="text-muted-celeste">
+                                                        {{ $record->year_level ?: '—' }}@if ($record->section) / {{ $record->section }}@endif
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge-celeste badge-type text-capitalize">{{ $record->status }}</span>
+                                                    </td>
+                                                    <td>{{ $record->certificates_count }}</td>
+                                                    <td class="text-end text-nowrap">
+                                                        @if ($pendingDeleteId === $record->id)
+                                                            {{-- The confirmation replaces the buttons in place,
+                                                                 so the row being deleted is the row being read. --}}
+                                                            <span class="small me-2">Delete this record?</span>
+                                                            <button type="button" class="btn btn-sm btn-danger"
+                                                                    wire:click="delete">Yes, delete</button>
+                                                            <button type="button" class="btn btn-sm btn-light"
+                                                                    wire:click="cancelDelete">Cancel</button>
+                                                        @else
+                                                            <button type="button" class="btn btn-sm btn-psu-outline"
+                                                                    wire:click="edit({{ $record->id }})">
+                                                                <i class="bi bi-pencil"></i> Edit
+                                                            </button>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                @endif
+            </div>
+        @empty
+            <div class="card-celeste">
+                <div class="empty">
+                    <div class="empty-icon"><i class="bi bi-people"></i></div>
+                    @if (strlen(trim($search)) >= 2 || $statusFilter !== '')
+                        <h6>No record matches your search</h6>
+                        <p>Try a different student number or last name.</p>
+                    @else
+                        <h6>No student records yet</h6>
+                        <p>Use Add student to create the first one.</p>
+                    @endif
+                </div>
+            </div>
+        @endforelse
 
     @else
 

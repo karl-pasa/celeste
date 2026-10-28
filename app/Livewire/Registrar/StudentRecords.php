@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Validator;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Livewire\WithPagination;
 
 /**
  * Student Records — add, edit and remove the records documents are drawn from.
@@ -22,7 +21,6 @@ use Livewire\WithPagination;
  */
 class StudentRecords extends Component
 {
-    use WithPagination;
     use WithFileUploads;
 
     public string $search = '';
@@ -280,14 +278,21 @@ class StudentRecords extends Component
     // ------------------------------------------------------------------
 
     /**
-     * Only the columns the table renders are selected. The record carries
-     * forty odd fields and none of the rest appear here, so fetching them
-     * costs round trips for nothing.
+     * Records grouped College -> Program, ready for the list.
+     *
+     * Not paginated: a page of 15 cut across groups would split a program
+     * over several pages. Only the columns the table renders are selected,
+     * so loading every matching row stays cheap. Colleges and programs
+     * follow the order in config/celeste.php; anything not in the config
+     * (an old or misspelt value) is listed after, alphabetically, rather
+     * than hidden.
+     *
+     * @return array<int, array{key:string,name:string,count:int,programs:array}>
      */
     #[Computed]
-    public function records()
+    public function groups(): array
     {
-        return StudentRecord::query()
+        $rows = StudentRecord::query()
             ->select([
                 'id', 'student_number', 'first_name', 'middle_name',
                 'last_name', 'suffix', 'college', 'program',
@@ -307,7 +312,101 @@ class StudentRecords extends Component
             })
             ->orderBy('last_name')
             ->orderBy('first_name')
-            ->paginate(15);
+            ->get();
+
+        $byCollege = $rows->groupBy(
+            fn ($r) => trim((string) $r->college) !== '' ? trim((string) $r->college) : 'No college'
+        );
+
+        $collegeNames = $this->orderedByConfig(
+            $byCollege->keys()->map(fn ($k) => (string) $k)->all(),
+            $this->colleges(),
+        );
+
+        $out = [];
+
+        foreach ($collegeNames as $collegeName) {
+            $inCollege = $byCollege[$collegeName];
+
+            $byProgram = $inCollege->groupBy(
+                fn ($r) => trim((string) $r->program) !== '' ? trim((string) $r->program) : 'No program'
+            );
+
+            $programNames = $this->orderedByConfig(
+                $byProgram->keys()->map(fn ($k) => (string) $k)->all(),
+                config('celeste.programs', [])[$collegeName] ?? [],
+            );
+
+            $programs = [];
+            foreach ($programNames as $programName) {
+                $students = $byProgram[$programName];
+                $programs[] = [
+                    'key'      => md5($collegeName . '|' . $programName),
+                    'name'     => $programName,
+                    'count'    => $students->count(),
+                    'students' => $students,
+                ];
+            }
+
+            $out[] = [
+                'key'      => md5($collegeName),
+                'name'     => $collegeName,
+                'count'    => $inCollege->count(),
+                'programs' => $programs,
+            ];
+        }
+
+        return $out;
+    }
+
+    /** Names in config order first, then anything else alphabetically. */
+    protected function orderedByConfig(array $names, array $configured): array
+    {
+        $order = array_flip(array_values($configured));
+
+        usort($names, fn ($a, $b) => [$order[$a] ?? PHP_INT_MAX, $a]
+                                 <=> [$order[$b] ?? PHP_INT_MAX, $b]);
+
+        return $names;
+    }
+
+    // ── collapse state ──────────────────────────────────────────────
+    // Plain properties handled by the server, so nothing depends on
+    // browser-side state. Colleges start open and programs closed, which
+    // gives an overview of every programme and its head-count at a glance.
+
+    /** @var array<int, string> keys of colleges the user has collapsed */
+    public array $closedColleges = [];
+
+    /** @var array<int, string> keys of programs the user has opened */
+    public array $openPrograms = [];
+
+    public function toggleCollege(string $key): void
+    {
+        $this->closedColleges = in_array($key, $this->closedColleges, true)
+            ? array_values(array_diff($this->closedColleges, [$key]))
+            : [...$this->closedColleges, $key];
+    }
+
+    public function toggleProgram(string $key): void
+    {
+        $this->openPrograms = in_array($key, $this->openPrograms, true)
+            ? array_values(array_diff($this->openPrograms, [$key]))
+            : [...$this->openPrograms, $key];
+    }
+
+    public function expandAll(): void
+    {
+        $this->closedColleges = [];
+        $this->openPrograms = collect($this->groups)
+            ->flatMap(fn ($c) => collect($c['programs'])->pluck('key'))
+            ->all();
+    }
+
+    public function collapseAll(): void
+    {
+        $this->closedColleges = collect($this->groups)->pluck('key')->all();
+        $this->openPrograms = [];
     }
 
     /**
@@ -376,16 +475,6 @@ class StudentRecords extends Component
         foreach ($clear as $field) {
             $this->form[$field] = '';
         }
-    }
-
-    public function updatedSearch(): void
-    {
-        $this->resetPage();
-    }
-
-    public function updatedStatusFilter(): void
-    {
-        $this->resetPage();
     }
 
     // ------------------------------------------------------------------
@@ -599,7 +688,7 @@ class StudentRecords extends Component
         }
 
         $this->showForm = false;
-        unset($this->records);
+        unset($this->groups);
 
         $this->flash = $message;
         $this->blocked = null;
@@ -683,7 +772,7 @@ class StudentRecords extends Component
         StudentRecord::whereKey($this->pendingDeleteId)->delete();
 
         $this->pendingDeleteId = null;
-        unset($this->records);
+        unset($this->groups);
 
         $this->flash = 'Record deleted.';
         $this->blocked = null;
@@ -951,7 +1040,7 @@ class StudentRecords extends Component
         });
 
         $this->closeImport();
-        unset($this->records);
+        unset($this->groups);
 
         $this->flash = "Import finished. {$new} added"
             . ($updated ? ", {$updated} updated" : '') . '.';

@@ -76,6 +76,10 @@
                             Issued
                             @if ($sort === 'issued_on') <i class="bi bi-caret-{{ $direction === 'asc' ? 'up' : 'down' }}-fill"></i> @endif
                         </th>
+                        <th role="button" wire:click="sortBy('created_at')">
+                            Time
+                            @if ($sort === 'created_at') <i class="bi bi-caret-{{ $direction === 'asc' ? 'up' : 'down' }}-fill"></i> @endif
+                        </th>
                         <th role="button" wire:click="sortBy('verification_count')">Checks</th>
                         <th>Status</th>
                         <th class="text-end">Actions</th>
@@ -101,6 +105,7 @@
                                 <div class="text-muted-celeste" style="font-size:.75rem">{{ $certificate->studentRecord?->student_number }}</div>
                             </td>
                             <td class="text-muted-celeste">{{ $certificate->issued_on?->format('M j, Y') }}</td>
+                            <td class="text-muted-celeste text-nowrap">{{ $certificate->created_at?->format('g:i A') }}</td>
                             <td>{{ number_format($certificate->verification_count) }}</td>
                             <td>
                                 <span class="badge-celeste {{ match ($certificate->status) {
@@ -130,7 +135,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7">
+                        <tr><td colspan="8">
                             <div class="empty">
                                 <div class="empty-icon"><i class="bi bi-search"></i></div>
                                 <h6>Nothing matches these filters</h6>

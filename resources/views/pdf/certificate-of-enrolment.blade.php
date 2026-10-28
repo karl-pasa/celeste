@@ -412,23 +412,16 @@
                  form carries its stamp. The Processed-by line and the ENROLLED
                  stamp are not reproduced: they record the paper transaction, and
                  the QR code and serial are what vouch for this copy. --}}
-            <table style="margin-top:1.4mm">
-                <tr>
-                    <td style="width:25mm; vertical-align:top">
-                        @if (!empty($qr))
-                            <img src="{{ $qr }}" style="width:24mm;height:24mm" alt="">
-                        @else
-                            <div style="width:24mm;height:24mm;border:.5pt dashed #999;font-size:7pt;color:#999;text-align:center">
-                                <div style="padding-top:9.5mm">QR</div>
-                            </div>
-                        @endif
-                    </td>
-                    <td style="vertical-align:middle; padding-left:1.5mm">
-                        <div style="font-family:'Courier',monospace; font-size:7.4pt">{{ $certificate->serial_number }}</div>
-                        <div style="font-size:6.6pt; color:#444; padding-top:.8mm">Scan to verify</div>
-                    </td>
-                </tr>
-            </table>
+            <div style="margin-top:1.4mm; width:34mm">
+                @if (!empty($qr))
+                    <img src="{{ $qr }}" style="width:24mm;height:24mm" alt="">
+                @else
+                    <div style="width:24mm;height:24mm;border:.5pt dashed #999;font-size:7pt;color:#999;text-align:center">
+                        <div style="padding-top:9.5mm">QR</div>
+                    </div>
+                @endif
+                <div style="font-family:'Courier',monospace; font-size:7.4pt; padding-top:.8mm; white-space:nowrap">{{ $certificate->serial_number }}</div>
+            </div>
         </td>
     </tr>
 </table>

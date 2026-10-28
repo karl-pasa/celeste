@@ -41,8 +41,14 @@
         {{-- Camera scanner --}}
         <div x-show="mode === 'scan'" x-cloak>
             <div class="scanner-frame mb-3">
-                <div id="celeste-reader" class="w-100 h-100"></div>
+                <video id="celeste-video" class="w-100 h-100" playsinline muted
+                       style="object-fit:cover;background:#0b1530"></video>
                 <div class="scanner-reticle"></div>
+            </div>
+            <div class="text-center mb-2">
+                <button type="button" id="scanner-flip" class="btn btn-sm btn-psu-outline d-none">
+                    <i class="bi bi-camera-reels"></i> Switch camera
+                </button>
             </div>
             <p class="text-center text-muted-celeste mb-0" style="font-size:.8125rem">
                 Hold the QR code inside the frame. Allow camera access when your browser asks.
@@ -106,41 +112,64 @@
     @endif
 
     @push('scripts')
-        <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                let scanner = null;
-                const errorBox = document.getElementById('scanner-error');
+        {{-- qr-scanner reads codes in a background worker, so the camera
+             stays smooth, and it copes with dim light and angled codes better
+             than the library it replaces. --}}
+        <script type="module">
+            import QrScanner from 'https://cdn.jsdelivr.net/npm/qr-scanner@1.4.2/qr-scanner.min.js';
 
-                const showError = (message) => {
-                    if (!errorBox) return;
-                    errorBox.textContent = message;
-                    errorBox.classList.remove('d-none');
-                };
+            const video    = document.getElementById('celeste-video');
+            const errorBox = document.getElementById('scanner-error');
+            const flipBtn  = document.getElementById('scanner-flip');
+            let scanner = null;
+            let facing  = 'environment';
 
-                window.addEventListener('start-scanner', () => {
-                    if (scanner) return;
+            const showError = (message) => {
+                if (!errorBox) return;
+                errorBox.textContent = message;
+                errorBox.classList.remove('d-none');
+            };
 
-                    scanner = new Html5Qrcode('celeste-reader');
-                    scanner.start(
-                        { facingMode: 'environment' },
-                        { fps: 10, qrbox: { width: 220, height: 220 } },
-                        (decodedText) => {
-                            scanner.stop().then(() => { scanner = null; });
+            window.addEventListener('start-scanner', async () => {
+                if (!video) return;
+                errorBox?.classList.add('d-none');
+
+                if (!scanner) {
+                    scanner = new QrScanner(
+                        video,
+                        (result) => {
+                            scanner.stop();
                             // Hand the decoded value to the Livewire component.
-                            Livewire.dispatch('qr-scanned', { value: decodedText });
+                            Livewire.dispatch('qr-scanned', { value: result.data });
                         },
-                        () => { /* per-frame misses are normal; stay quiet */ }
-                    ).catch(() => {
-                        showError('Camera unavailable. Check browser permissions, or enter the serial number instead.');
-                    });
-                });
+                        {
+                            preferredCamera: facing,
+                            returnDetailedScanResult: true,
+                            highlightScanRegion: false,
+                            highlightCodeOutline: true,
+                            maxScansPerSecond: 25,
+                        }
+                    );
+                }
 
-                window.addEventListener('stop-scanner', () => {
-                    if (scanner) {
-                        scanner.stop().then(() => { scanner = null; }).catch(() => { scanner = null; });
-                    }
-                });
+                try {
+                    await scanner.start();
+                    // Offer the switch only when the device has more than one camera.
+                    const cameras = await QrScanner.listCameras();
+                    if (cameras.length > 1) flipBtn?.classList.remove('d-none');
+                } catch (e) {
+                    showError('Camera unavailable. Check browser permissions, or enter the serial number instead.');
+                }
+            });
+
+            window.addEventListener('stop-scanner', () => {
+                scanner?.stop();
+            });
+
+            flipBtn?.addEventListener('click', async () => {
+                if (!scanner) return;
+                facing = facing === 'environment' ? 'user' : 'environment';
+                try { await scanner.setCamera(facing); } catch (e) { /* keep current camera */ }
             });
         </script>
     @endpush

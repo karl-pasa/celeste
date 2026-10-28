@@ -55,6 +55,15 @@ class VerifyPanel extends Component
     #[On('qr-scanned')]
     public function handleScan(string $value, VerificationService $verifier): void
     {
+        // A CELESTE code holds the full verification link. Going to that
+        // page, rather than answering inside this panel, gives the scanner
+        // the same result page as a phone's own camera app: the details
+        // and the preview of the issued document.
+        if (preg_match('~/verify/([A-Za-z0-9]{20,64})~', $value, $m)) {
+            $this->redirectRoute('verify.token', ['token' => $m[1]]);
+            return;
+        }
+
         $this->reference = $value;
         $this->method = 'qr_scan';
         $this->verify($verifier);

@@ -64,16 +64,15 @@
                         @endforeach
                     </select>
 
-                    <div class="divider-label my-3">Who gets it</div>
+                    <div class="divider-label my-3">Narrow the list</div>
 
-                    <label for="college" class="form-label">College <span style="color:var(--psu-red)">*</span></label>
-                    <select id="college" wire:model.live="college" class="form-select mb-2 @error('college') is-invalid @enderror">
-                        <option value="">Choose a college</option>
+                    <label for="college" class="form-label">College</label>
+                    <select id="college" wire:model.live="college" class="form-select mb-2">
+                        <option value="">All colleges</option>
                         @foreach ($colleges as $option)
                             <option value="{{ $option }}">{{ $option }}</option>
                         @endforeach
                     </select>
-                    @error('college') <div class="invalid-feedback d-block mb-2">{{ $message }}</div> @enderror
 
                     <label for="program" class="form-label">Program</label>
                     <select id="program" wire:model.live="program" class="form-select mb-2" @disabled($college === '')>
@@ -99,75 +98,55 @@
                         @endforeach
                     </select>
                 </div>
-
-                <div class="p-3 border-top">
-                    <div class="mb-2" style="font-size:.875rem">
-                        <strong>{{ $this->matchCount }}</strong>
-                        student{{ $this->matchCount === 1 ? '' : 's' }} will receive this document
-                    </div>
-                    <button wire:click="generate" class="btn btn-psu w-100" wire:loading.attr="disabled" wire:target="generate"
-                            @disabled(trim($label) === '' || $this->matchCount === 0)>
-                        <span wire:loading.remove wire:target="generate"><i class="bi bi-files"></i> Generate {{ $this->matchCount ?: '' }} document{{ $this->matchCount === 1 ? '' : 's' }}</span>
-                        <span wire:loading wire:target="generate">
-                            <span class="spinner-border spinner-border-sm me-1"></span> Generating and hashing…
-                        </span>
-                    </button>
-                    @if (trim($label) === '')
-                        <div class="text-muted-celeste mt-2" style="font-size:.75rem">Enter a batch name to continue.</div>
-                    @endif
-                </div>
             </div>
         </div>
 
         <div class="col-xl-8">
             <div class="card-celeste">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <span><i class="bi bi-clock-history"></i> History</span>
-                    <span class="text-muted-celeste" style="font-size:.8125rem">Previous batches</span>
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <span>Student records</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="search" wire:model.live.debounce.300ms="search" class="form-control form-control-sm"
+                               placeholder="Search name or number" style="width:200px">
+                        <span class="badge-celeste badge-type">{{ count($selected) }} selected</span>
+                    </div>
                 </div>
+
+                @error('selected')
+                    <div class="alert alert-danger py-2 px-3 m-3 mb-0 small">{{ $message }}</div>
+                @enderror
 
                 <div class="table-responsive">
                     <table class="table table-celeste">
                         <thead>
                             <tr>
-                                <th>Batch</th>
-                                <th>Document</th>
-                                <th class="text-center">Generated</th>
-                                <th class="text-center">Failed</th>
-                                <th>Date</th>
-                                <th class="text-end">Actions</th>
+                                <th style="width:38px">
+                                    <input type="checkbox" class="form-check-input" wire:model.live="selectPage" aria-label="Select this page">
+                                </th>
+                                <th>Student</th>
+                                <th>Number</th>
+                                <th>Program</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($this->history as $batch)
-                                <tr wire:key="history-{{ $batch->id }}">
+                            @forelse ($this->students as $record)
+                                <tr wire:key="student-{{ $record->id }}">
                                     <td>
-                                        <div>{{ $batch->label }}</div>
-                                        <div class="serial text-muted-celeste" style="font-size:.75rem">{{ $batch->reference }}</div>
+                                        <input type="checkbox" class="form-check-input" value="{{ $record->id }}"
+                                               wire:model.live="selected" aria-label="Select {{ $record->full_name }}">
                                     </td>
-                                    <td class="text-muted-celeste">{{ $types[$batch->document_type] ?? $batch->document_type }}</td>
-                                    <td class="text-center">{{ $batch->generated }} <span class="text-muted-celeste">/ {{ $batch->total }}</span></td>
-                                    <td class="text-center" style="{{ $batch->failed ? 'color:var(--psu-red)' : '' }}">{{ $batch->failed }}</td>
-                                    <td class="text-muted-celeste">{{ $batch->created_at?->format('M j, Y g:i A') }}</td>
-                                    <td class="text-end">
-                                        <div class="btn-group btn-group-sm">
-                                            <a href="{{ route('registrar.certificates', ['batch' => $batch->id]) }}" class="btn btn-psu-outline" title="View the documents">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            @if ($batch->generated > 0)
-                                                <a href="{{ route('registrar.batches.download', $batch->id) }}" class="btn btn-psu-outline" title="Download all (ZIP)">
-                                                    <i class="bi bi-file-earmark-zip"></i>
-                                                </a>
-                                            @endif
-                                        </div>
-                                    </td>
+                                    <td>{{ $record->full_name }}</td>
+                                    <td class="serial">{{ $record->student_number }}</td>
+                                    <td class="text-muted-celeste">{{ $record->program }}</td>
+                                    <td><span class="badge-celeste badge-type text-capitalize">{{ $record->status }}</span></td>
                                 </tr>
                             @empty
-                                <tr><td colspan="6">
+                                <tr><td colspan="5">
                                     <div class="empty">
-                                        <div class="empty-icon"><i class="bi bi-clock-history"></i></div>
-                                        <h6>No batches yet</h6>
-                                        <p>Batches you generate will be listed here, so you can find and download them later.</p>
+                                        <div class="empty-icon"><i class="bi bi-funnel"></i></div>
+                                        <h6>No records match these filters</h6>
+                                        <p>Widen the college, program, year level, or section filter to see more students.</p>
                                     </div>
                                 </td></tr>
                             @endforelse
@@ -175,8 +154,83 @@
                     </table>
                 </div>
 
-                <div class="p-3 border-top">{{ $this->history->links() }}</div>
+                <div class="p-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div>{{ $this->students->links() }}</div>
+                    <button wire:click="generate" class="btn btn-psu" wire:loading.attr="disabled" wire:target="generate"
+                            @disabled(count($selected) === 0 || trim($label) === '')>
+                        <span wire:loading.remove wire:target="generate">
+                            <i class="bi bi-files"></i> Generate {{ count($selected) ?: '' }} document{{ count($selected) === 1 ? '' : 's' }}
+                        </span>
+                        <span wire:loading wire:target="generate">
+                            <span class="spinner-border spinner-border-sm me-1"></span> Generating and hashing…
+                        </span>
+                    </button>
+                </div>
+                @if (trim($label) === '')
+                    <div class="px-3 pb-3 text-muted-celeste" style="font-size:.75rem">Enter a batch name to enable Generate.</div>
+                @endif
             </div>
         </div>
+    </div>
+
+    <div class="mt-3">
+        <div class="card-celeste">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-clock-history"></i> History</span>
+                <span class="text-muted-celeste" style="font-size:.8125rem">Previous batches</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-celeste">
+                    <thead>
+                        <tr>
+                            <th>Batch</th>
+                            <th>Document</th>
+                            <th class="text-center">Generated</th>
+                            <th class="text-center">Failed</th>
+                            <th>Date</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($this->history as $batch)
+                            <tr wire:key="history-{{ $batch->id }}">
+                                <td>
+                                    <div>{{ $batch->label }}</div>
+                                    <div class="serial text-muted-celeste" style="font-size:.75rem">{{ $batch->reference }}</div>
+                                </td>
+                                <td class="text-muted-celeste">{{ $types[$batch->document_type] ?? $batch->document_type }}</td>
+                                <td class="text-center">{{ $batch->generated }} <span class="text-muted-celeste">/ {{ $batch->total }}</span></td>
+                                <td class="text-center" style="{{ $batch->failed ? 'color:var(--psu-red)' : '' }}">{{ $batch->failed }}</td>
+                                <td class="text-muted-celeste">{{ $batch->created_at?->format('M j, Y g:i A') }}</td>
+                                <td class="text-end">
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ route('registrar.certificates', ['batch' => $batch->id]) }}" class="btn btn-psu-outline" title="View the documents">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        @if ($batch->generated > 0)
+                                            <a href="{{ route('registrar.batches.download', $batch->id) }}" class="btn btn-psu-outline" title="Download all (ZIP)">
+                                                <i class="bi bi-file-earmark-zip"></i>
+                                            </a>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="6">
+                                <div class="empty">
+                                    <div class="empty-icon"><i class="bi bi-clock-history"></i></div>
+                                    <h6>No batches yet</h6>
+                                    <p>Batches you generate will be listed here, so you can find and download them later.</p>
+                                </div>
+                            </td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="p-3 border-top">{{ $this->history->links() }}</div>
+        </div>
+
     </div>
 </div>

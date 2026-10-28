@@ -19,6 +19,11 @@ class GenerateBatch extends Component
     public string $program = '';
     public string $yearLevel = '';
     public string $section = '';
+    public string $search = '';
+
+    /** @var array<int> */
+    public array $selected = [];
+    public bool $selectPage = false;
 
     public ?int $batchId = null;
 
@@ -27,6 +32,21 @@ class GenerateBatch extends Component
      * overwriting it. Clearing the box hands control back to the suggestion.
      */
     public bool $labelEdited = false;
+
+    public function updatedSelectPage(bool $value): void
+    {
+        $ids = $this->students->pluck('id')->all();
+
+        $this->selected = $value
+            ? array_values(array_unique(array_merge($this->selected, $ids)))
+            : array_values(array_diff($this->selected, $ids));
+    }
+
+    public function updatingSearch(): void
+    {
+        $this->resetPage();
+        $this->selectPage = false;
+    }
 
     public function updatedLabel(): void
     {
@@ -38,42 +58,50 @@ class GenerateBatch extends Component
         $this->program = '';
         $this->yearLevel = '';
         $this->section = '';
-        $this->suggestLabel();
+        $this->afterFilterChange();
     }
 
     public function updatedProgram(): void
     {
         $this->yearLevel = '';
         $this->section = '';
-        $this->suggestLabel();
+        $this->afterFilterChange();
     }
 
     public function updatedYearLevel(): void
     {
         $this->section = '';
-        $this->suggestLabel();
+        $this->afterFilterChange();
     }
 
     public function updatedSection(): void
     {
+        $this->afterFilterChange();
+    }
+
+    protected function afterFilterChange(): void
+    {
+        $this->resetPage();
+        $this->selectPage = false;
+        $this->selected = [];
         $this->suggestLabel();
     }
 
-    /** Every student the current filters match. */
-    protected function studentQuery()
+    public function getStudentsProperty()
     {
         return StudentRecord::query()
             ->when($this->college, fn ($q) => $q->where('college', $this->college))
             ->when($this->program, fn ($q) => $q->where('program', $this->program))
             ->when($this->yearLevel !== '', fn ($q) => $q->where('year_level', $this->yearLevel))
-            ->when($this->section !== '', fn ($q) => $q->where('section', $this->section));
-    }
-
-    public function getMatchCountProperty(): int
-    {
-        // Nothing is counted until a college is chosen, so the whole student
-        // body is never issued to by accident.
-        return $this->college === '' ? 0 : $this->studentQuery()->count();
+            ->when($this->section !== '', fn ($q) => $q->where('section', $this->section))
+            ->when($this->search, function ($q) {
+                $q->where(function ($s) {
+                    $s->where('last_name', 'ilike', "%{$this->search}%")
+                      ->orWhere('student_number', 'ilike', "%{$this->search}%");
+                });
+            })
+            ->orderBy('last_name')
+            ->paginate(10);
     }
 
     public function generate(CertificateGenerator $generator): void
@@ -81,24 +109,24 @@ class GenerateBatch extends Component
         $this->label = trim($this->label);
 
         $this->validate([
+            'selected'     => ['required', 'array', 'min:1'],
             'label'        => ['required', 'string', 'max:120'],
-            'college'      => ['required', 'string'],
             'documentType' => ['required', 'in:' . implode(',', array_keys(Certificate::types()))],
         ], [
-            'label.required'   => 'Give the batch a name before generating.',
-            'college.required' => 'Choose at least a college so the batch has students.',
+            'selected.required' => 'Select at least one student record.',
+            'label.required'    => 'Give the batch a name before generating.',
         ]);
 
-        $ids = $this->studentQuery()->pluck('id')->all();
-
-        if ($ids === []) {
-            $this->addError('college', 'No student records match these filters.');
-            return;
-        }
-
-        $batch = $generator->issueBatch($ids, $this->documentType, auth()->user(), $this->label);
+        $batch = $generator->issueBatch(
+            $this->selected,
+            $this->documentType,
+            auth()->user(),
+            $this->label,
+        );
 
         $this->batchId = $batch->id;
+        $this->selected = [];
+        $this->selectPage = false;
         $this->resetPage('history');
     }
 

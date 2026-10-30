@@ -123,10 +123,6 @@
                     </div>
                 </div>
 
-                @error('selected')
-                    <div class="alert alert-danger py-2 px-3 m-3 mb-0 small">{{ $message }}</div>
-                @enderror
-
                 <div class="table-responsive">
                     <table class="table table-celeste">
                         <thead>
@@ -168,7 +164,8 @@
 
                 <div class="p-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <div>{{ $this->students->links() }}</div>
-                    <button wire:click="generate" class="btn btn-psu" wire:loading.attr="disabled" wire:target="generate">
+                    <button wire:click="generate" class="btn btn-psu" wire:loading.attr="disabled" wire:target="generate"
+                            @disabled(count($selected) === 0)>
                         <span wire:loading.remove wire:target="generate">
                             <i class="bi bi-files"></i> Generate {{ count($selected) ?: '' }} document{{ count($selected) === 1 ? '' : 's' }}
                         </span>

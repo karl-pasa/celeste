@@ -53,7 +53,7 @@
                     <label for="label" class="form-label">Batch name <span style="color:var(--psu-red)">*</span></label>
                     <input type="text" id="label" wire:model.live.debounce.300ms="label" required
                            class="form-control mb-1 @error('label') is-invalid @enderror"
-                           placeholder="Required. Fills in from the filters, or type your own">
+                           placeholder="Required. Type a name for this batch">
                     @error('label') <div class="invalid-feedback d-block mb-2">{{ $message }}</div> @enderror
                     <div class="mb-3"></div>
 

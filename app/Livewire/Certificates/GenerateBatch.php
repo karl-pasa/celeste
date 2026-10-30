@@ -91,7 +91,6 @@ class GenerateBatch extends Component
         $this->resetPage();
         $this->selectPage = false;
         $this->selected = [];
-        $this->suggestLabel();
     }
 
     public function getStudentsProperty()
@@ -115,13 +114,17 @@ class GenerateBatch extends Component
     {
         $this->label = trim($this->label);
 
+        // The registrar must name the batch themselves. Nothing is generated
+        // until a name has been typed.
+
         $this->validate([
             'selected'     => ['required', 'array', 'min:1'],
-            'label'        => ['required', 'string', 'max:120'],
+            'label'        => ['required', 'string', 'min:3', 'max:120'],
             'documentType' => ['required', 'in:' . implode(',', array_keys(Certificate::types()))],
         ], [
             'selected.required' => 'Select at least one student record.',
             'label.required'    => 'Give the batch a name before generating.',
+            'label.min'         => 'The batch name must be at least 3 characters.',
         ]);
 
         $batch = $generator->issueBatch(
@@ -171,15 +174,6 @@ class GenerateBatch extends Component
             ->distinct()
             ->orderBy('program')
             ->pluck('program');
-    }
-
-    protected function suggestLabel(): void
-    {
-        if ($this->labelEdited) {
-            return;
-        }
-
-        $this->label = trim($this->program . ' ' . $this->cohortCode());
     }
 
     protected function cohortCode(): string

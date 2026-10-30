@@ -168,8 +168,7 @@
 
                 <div class="p-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <div>{{ $this->students->links() }}</div>
-                    <button wire:click="generate" class="btn btn-psu" wire:loading.attr="disabled" wire:target="generate"
-                            @disabled(count($selected) === 0 || trim($label) === '')>
+                    <button wire:click="generate" class="btn btn-psu" wire:loading.attr="disabled" wire:target="generate">
                         <span wire:loading.remove wire:target="generate">
                             <i class="bi bi-files"></i> Generate {{ count($selected) ?: '' }} document{{ count($selected) === 1 ? '' : 's' }}
                         </span>
@@ -179,7 +178,7 @@
                     </button>
                 </div>
                 @if (trim($label) === '')
-                    <div class="px-3 pb-3 text-muted-celeste" style="font-size:.75rem">Enter a batch name to enable Generate.</div>
+                    <div class="px-3 pb-3 text-muted-celeste" style="font-size:.75rem">A batch name is required before documents can be generated.</div>
                 @endif
             </div>
           @endif
@@ -247,3 +246,20 @@
 
     </div>
 </div>
+
+@script
+<script>
+    // After a failed Generate, scroll to the first thing that went wrong and
+    // put the cursor in it if it is a field.
+    $wire.on('scroll-to-error', () => {
+        setTimeout(() => {
+            const target = document.querySelector('.is-invalid, .invalid-feedback.d-block, .alert-danger');
+            if (!target) return;
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (typeof target.focus === 'function' && /^(INPUT|SELECT|TEXTAREA)$/.test(target.tagName)) {
+                target.focus({ preventScroll: true });
+            }
+        }, 60);
+    });
+</script>
+@endscript

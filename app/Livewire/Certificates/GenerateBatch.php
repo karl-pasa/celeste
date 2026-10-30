@@ -6,6 +6,7 @@ use App\Models\Certificate;
 use App\Models\CertificateBatch;
 use App\Models\StudentRecord;
 use App\Services\CertificateGenerator;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -117,15 +118,23 @@ class GenerateBatch extends Component
         // The registrar must name the batch themselves. Nothing is generated
         // until a name has been typed.
 
-        $this->validate([
-            'selected'     => ['required', 'array', 'min:1'],
-            'label'        => ['required', 'string', 'min:3', 'max:120'],
-            'documentType' => ['required', 'in:' . implode(',', array_keys(Certificate::types()))],
-        ], [
-            'selected.required' => 'Select at least one student record.',
-            'label.required'    => 'Give the batch a name before generating.',
-            'label.min'         => 'The batch name must be at least 3 characters.',
-        ]);
+        try {
+            $this->validate([
+                'selected'     => ['required', 'array', 'min:1'],
+                'label'        => ['required', 'string', 'min:3', 'max:120'],
+                'documentType' => ['required', 'in:' . implode(',', array_keys(Certificate::types()))],
+            ], [
+                'selected.required' => 'Select at least one student record.',
+                'label.required'    => 'Give the batch a name before generating.',
+                'label.min'         => 'The batch name must be at least 3 characters.',
+            ]);
+        } catch (ValidationException $e) {
+            // Tell the browser to bring the first error into view. The page
+            // is long, and the field at fault is often off-screen.
+            $this->dispatch('scroll-to-error');
+
+            throw $e;
+        }
 
         $batch = $generator->issueBatch(
             array_map('intval', $this->selected),

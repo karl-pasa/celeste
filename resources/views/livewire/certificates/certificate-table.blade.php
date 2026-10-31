@@ -88,17 +88,11 @@
                 </div>
             </div>
 
-            {{-- Row 3: when it was issued --}}
+            {{-- Row 3: the day it was issued --}}
             <div class="row g-2 align-items-end mt-1">
                 <div class="col-6 col-lg-3">
-                    <label for="dateFrom" class="form-label">Issued from</label>
-                    <input type="date" id="dateFrom" wire:model.live="dateFrom" class="form-control"
-                           @if ($dateTo !== '') max="{{ $dateTo }}" @endif>
-                </div>
-                <div class="col-6 col-lg-3">
-                    <label for="dateTo" class="form-label">Issued to</label>
-                    <input type="date" id="dateTo" wire:model.live="dateTo" class="form-control"
-                           @if ($dateFrom !== '') min="{{ $dateFrom }}" @endif>
+                    <label for="dateFilter" class="form-label">Date issued</label>
+                    <input type="date" id="dateFilter" wire:model.live="date" class="form-control">
                 </div>
                 <div class="col-lg-2 ms-lg-auto">
                     <button wire:click="clearFilters" class="btn btn-psu-outline w-100" title="Clear all filters">

@@ -41,12 +41,9 @@ class CertificateTable extends Component
     #[Url]
     public string $section = '';
 
-    // Date the document was issued: from / to, both optional and inclusive.
+    // The one day the document was issued (optional).
     #[Url]
-    public string $dateFrom = '';
-
-    #[Url]
-    public string $dateTo = '';
+    public string $date = '';
 
     /** Show only the documents of one batch (?batch=ID). */
     #[Url]
@@ -63,7 +60,7 @@ class CertificateTable extends Component
     public function updating($field): void
     {
         if (in_array($field, ['search', 'type', 'status', 'batch', 'college', 'program',
-                              'yearLevel', 'section', 'dateFrom', 'dateTo'], true)) {
+                              'yearLevel', 'section', 'date'], true)) {
             $this->resetPage();
         }
     }
@@ -97,7 +94,7 @@ class CertificateTable extends Component
     public function clearFilters(): void
     {
         $this->reset(['search', 'type', 'status', 'batch', 'college', 'program',
-            'yearLevel', 'section', 'dateFrom', 'dateTo']);
+            'yearLevel', 'section', 'date']);
         $this->resetPage();
     }
 
@@ -164,8 +161,7 @@ class CertificateTable extends Component
             }))
             ->ofType($this->type ?: null)
             ->when($this->status, fn ($q) => $q->where('status', $this->status))
-            ->when($this->dateFrom !== '', fn ($q) => $q->whereDate('issued_on', '>=', $this->dateFrom))
-            ->when($this->dateTo !== '', fn ($q) => $q->whereDate('issued_on', '<=', $this->dateTo))
+            ->when($this->date !== '', fn ($q) => $q->whereDate('issued_on', $this->date))
             ->when($this->college !== '' || $this->program !== '' || $this->yearLevel !== '' || $this->section !== '',
                 fn ($q) => $q->whereHas('studentRecord', function ($r) {
                     $r->when($this->college !== '',   fn ($x) => $x->where('college', $this->college))

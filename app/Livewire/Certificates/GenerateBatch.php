@@ -50,6 +50,17 @@ class GenerateBatch extends Component
             : array_values(array_diff($this->selected, $ids));
     }
 
+    /**
+     * Keep the header box honest: ticked only while every student on this
+     * page is selected, so unticking one row clears it.
+     */
+    public function updatedSelected(): void
+    {
+        $ids = $this->students->pluck('id')->map(fn ($id) => (string) $id)->all();
+
+        $this->selectPage = $ids !== [] && array_diff($ids, array_map('strval', $this->selected)) === [];
+    }
+
     public function updatingSearch(): void
     {
         $this->resetPage();

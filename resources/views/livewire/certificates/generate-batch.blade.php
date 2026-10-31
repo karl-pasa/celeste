@@ -1,4 +1,17 @@
-<div>
+<div class="batch-select">
+<style>
+    /* A ticked box must always show: blue fill and a white tick. Declared
+       here so a site-wide .form-check-input rule cannot hide the tick. */
+    .batch-select .form-check-input { width: 1.1rem; height: 1.1rem; cursor: pointer; }
+    .batch-select .form-check-input:checked {
+        background-color: #12306B !important;
+        border-color: #12306B !important;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: center !important;
+        background-size: 100% 100% !important;
+    }
+</style>
     @if ($this->batch)
         <div class="card-celeste mb-3" wire:key="batch-{{ $this->batch->id }}">
             <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -128,7 +141,8 @@
                         <thead>
                             <tr>
                                 <th style="width:38px">
-                                    <input type="checkbox" class="form-check-input" wire:model.live="selectPage" aria-label="Select this page">
+                                    <input type="checkbox" class="form-check-input" wire:model.live="selectPage" aria-label="Select this page"
+                                           wire:key="select-page-{{ $selectPage ? 'on' : 'off' }}" @checked($selectPage)>
                                 </th>
                                 <th>Student</th>
                                 <th>Number</th>
@@ -138,7 +152,7 @@
                         </thead>
                         <tbody>
                             @forelse ($this->students as $record)
-                                <tr wire:key="student-{{ $record->id }}">
+                                <tr wire:key="student-{{ $record->id }}-{{ in_array((string) $record->id, $selected, true) ? 'on' : 'off' }}">
                                     <td>
                                         <input type="checkbox" class="form-check-input" value="{{ $record->id }}"
                                                wire:model.live="selected" aria-label="Select {{ $record->full_name }}"

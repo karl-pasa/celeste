@@ -4,6 +4,36 @@
 @section('subtitle', 'Office of the University Registrar · ' . config('celeste.institution.short'))
 
 @section('content')
+{{-- Documents generated, by type. Each type has its own colour. --}}
+@php
+    $byType = \App\Models\Certificate::query()
+        ->selectRaw('document_type, count(*) as total')
+        ->groupBy('document_type')
+        ->pluck('total', 'document_type');
+
+    // [icon, strong colour, soft background]
+    $typeStyle = [
+        \App\Models\Certificate::TYPE_DIPLOMA   => ['bi-mortarboard',       'var(--psu-blue)',  'var(--psu-blue-soft)'],
+        \App\Models\Certificate::TYPE_DISMISSAL => ['bi-box-arrow-right',   'var(--psu-gold)',  'var(--psu-gold-soft)'],
+        \App\Models\Certificate::TYPE_ENROLMENT => ['bi-journal-check',     'var(--psu-green)', 'var(--psu-green-soft)'],
+        \App\Models\Certificate::TYPE_TOR       => ['bi-file-earmark-text', 'var(--psu-red)',   'var(--psu-red-soft)'],
+    ];
+@endphp
+<div class="row g-3 mb-3">
+    @foreach (\App\Models\Certificate::types() as $type => $label)
+        @php [$icon, $strong, $soft] = $typeStyle[$type] ?? ['bi-file-earmark', 'var(--psu-navy-600)', 'var(--psu-navy-050)']; @endphp
+        <div class="col-6 col-xl-3">
+            <div class="stat" style="border-top:3px solid {{ $strong }};background:{{ $soft }}">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="stat-label" style="color:{{ $strong }}">{{ $label }}</div>
+                    <i class="bi {{ $icon }}" style="color:{{ $strong }};font-size:1.1rem"></i>
+                </div>
+                <div class="stat-value" style="color:{{ $strong }}">{{ number_format((int) ($byType[$type] ?? 0)) }}</div>
+            </div>
+        </div>
+    @endforeach
+</div>
+
 <div class="row g-3 mb-3">
     @foreach ([
         ['Certificates on file', number_format($summary['total_certificates']), $summary['issued_this_period'] . ' issued in the last 30 days', 'bi-collection'],
@@ -29,37 +59,6 @@
                         {{ $meta }}
                     @endif
                 </div>
-            </div>
-        </div>
-    @endforeach
-</div>
-
-{{-- Documents generated, by type --}}
-@php
-    $byType = \App\Models\Certificate::query()
-        ->selectRaw("document_type, count(*) as total, sum(case when status = 'issued' then 1 else 0 end) as active")
-        ->groupBy('document_type')
-        ->get()
-        ->keyBy('document_type');
-
-    $typeIcons = [
-        \App\Models\Certificate::TYPE_DIPLOMA   => 'bi-mortarboard',
-        \App\Models\Certificate::TYPE_DISMISSAL => 'bi-box-arrow-right',
-        \App\Models\Certificate::TYPE_ENROLMENT => 'bi-journal-check',
-        \App\Models\Certificate::TYPE_TOR       => 'bi-file-earmark-text',
-    ];
-@endphp
-<div class="row g-3 mb-3">
-    @foreach (\App\Models\Certificate::types() as $type => $label)
-        @php $row = $byType->get($type); @endphp
-        <div class="col-6 col-xl-3">
-            <div class="stat">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div class="stat-label">{{ $label }}</div>
-                    <i class="bi {{ $typeIcons[$type] ?? 'bi-file-earmark' }} text-muted-celeste"></i>
-                </div>
-                <div class="stat-value">{{ number_format((int) ($row->total ?? 0)) }}</div>
-                <div class="stat-meta">documents generated &middot; {{ number_format((int) ($row->active ?? 0)) }} active</div>
             </div>
         </div>
     @endforeach

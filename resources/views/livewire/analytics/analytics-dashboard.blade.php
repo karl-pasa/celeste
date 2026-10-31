@@ -1,4 +1,4 @@
-<div>
+<div wire:poll.10s.visible="refresh">
     {{-- The toggle is pinned to the right edge (margin-left:auto) and never
          shrinks or wraps its labels. Without that, the bold "active" label
          made "Last 30 days" break onto two lines and shifted the whole
@@ -6,6 +6,7 @@
     <div class="d-flex align-items-center flex-wrap gap-2 mb-3">
         <p class="text-muted-celeste mb-0" style="font-size:.875rem;flex:1 1 280px;min-width:0">
             Every verification attempt against a {{ config('celeste.institution.short') }} document, including the ones that failed.
+            <span class="ms-2 text-nowrap" style="color:var(--psu-green);font-size:.75rem"><i class="bi bi-broadcast"></i> Live</span>
         </p>
         <div class="role-tabs" style="width:auto;flex:0 0 auto;margin-left:auto;display:inline-flex;white-space:nowrap">
             @foreach ([7 => 'Last 7 days', 30 => 'Last 30 days', 90 => 'Last 90 days'] as $value => $label)
@@ -176,13 +177,24 @@
     <script>
         const font = { family: 'Poppins', size: 11 };
 
+        // First call draws the charts. Later calls (every refresh) only swap in
+        // the new numbers, so the charts do not flash or replay their animation.
         const paint = (charts) => {
-            ['analyticsVolume', 'analyticsType'].forEach(id => {
-                const existing = Chart.getChart(id);
-                if (existing) existing.destroy();
-            });
-
             const s = charts.series;
+            const volume = Chart.getChart('analyticsVolume');
+            const type = Chart.getChart('analyticsType');
+
+            if (volume && type) {
+                volume.data.labels = s.labels;
+                volume.data.datasets[0].data = s.authentic;
+                volume.data.datasets[1].data = s.failed;
+                volume.update('none');
+
+                type.data.labels = charts.byType.map(t => t.label);
+                type.data.datasets[0].data = charts.byType.map(t => t.total);
+                type.update('none');
+                return;
+            }
 
             new Chart(document.getElementById('analyticsVolume'), {
                 type: 'line',

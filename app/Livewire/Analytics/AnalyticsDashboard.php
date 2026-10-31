@@ -22,6 +22,16 @@ class AnalyticsDashboard extends Component
         $this->dispatch('analytics-refresh', charts: $this->chartData($analytics));
     }
 
+    /**
+     * Called by the page every few seconds (wire:poll). Livewire re-renders
+     * the numbers and tables itself; the charts sit in wire:ignore blocks,
+     * so they are handed the fresh figures here.
+     */
+    public function refresh(AnalyticsService $analytics): void
+    {
+        $this->dispatch('analytics-refresh', charts: $this->chartData($analytics));
+    }
+
     protected function chartData(AnalyticsService $analytics): array
     {
         return [

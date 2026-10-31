@@ -19,7 +19,7 @@
         \App\Models\Certificate::TYPE_TOR       => ['bi-file-earmark-text', 'var(--psu-red)',   'var(--psu-red-soft)'],
     ];
 @endphp
-<div class="row g-3 mb-3">
+<div class="row g-3 mb-3" data-live="types">
     @foreach (\App\Models\Certificate::types() as $type => $label)
         @php [$icon, $strong, $soft] = $typeStyle[$type] ?? ['bi-file-earmark', 'var(--psu-navy-600)', 'var(--psu-navy-050)']; @endphp
         <div class="col-6 col-xl-3">
@@ -34,7 +34,7 @@
     @endforeach
 </div>
 
-<div class="row g-3 mb-3">
+<div class="row g-3 mb-3" data-live="stats">
     @foreach ([
         ['Certificates on file', number_format($summary['total_certificates']), $summary['issued_this_period'] . ' issued in the last 30 days', 'bi-collection'],
         ['Active', number_format($summary['active_certificates']), $summary['revoked_certificates'] . ' revoked', 'bi-patch-check'],
@@ -72,7 +72,7 @@
                 <a href="{{ route('registrar.analytics') }}" class="btn btn-sm btn-psu-outline">Full analytics</a>
             </div>
             <div class="p-3">
-                <canvas id="volumeChart" height="110"></canvas>
+                <canvas id="volumeChart" height="110" data-series="{{ json_encode($series) }}"></canvas>
             </div>
         </div>
 
@@ -92,7 +92,7 @@
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody data-live="recent">
                         @forelse ($recent as $certificate)
                             <tr>
                                 <td class="serial">{{ $certificate->serial_number }}</td>
@@ -121,7 +121,7 @@
     <div class="col-xl-4">
         <div class="card-celeste mb-3">
             <div class="card-header">Needs your attention</div>
-            <div class="p-3">
+            <div class="p-3" data-live="flags">
                 @foreach ($flags as $flag)
                     <div class="flag flag-{{ $flag['severity'] }}">
                         <span class="flag-dot"></span>
@@ -137,7 +137,7 @@
 
         <div class="card-celeste">
             <div class="card-header">Latest verifications</div>
-            <div class="p-3">
+            <div class="p-3" data-live="activity">
                 @forelse ($activity as $log)
                     <div class="d-flex justify-content-between align-items-start py-2 {{ !$loop->last ? 'border-bottom' : '' }}">
                         <div style="min-width:0">
@@ -167,7 +167,7 @@
 @push('scripts')
 <script>
     const ctx = document.getElementById('volumeChart');
-    new Chart(ctx, {
+    const volumeChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: @json($series['labels']),
@@ -202,5 +202,50 @@
             },
         },
     });
+</script>
+<script>
+    // Live dashboard: every few seconds the page is fetched again quietly and
+    // the numbers, lists and chart are updated in place. Nothing reloads, so
+    // scrolling and anything open stay where they are. It pauses while the
+    // tab is hidden and catches up the moment the tab is shown again.
+    (function () {
+        const EVERY = 10000;   // milliseconds
+        let busy = false;
+
+        async function refresh() {
+            if (busy || document.hidden) return;
+            busy = true;
+            try {
+                const res = await fetch(window.location.href, {
+                    credentials: 'same-origin',
+                    cache: 'no-store',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                });
+                if (!res.ok) return;
+                const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+
+                document.querySelectorAll('[data-live]').forEach((el) => {
+                    const fresh = doc.querySelector('[data-live="' + el.dataset.live + '"]');
+                    if (fresh && fresh.innerHTML !== el.innerHTML) el.innerHTML = fresh.innerHTML;
+                });
+
+                const canvas = doc.getElementById('volumeChart');
+                if (canvas && canvas.dataset.series) {
+                    const s = JSON.parse(canvas.dataset.series);
+                    volumeChart.data.labels = s.labels;
+                    volumeChart.data.datasets[0].data = s.authentic;
+                    volumeChart.data.datasets[1].data = s.failed;
+                    volumeChart.update('none');
+                }
+            } catch (e) {
+                /* a failed refresh is silent; the next one tries again */
+            } finally {
+                busy = false;
+            }
+        }
+
+        setInterval(refresh, EVERY);
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+    })();
 </script>
 @endpush

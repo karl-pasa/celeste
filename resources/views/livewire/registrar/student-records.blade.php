@@ -206,9 +206,6 @@
                     in {{ count($groups) }} {{ Str::plural('college', count($groups)) }}
                 </div>
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-sm btn-light" wire:click="expandAll">
-                        <i class="bi bi-arrows-expand"></i> Expand all
-                    </button>
                     <button type="button" class="btn btn-sm btn-light" wire:click="collapseAll">
                         <i class="bi bi-arrows-collapse"></i> Collapse all
                     </button>

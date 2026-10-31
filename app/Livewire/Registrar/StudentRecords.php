@@ -446,15 +446,19 @@ class StudentRecords extends Component
         $this->openSections = [];
     }
 
+    /**
+     * Opens every college and program, but NOT every section. Each section
+     * lists its students, and the full list is thousands of rows: the page
+     * response then exceeds the host's size limit and the server refuses it
+     * (FUNCTION_RESPONSE_PAYLOAD_TOO_LARGE). Sections stay closed until
+     * clicked, so the list of programs and sections can be browsed safely.
+     */
     public function expandAll(): void
     {
         $this->closedColleges = [];
-
-        $programs = collect($this->groups)->flatMap(fn ($c) => $c['programs']);
-
-        $this->openPrograms = $programs->pluck('key')->all();
-        $this->openSections = $programs
-            ->flatMap(fn ($p) => collect($p['sections'])->pluck('key'))
+        $this->openSections = [];
+        $this->openPrograms = collect($this->groups)
+            ->flatMap(fn ($c) => collect($c['programs'])->pluck('key'))
             ->all();
     }
 

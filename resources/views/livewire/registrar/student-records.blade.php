@@ -192,6 +192,11 @@
             $groups    = $this->groups;
             $searching = strlen(trim($search)) >= 2;
             $total     = collect($groups)->sum('count');
+            // Students listed on screen at once. Every row is HTML sent to the
+            // browser; past a few hundred the response is too big for the host.
+            $budget    = 300;
+            // A search opens its matching sections only while the matches are few.
+            $autoOpen  = $searching && $total <= 150;
         @endphp
 
         @if ($total > 0)
@@ -241,7 +246,7 @@
 
                             @if ($programOpen)
                                 @foreach ($program['sections'] as $section)
-                                    @php $sectionOpen = $searching || in_array($section['key'], $openSections, true); @endphp
+                                    @php $sectionOpen = $autoOpen || in_array($section['key'], $openSections, true); @endphp
 
                                     <div class="border-top" wire:key="section-{{ $section['key'] }}">
                                         <button type="button"
@@ -266,7 +271,11 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        @foreach ($section['students'] as $record)
+                                                        @php
+                                                            $visible = $section['students']->take(max($budget, 0));
+                                                            $budget -= $visible->count();
+                                                        @endphp
+                                                        @foreach ($visible as $record)
                                                             <tr wire:key="student-{{ $record->id }}">
                                                                 <td>{{ $record->full_name }}</td>
                                                                 <td class="serial">{{ $record->student_number }}</td>
@@ -293,6 +302,12 @@
                                                     </tbody>
                                                 </table>
                                             </div>
+                                            @if ($visible->count() < $section['count'])
+                                                <p class="small text-muted-celeste px-3 py-2 mb-0">
+                                                    Showing {{ $visible->count() }} of {{ $section['count'] }}.
+                                                    Too many students to show at once. Close another section, or search by student number or last name.
+                                                </p>
+                                            @endif
                                         @endif
                                     </div>
                                 @endforeach

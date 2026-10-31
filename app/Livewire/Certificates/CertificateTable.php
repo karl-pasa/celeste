@@ -27,8 +27,26 @@ class CertificateTable extends Component
     #[Url]
     public string $status = '';
 
+    // Class filters. Each one narrows the next, as on Batch generation, and
+    // they match the student's record (college, program, year level, section).
     #[Url]
-    public string $year = '';
+    public string $college = '';
+
+    #[Url]
+    public string $program = '';
+
+    #[Url]
+    public string $yearLevel = '';
+
+    #[Url]
+    public string $section = '';
+
+    // Date the document was issued: from / to, both optional and inclusive.
+    #[Url]
+    public string $dateFrom = '';
+
+    #[Url]
+    public string $dateTo = '';
 
     /** Show only the documents of one batch (?batch=ID). */
     #[Url]
@@ -44,9 +62,30 @@ class CertificateTable extends Component
 
     public function updating($field): void
     {
-        if (in_array($field, ['search', 'type', 'status', 'year', 'batch'], true)) {
+        if (in_array($field, ['search', 'type', 'status', 'batch', 'college', 'program',
+                              'yearLevel', 'section', 'dateFrom', 'dateTo'], true)) {
             $this->resetPage();
         }
+    }
+
+    // Choosing a different college clears what was chosen beneath it, so a
+    // BSIT filter is never left standing under the College of Education.
+    public function updatedCollege(): void
+    {
+        $this->program = '';
+        $this->yearLevel = '';
+        $this->section = '';
+    }
+
+    public function updatedProgram(): void
+    {
+        $this->yearLevel = '';
+        $this->section = '';
+    }
+
+    public function updatedYearLevel(): void
+    {
+        $this->section = '';
     }
 
     public function sortBy(string $column): void
@@ -57,7 +96,8 @@ class CertificateTable extends Component
 
     public function clearFilters(): void
     {
-        $this->reset(['search', 'type', 'status', 'year', 'batch']);
+        $this->reset(['search', 'type', 'status', 'batch', 'college', 'program',
+            'yearLevel', 'section', 'dateFrom', 'dateTo']);
         $this->resetPage();
     }
 
@@ -124,7 +164,15 @@ class CertificateTable extends Component
             }))
             ->ofType($this->type ?: null)
             ->when($this->status, fn ($q) => $q->where('status', $this->status))
-            ->when($this->year, fn ($q) => $q->whereYear('issued_on', $this->year))
+            ->when($this->dateFrom !== '', fn ($q) => $q->whereDate('issued_on', '>=', $this->dateFrom))
+            ->when($this->dateTo !== '', fn ($q) => $q->whereDate('issued_on', '<=', $this->dateTo))
+            ->when($this->college !== '' || $this->program !== '' || $this->yearLevel !== '' || $this->section !== '',
+                fn ($q) => $q->whereHas('studentRecord', function ($r) {
+                    $r->when($this->college !== '',   fn ($x) => $x->where('college', $this->college))
+                      ->when($this->program !== '',   fn ($x) => $x->where('program', $this->program))
+                      ->when($this->yearLevel !== '', fn ($x) => $x->where('year_level', $this->yearLevel))
+                      ->when($this->section !== '',   fn ($x) => $x->where('section', $this->section));
+                }))
             ->orderBy($this->sort, $this->direction)
             ->paginate(12);
 
@@ -138,8 +186,12 @@ class CertificateTable extends Component
             'integrity'    => $integrity,
             'activeBatch'  => $this->batch !== '' ? CertificateBatch::find((int) $this->batch) : null,
             'types'        => Certificate::types(),
-            'years'        => Certificate::selectRaw('EXTRACT(YEAR FROM issued_on) as y')
-                ->distinct()->orderByDesc('y')->pluck('y'),
+            'colleges'     => config('celeste.colleges', []),
+            'programs'     => $this->college !== ''
+                ? (config('celeste.programs', [])[$this->college] ?? [])
+                : [],
+            'yearLevels'   => config('celeste.academics.year_levels', []),
+            'sections'     => config('celeste.academics.sections', []),
         ]);
     }
 }

@@ -21,8 +21,9 @@
 
     <div class="card-celeste">
         <div class="p-3 border-bottom">
+            {{-- Row 1: what to look for --}}
             <div class="row g-2 align-items-end">
-                <div class="col-lg-4">
+                <div class="col-lg-6">
                     <label for="search" class="form-label">Search</label>
                     <input type="search" id="search" wire:model.live.debounce.300ms="search" class="form-control"
                            placeholder="Serial, fingerprint, name, or student number">
@@ -36,7 +37,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-6 col-lg-2">
+                <div class="col-6 col-lg-3">
                     <label for="statusFilter" class="form-label">Status</label>
                     <select id="statusFilter" wire:model.live="status" class="form-select">
                         <option value="">Any</option>
@@ -45,18 +46,63 @@
                         <option value="superseded">Superseded</option>
                     </select>
                 </div>
-                <div class="col-6 col-lg-2">
-                    <label for="yearFilter" class="form-label">Year</label>
-                    <select id="yearFilter" wire:model.live="year" class="form-select">
-                        <option value="">All years</option>
-                        @foreach ($years as $option)
-                            <option value="{{ (int) $option }}">{{ (int) $option }}</option>
+            </div>
+
+            {{-- Row 2: which class --}}
+            <div class="row g-2 align-items-end mt-1">
+                <div class="col-lg-4">
+                    <label for="collegeFilter" class="form-label">College</label>
+                    <select id="collegeFilter" wire:model.live="college" class="form-select">
+                        <option value="">All colleges</option>
+                        @foreach ($colleges as $option)
+                            <option value="{{ $option }}">{{ $option }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-6 col-lg-1">
-                    <button wire:click="clearFilters" class="btn btn-psu-outline w-100" title="Clear filters">
-                        <i class="bi bi-x-lg"></i>
+                <div class="col-lg-4">
+                    <label for="programFilter" class="form-label">Program</label>
+                    <select id="programFilter" wire:model.live="program" class="form-select" @disabled($college === '')>
+                        <option value="">{{ $college === '' ? 'Choose a college first' : 'All programs' }}</option>
+                        @foreach ($programs as $option)
+                            <option value="{{ $option }}">{{ $option }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <label for="yearLevelFilter" class="form-label">Year level</label>
+                    <select id="yearLevelFilter" wire:model.live="yearLevel" class="form-select" @disabled($program === '')>
+                        <option value="">All</option>
+                        @foreach ($yearLevels as $option)
+                            <option value="{{ $option }}">{{ $option }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <label for="sectionFilter" class="form-label">Section</label>
+                    <select id="sectionFilter" wire:model.live="section" class="form-select" @disabled($yearLevel === '')>
+                        <option value="">All</option>
+                        @foreach ($sections as $option)
+                            <option value="{{ $option }}">{{ $option }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            {{-- Row 3: when it was issued --}}
+            <div class="row g-2 align-items-end mt-1">
+                <div class="col-6 col-lg-3">
+                    <label for="dateFrom" class="form-label">Issued from</label>
+                    <input type="date" id="dateFrom" wire:model.live="dateFrom" class="form-control"
+                           @if ($dateTo !== '') max="{{ $dateTo }}" @endif>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <label for="dateTo" class="form-label">Issued to</label>
+                    <input type="date" id="dateTo" wire:model.live="dateTo" class="form-control"
+                           @if ($dateFrom !== '') min="{{ $dateFrom }}" @endif>
+                </div>
+                <div class="col-lg-2 ms-lg-auto">
+                    <button wire:click="clearFilters" class="btn btn-psu-outline w-100" title="Clear all filters">
+                        <i class="bi bi-x-lg"></i> Clear
                     </button>
                 </div>
             </div>

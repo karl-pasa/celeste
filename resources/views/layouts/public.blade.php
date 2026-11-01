@@ -29,9 +29,6 @@
             </span>
         </a>
         <div class="d-flex align-items-center gap-2">
-            <a href="{{ route('verify.scanner') }}" class="btn btn-sm" style="background:rgba(255,255,255,.12);color:#fff;border:0">
-                <i class="bi bi-qr-code-scan"></i> <span class="d-none d-sm-inline">Scan</span>
-            </a>
             @auth
                 <a href="{{ auth()->user()->isRegistrar() ? route('registrar.dashboard') : route('student.dashboard') }}"
                    class="btn btn-sm btn-light">Dashboard</a>

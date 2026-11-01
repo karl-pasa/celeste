@@ -169,8 +169,20 @@ class AuthController extends Controller
             'role_attempted' => $request->input('role'),
         ]);
 
+        // The error appears on the field it belongs to. An address from the
+        // wrong domain is rejected before the database is consulted, so it is
+        // safe to say so on the email box. Every other failure (no such
+        // account, wrong password, wrong role) shares one message and sits on
+        // the password box: naming the field that was wrong would reveal
+        // whether an address has an account.
+        if ($reason === 'non_institutional_domain') {
+            throw ValidationException::withMessages([
+                'email' => "Use your @{$domain} institutional email address.",
+            ]);
+        }
+
         throw ValidationException::withMessages([
-            'email' => "Those credentials do not match any @{$domain} account.",
+            'password' => "Those credentials do not match any @{$domain} account.",
         ]);
     }
 
@@ -198,7 +210,7 @@ class AuthController extends Controller
         ]);
 
         throw ValidationException::withMessages([
-            'email' => "Too many attempts. Try again in {$seconds} seconds.",
+            'password' => "Too many attempts. Try again in {$seconds} seconds.",
         ]);
     }
 

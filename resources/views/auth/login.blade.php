@@ -3,6 +3,11 @@
 @section('title', 'Sign in')
 
 @section('content')
+<style>
+    /* When the password is wrong, the eye button beside the box turns red too,
+       so the whole field reads as one error. */
+    .input-group .form-control.is-invalid ~ .input-group-text { border-color: var(--psu-red); }
+</style>
 <div class="auth-card">
     <div class="auth-head lockup">
         <img src="{{ asset('images/celeste-logo-navy.svg') }}" alt="CELESTE" class="seal"

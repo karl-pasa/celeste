@@ -17,16 +17,37 @@
     <div class="row g-3 mb-3">
         <div class="col-lg-8">
             <div class="card-celeste h-100">
-                <div class="card-header">Your record</div>
+                <div class="card-header">Your information</div>
                 <div class="p-3 p-md-4">
                     <dl class="mb-0">
                         <div class="detail-row"><dt>Name</dt><dd>{{ $record->full_name }}</dd></div>
                         <div class="detail-row"><dt>Student number</dt><dd class="serial">{{ $record->student_number }}</dd></div>
+                        <div class="detail-row"><dt>Email</dt><dd>{{ $record->email ?: auth()->user()->email }}</dd></div>
                         <div class="detail-row"><dt>College</dt><dd>{{ $record->college }}</dd></div>
                         <div class="detail-row"><dt>Program</dt><dd>{{ $record->program }}</dd></div>
+                        @if ($record->major)
+                            <div class="detail-row"><dt>Major</dt><dd>{{ $record->major }}</dd></div>
+                        @endif
+                        @if ($record->year_level)
+                            <div class="detail-row"><dt>Year level</dt><dd>{{ $record->year_level }}</dd></div>
+                        @endif
+                        @if ($record->section)
+                            <div class="detail-row"><dt>Section</dt><dd>{{ $record->section }}</dd></div>
+                        @endif
+                        @if ($record->semester || $record->academic_year)
+                            <div class="detail-row"><dt>Term</dt>
+                                <dd>{{ trim($record->semester . ($record->academic_year ? ', A.Y. ' . $record->academic_year : '')) }}</dd>
+                            </div>
+                        @endif
                         <div class="detail-row"><dt>Status</dt><dd class="text-capitalize">{{ $record->status }}</dd></div>
+                        @if ($record->date_admitted)
+                            <div class="detail-row"><dt>Date admitted</dt><dd>{{ $record->date_admitted->format('F j, Y') }}</dd></div>
+                        @endif
                         @if ($record->date_graduated)
                             <div class="detail-row"><dt>Graduated</dt><dd>{{ $record->date_graduated->format('F j, Y') }}</dd></div>
+                        @endif
+                        @if ($record->latin_honor)
+                            <div class="detail-row"><dt>Honors</dt><dd>{{ $record->latin_honor }}</dd></div>
                         @endif
                     </dl>
                 </div>

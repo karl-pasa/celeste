@@ -28,7 +28,18 @@
             <div class="alert alert-success py-2 px-3 small mb-3">{{ session('status') }}</div>
         @endif
 
-        <form method="POST" action="{{ route('login.attempt') }}" x-data="{ role: '{{ old('role', $role) }}' }">
+        <form method="POST" action="{{ route('login.attempt') }}" x-data="{
+                  role: '{{ old('role', $role) }}',
+                  // An error belongs to the tab it happened on. Switching tabs
+                  // clears the red outlines and messages, so the other tab
+                  // starts clean.
+                  switchTo(next) {
+                      if (next === this.role) return;
+                      this.role = next;
+                      this.$root.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+                      this.$root.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                  }
+              }">
             @csrf
 
             <div class="role-tabs mb-3" role="tablist" aria-label="Account type">
@@ -39,7 +50,7 @@
                     <button type="button" role="tab"
                             class="role-tab" :class="{ 'active': role === '{{ $value }}' }"
                             :aria-selected="role === '{{ $value }}'"
-                            @click="role = '{{ $value }}'">
+                            @click="switchTo('{{ $value }}')">
                         <i class="bi {{ $icon }}"></i>{{ $label }}
                     </button>
                 @endforeach

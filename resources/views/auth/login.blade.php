@@ -31,13 +31,20 @@
         <form method="POST" action="{{ route('login.attempt') }}" x-data="{
                   role: '{{ old('role', $role) }}',
                   // An error belongs to the tab it happened on. Switching tabs
-                  // clears the red outlines and messages, so the other tab
-                  // starts clean.
+                  // clears the red outlines, the messages and what was
+                  // typed, so the other tab starts clean.
                   switchTo(next) {
                       if (next === this.role) return;
                       this.role = next;
                       this.$root.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
                       this.$root.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                      // The other account type is a different person, so the typed
+                      // email and password are emptied as well.
+                      const email = this.$root.querySelector('#email');
+                      const password = this.$root.querySelector('#password');
+                      if (email) email.value = '';
+                      if (password) password.value = '';
+                      if (email) email.focus();
                   }
               }">
             @csrf

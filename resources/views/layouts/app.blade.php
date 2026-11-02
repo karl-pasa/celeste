@@ -15,12 +15,26 @@
     <link rel="icon" type="image/png" sizes="any" href="{{ asset('favicon-96x96.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
     <style>
-        /* The menu scrolls by itself, so the profile and Sign out button at the
-           bottom of the sidebar stay on screen however many links there are. */
+        /* Sign out stays on screen. On a short screen the menu is made more
+           compact so everything fits; if it still does not, it scrolls with
+           the mouse wheel or by touch, with no scroll bar drawn. */
         .sidebar { display: flex; flex-direction: column; height: 100vh; height: 100dvh; max-height: 100dvh; overflow: hidden; }
         .sidebar .brand { flex: 0 0 auto; }
-        .sidebar nav { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+        .sidebar nav { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; -ms-overflow-style: none; }
+        .sidebar nav::-webkit-scrollbar { display: none; }
         .sidebar .sidebar-foot { flex: 0 0 auto; margin-top: 0; }
+
+        @media (max-height: 800px) {
+            .sidebar .brand { padding-top: .75rem !important; padding-bottom: .75rem !important; }
+            .sidebar .brand img { width: 44px !important; height: 44px !important; flex-basis: 44px !important; }
+            .sidebar .nav-section { padding-top: .5rem !important; padding-bottom: .15rem !important; margin-top: 0 !important; }
+            .sidebar .nav-link { padding-top: .38rem !important; padding-bottom: .38rem !important; }
+            .sidebar .sidebar-foot { padding-top: .6rem !important; padding-bottom: .6rem !important; }
+        }
+        @media (max-height: 640px) {
+            .sidebar .nav-link { padding-top: .28rem !important; padding-bottom: .28rem !important; font-size: .85rem; }
+            .sidebar .nav-section { padding-top: .35rem !important; }
+        }
     </style>
     @livewireStyles
 </head>

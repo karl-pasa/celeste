@@ -15,25 +15,22 @@
     <link rel="icon" type="image/png" sizes="any" href="{{ asset('favicon-96x96.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
     <style>
-        /* Sign out stays on screen. On a short screen the menu is made more
-           compact so everything fits; if it still does not, it scrolls with
-           the mouse wheel or by touch, with no scroll bar drawn. */
+        /* The profile and Sign out block sits directly under the last menu
+           link, with no empty gap, and always stays on screen. If a very short
+           screen cannot hold everything, the menu scrolls by wheel or touch
+           with no scroll bar drawn. */
         .sidebar { display: flex; flex-direction: column; height: 100vh; height: 100dvh; max-height: 100dvh; overflow: hidden; }
         .sidebar .brand { flex: 0 0 auto; }
-        .sidebar nav { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; -ms-overflow-style: none; }
+        .sidebar nav { flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; -ms-overflow-style: none; }
         .sidebar nav::-webkit-scrollbar { display: none; }
         .sidebar .sidebar-foot { flex: 0 0 auto; margin-top: 0; }
 
-        @media (max-height: 800px) {
-            .sidebar .brand { padding-top: .75rem !important; padding-bottom: .75rem !important; }
-            .sidebar .brand img { width: 44px !important; height: 44px !important; flex-basis: 44px !important; }
-            .sidebar .nav-section { padding-top: .5rem !important; padding-bottom: .15rem !important; margin-top: 0 !important; }
-            .sidebar .nav-link { padding-top: .38rem !important; padding-bottom: .38rem !important; }
-            .sidebar .sidebar-foot { padding-top: .6rem !important; padding-bottom: .6rem !important; }
-        }
-        @media (max-height: 640px) {
-            .sidebar .nav-link { padding-top: .28rem !important; padding-bottom: .28rem !important; font-size: .85rem; }
-            .sidebar .nav-section { padding-top: .35rem !important; }
+        /* A little tighter only when the screen is short. */
+        @media (max-height: 760px) {
+            .sidebar .brand { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+            .sidebar .brand img { width: 52px !important; height: 52px !important; flex-basis: 52px !important; }
+            .sidebar .nav-section { padding-top: .75rem !important; }
+            .sidebar .nav-link { padding-top: .45rem !important; padding-bottom: .45rem !important; }
         }
     </style>
     @livewireStyles
@@ -102,12 +99,11 @@
                     <div style="color:rgba(255,255,255,.55); font-size:.75rem">{{ auth()->user()->roleLabel() }}</div>
                 </div>
             </div>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button class="btn btn-sm w-100" style="background:rgba(255,255,255,.1); color:#fff; border:0">
-                    <i class="bi bi-box-arrow-right"></i> Sign out
-                </button>
-            </form>
+            {{-- Asks first; the form itself is inside the confirmation box below. --}}
+            <button type="button" class="btn btn-sm w-100" style="background:rgba(255,255,255,.1); color:#fff; border:0"
+                    data-bs-toggle="modal" data-bs-target="#signOutModal">
+                <i class="bi bi-box-arrow-right"></i> Sign out
+            </button>
         </div>
     </aside>
 
@@ -143,6 +139,23 @@
             @endif
 
             @yield('content')
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="signOutModal" tabindex="-1" aria-labelledby="signOutTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-body text-center p-4">
+                <i class="bi bi-box-arrow-right" style="font-size:2rem;color:var(--psu-navy-600, #12224f)"></i>
+                <h6 class="mt-2 mb-1" id="signOutTitle">Sign out?</h6>
+                <p class="small text-muted-celeste mb-3">You will need to sign in again to continue.</p>
+                <form method="POST" action="{{ route('logout') }}" class="d-flex gap-2 justify-content-center">
+                    @csrf
+                    <button type="button" class="btn btn-psu-outline" data-bs-dismiss="modal">Stay signed in</button>
+                    <button type="submit" class="btn btn-psu">Sign out</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

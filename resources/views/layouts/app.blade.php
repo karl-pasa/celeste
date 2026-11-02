@@ -24,6 +24,9 @@
         .sidebar nav { flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; -ms-overflow-style: none; }
         .sidebar nav::-webkit-scrollbar { display: none; }
         .sidebar .sidebar-foot { flex: 0 0 auto; margin-top: 0; }
+        /* Student menu is short: the name and Sign out block sits at the bottom
+           of the sidebar instead of floating under the one link. */
+        .sidebar.sidebar-pinned nav { flex: 1 1 auto; }
 
         /* A little tighter only when the screen is short. */
         @media (max-height: 760px) {
@@ -38,7 +41,7 @@
 <body>
 <div class="app-shell" x-data="{ nav: false }">
 
-    <aside class="sidebar" :class="{ 'open': nav }">
+    <aside class="sidebar {{ auth()->user()->isRegistrar() ? '' : 'sidebar-pinned' }}" :class="{ 'open': nav }">
         <div class="brand" style="gap:.75rem;padding-top:1.25rem;padding-bottom:1.25rem">
             <img src="{{ asset('images/psu-seal-white.png') }}" alt="Partido State University seal"
                  style="width:60px;height:60px;flex:0 0 60px;object-fit:contain"

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 /**
- * Creates and maintains student logins for the administrator.
+ * Creates and maintains student logins for the Registrar.
  *
  * Email    : initials of the first name + last name + last 3 digits of the
  *            student number + .pbox@parsu.edu.ph
@@ -97,8 +97,8 @@ class StudentLoginManager
     }
 
     /**
-     * The administrator types the new password. The student is still asked to
-     * choose their own at the next sign-in, because the administrator now
+     * The Registrar types the new password. The student is still asked to
+     * choose their own at the next sign-in, because the Registrar now
      * knows this one.
      */
     public function setPassword(User $user, string $password): void

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Admin;
+namespace App\Livewire\Registrar;
 
 use App\Models\AuditLog;
 use App\Models\StudentRecord;
@@ -11,7 +11,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 /**
- * The administrator's list of students and their logins.
+ * The Registrar's list of students and their logins.
  */
 class StudentLogins extends Component
 {
@@ -49,7 +49,7 @@ class StudentLogins extends Component
     /** Runs on every request, including each button press. */
     public function boot(): void
     {
-        abort_unless(auth()->user()?->isAdmin(), 403);
+        abort_unless(auth()->user()?->isRegistrar(), 403);
     }
 
     public function updatedSearch(): void  { $this->resetPage(); }
@@ -79,7 +79,7 @@ class StudentLogins extends Component
 
         switch ($logins->create($record)) {
             case StudentLoginManager::CREATED:
-                $this->audit('admin.login_created', ['student_number' => $record->student_number]);
+                $this->audit('student_login.created', ['student_number' => $record->student_number]);
                 $this->say("Login created for {$name}. Email: {$logins->emailFor($record)}. First password: {$record->student_number}");
                 break;
             case StudentLoginManager::EXISTS:
@@ -107,7 +107,7 @@ class StudentLogins extends Component
         });
 
         if ($made > 0) {
-            $this->audit('admin.logins_created', ['count' => $made]);
+            $this->audit('student_login.batch_created', ['count' => $made]);
         }
 
         $left = $this->query()->whereNull('users.id')->count();
@@ -121,7 +121,7 @@ class StudentLogins extends Component
         $this->say($text, $made > 0 ? 'success' : 'warning');
     }
 
-    /** Opens the box where the administrator types the new password. */
+    /** Opens the box where the Registrar types the new password. */
     public function openReset(int $loginId): void
     {
         User::where('role', User::ROLE_STUDENT)->findOrFail($loginId);
@@ -151,7 +151,7 @@ class StudentLogins extends Component
         $user = User::where('role', User::ROLE_STUDENT)->findOrFail($this->resetId);
         $logins->setPassword($user, $this->newPassword);
 
-        $this->audit('admin.password_reset', ['student_number' => $user->student_number]);
+        $this->audit('student_login.password_reset', ['student_number' => $user->student_number]);
         $this->say("Password changed for {$user->name}. Give them the new password; they will be asked to choose their own when they sign in.");
 
         $this->cancelReset();
@@ -219,7 +219,7 @@ class StudentLogins extends Component
             ? collect()
             : StudentRecord::query()->where('college', $this->college)->distinct()->orderBy('program')->pluck('program')->filter()->values();
 
-        return view('livewire.admin.student-logins', [
+        return view('livewire.registrar.student-logins', [
             'rows'         => $this->query()->paginate(20),
             'withoutLogin' => $this->query()->whereNull('users.id')->count(),
             'colleges'     => $colleges,

@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BatchDownloadController;
 use App\Http\Controllers\CertificateController;
@@ -8,7 +7,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PublicVerificationController;
-use App\Http\Middleware\EnsureAdmin;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PublicVerificationController::class, 'index'])->name('home');
@@ -55,19 +53,14 @@ Route::middleware(['auth', 'role:registrar'])->prefix('registrar')->name('regist
     Route::get('/certificates/{certificate}', [CertificateController::class, 'show'])->name('certificates.show');
 
     Route::get('/students', [CertificateController::class, 'students'])->name('students');
+    Route::get('/student-logins', function () {
+        return view('registrar.logins');
+    })->name('logins');
     Route::get('/analytics', [DashboardController::class, 'analytics'])->name('analytics');
     Route::get('/logs', [DashboardController::class, 'logs'])->name('logs');
     Route::get('/transcript', function () {
         return view('registrar.transcript');
     })->name('transcript');
-});
-
-// Administrator area. EnsureAdmin answers 404 to anyone else, so the
-// address does not even confirm that the area exists.
-Route::middleware(['auth', EnsureAdmin::class])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
-    Route::get('/student-logins', [AdminController::class, 'logins'])->name('logins');
-    Route::get('/student-records', [AdminController::class, 'students'])->name('students');
 });
 
 Route::middleware(['auth', 'role:student'])->prefix('my')->name('student.')->group(function () {

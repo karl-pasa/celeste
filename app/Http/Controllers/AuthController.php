@@ -40,7 +40,7 @@ class AuthController extends Controller
     public function showLogin(Request $request): View
     {
         return view('auth.login', [
-            'role' => in_array($request->query('as'), [User::ROLE_STUDENT, User::ROLE_REGISTRAR, User::ROLE_ADMIN], true)
+            'role' => in_array($request->query('as'), [User::ROLE_STUDENT, User::ROLE_REGISTRAR], true)
                 ? $request->query('as')
                 : User::ROLE_STUDENT,
         ]);
@@ -54,7 +54,7 @@ class AuthController extends Controller
         $credentials = $request->validate([
             'email'    => ['required', 'email', 'max:150'],
             'password' => ['required', 'string', 'max:200'],
-            'role'     => ['required', 'in:' . User::ROLE_STUDENT . ',' . User::ROLE_REGISTRAR . ',' . User::ROLE_ADMIN],
+            'role'     => ['required', 'in:' . User::ROLE_STUDENT . ',' . User::ROLE_REGISTRAR],
         ], [
             'email.required'    => 'Enter your institutional email address.',
             'email.email'       => "That does not look like an email address. Use your @{$domain} account.",
@@ -110,11 +110,9 @@ class AuthController extends Controller
 
         AuditLog::record('auth.login', $user, ['role' => $user->role]);
 
-        return redirect()->intended(match (true) {
-            $user->isAdmin()     => route('admin.dashboard'),
-            $user->isRegistrar() => route('registrar.dashboard'),
-            default              => route('student.dashboard'),
-        });
+        return redirect()->intended(
+            $user->isRegistrar() ? route('registrar.dashboard') : route('student.dashboard')
+        );
     }
 
     public function logout(Request $request): RedirectResponse

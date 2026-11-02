@@ -362,6 +362,47 @@ class StudentRecords extends Component
                 $sectionOrder = array_flip(array_values($this->sections()));
 
                 $sectionKeys = $bySection->keys()->map(fn ($k) => (string) $k)->all();
+
+                // A section whose students have all moved on stays in the list,
+                // empty, so the Registrar still sees it and can move others in.
+                // Only on the full list: while searching or filtering, empty
+                // sections would just be noise.
+                if ($this->statusFilter === '' && strlen(trim($this->search)) < 2) {
+                    $allYears = array_values($this->yearLevels());
+                    $allSecs  = array_values($this->sections());
+
+                    if ($allYears !== []) {
+                        $usedYears = [];
+                        $usedSecs  = [];
+                        foreach ($sectionKeys as $existing) {
+                            [$y, $s] = json_decode($existing, true);
+                            $usedYears[] = $y;
+                            $usedSecs[]  = $s;
+                        }
+
+                        // At least four years are shown; more when the program has them.
+                        $lastYear = min(3, count($allYears) - 1);
+                        foreach ($usedYears as $y) {
+                            $at = array_search($y, $allYears, true);
+                            if ($at !== false) {
+                                $lastYear = max($lastYear, $at);
+                            }
+                        }
+
+                        // The sections this program already uses, in the usual order.
+                        $useSecs = array_values(array_filter($allSecs, fn ($s) => in_array($s, $usedSecs, true)));
+
+                        for ($yi = 0; $yi <= $lastYear; $yi++) {
+                            foreach ($useSecs as $sec) {
+                                $k = json_encode([$allYears[$yi], $sec]);
+                                if (! in_array($k, $sectionKeys, true)) {
+                                    $sectionKeys[] = $k;
+                                    $bySection->put($k, collect());
+                                }
+                            }
+                        }
+                    }
+                }
                 usort($sectionKeys, function ($a, $b) use ($yearOrder, $sectionOrder) {
                     [$ya, $sa] = json_decode($a, true);
                     [$yb, $sb] = json_decode($b, true);

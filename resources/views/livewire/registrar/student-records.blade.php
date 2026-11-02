@@ -366,6 +366,13 @@
                                                                 </td>
                                                             </tr>
                                                         @endforeach
+                                                        @if ($section['count'] === 0)
+                                                            <tr>
+                                                                <td colspan="6" class="text-center text-muted-celeste py-3 small">
+                                                                    No students in this section.
+                                                                </td>
+                                                            </tr>
+                                                        @endif
                                                     </tbody>
                                                 </table>
                                             </div>

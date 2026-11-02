@@ -152,14 +152,14 @@
                     <h6 class="fw-semibold mb-2" id="signOutTitle">Sign out</h6>
                     <p class="small mb-0">Do you want to sign out of CELESTE?</p>
                 </div>
-                <div class="modal-footer border-0 justify-content-start gap-2" style="padding:.75rem 1.5rem 1.25rem">
-                    {{-- Red Sign out on the left; plain Cancel on the right. --}}
-                    <button type="submit" class="btn btn-sm px-3"
-                            style="background:var(--psu-red, #c9354a);border-color:var(--psu-red, #c9354a);color:#fff">
+                <div class="modal-footer border-0 gap-2" style="padding:.75rem 1.5rem 1.25rem">
+                    {{-- Two equal halves: red Sign out on the left, plain Cancel on the right. --}}
+                    <button type="submit" class="btn btn-sm flex-fill m-0"
+                            style="background:var(--psu-red, #c9354a);border-color:var(--psu-red, #c9354a);color:#fff;padding:.5rem 0">
                         Sign out
                     </button>
-                    <button type="button" class="btn btn-sm px-3" data-bs-dismiss="modal"
-                            style="background:transparent;border:0;box-shadow:none;color:inherit">
+                    <button type="button" class="btn btn-sm flex-fill m-0" data-bs-dismiss="modal"
+                            style="background:transparent;border:0;box-shadow:none;color:inherit;padding:.5rem 0">
                         Cancel
                     </button>
                 </div>
@@ -190,52 +190,6 @@
         }
         tick();
         setInterval(tick, 1000);
-    })();
-</script>
-<script>
-    // Leaving the website for more than 30 seconds signs the user out.
-    // While this page is in front it tells the server every 10 seconds that
-    // someone is still here. When the page is hidden (another tab, minimised,
-    // closed) it stops, and the server ends the session once 30 seconds pass.
-    (function () {
-        const LIMIT = 30000, BEAT = 10000;
-        const token = document.querySelector('meta[name="csrf-token"]')?.content || '';
-        const pingUrl = @json(route('session.ping'));
-        const logoutUrl = @json(route('logout'));
-        const loginUrl = @json(route('login', ['timeout' => 1]));
-        let beat = null, awayTimer = null, gone = false;
-
-        const body = () => { const f = new FormData(); f.append('_token', token); return f; };
-        const toLogin = () => { if (!gone) { gone = true; window.location.replace(loginUrl); } };
-
-        async function ping() {
-            try {
-                const res = await fetch(pingUrl, {
-                    method: 'POST', body: body(), credentials: 'same-origin', cache: 'no-store',
-                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                });
-                if (res.status === 401 || res.status === 419) toLogin();
-            } catch (e) { /* offline for a moment: the next one tries again */ }
-        }
-
-        function away() {
-            clearInterval(beat); beat = null;
-            try { navigator.sendBeacon(pingUrl, body()); } catch (e) {}   // marks the moment of leaving
-            clearTimeout(awayTimer);
-            awayTimer = setTimeout(() => {
-                fetch(logoutUrl, { method: 'POST', body: body(), credentials: 'same-origin', keepalive: true }).catch(() => {});
-            }, LIMIT);
-        }
-
-        function back() {
-            clearTimeout(awayTimer);
-            ping();
-            if (!beat) beat = setInterval(() => { if (!document.hidden) ping(); }, BEAT);
-        }
-
-        document.addEventListener('visibilitychange', () => (document.hidden ? away() : back()));
-        window.addEventListener('pagehide', () => { try { navigator.sendBeacon(pingUrl, body()); } catch (e) {} });
-        if (!document.hidden) back();
     })();
 </script>
 @stack('scripts')

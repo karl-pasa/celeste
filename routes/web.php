@@ -7,7 +7,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PublicVerificationController;
-use App\Http\Middleware\EnforceActivityWindow;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PublicVerificationController::class, 'index'])->name('home');
@@ -37,19 +36,14 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
-// "Still here" message from the open page. See EnforceActivityWindow.
-Route::post('/session/ping', fn () => response()->noContent())
-    ->middleware(['auth', EnforceActivityWindow::class, 'throttle:40,1'])
-    ->name('session.ping');
-
-Route::middleware(['auth', EnforceActivityWindow::class])->group(function () {
+Route::middleware('auth')->group(function () {
     Route::get('/password/change', [PasswordResetController::class, 'changeForm'])->name('password.change');
     Route::post('/password/change', [PasswordResetController::class, 'change'])
         ->middleware('throttle:6,1')
         ->name('password.change.store');
 });
 
-Route::middleware(['auth', EnforceActivityWindow::class, 'role:registrar'])->prefix('registrar')->name('registrar.')->group(function () {
+Route::middleware(['auth', 'role:registrar'])->prefix('registrar')->name('registrar.')->group(function () {
     Route::get('/', [DashboardController::class, 'registrar'])->name('dashboard');
 
     Route::get('/certificates', [CertificateController::class, 'index'])->name('certificates');
@@ -69,12 +63,12 @@ Route::middleware(['auth', EnforceActivityWindow::class, 'role:registrar'])->pre
     })->name('transcript');
 });
 
-Route::middleware(['auth', EnforceActivityWindow::class, 'role:student'])->prefix('my')->name('student.')->group(function () {
+Route::middleware(['auth', 'role:student'])->prefix('my')->name('student.')->group(function () {
     Route::get('/', [DashboardController::class, 'student'])->name('dashboard');
     Route::get('/documents', [DashboardController::class, 'documents'])->name('documents');
 });
 
-Route::middleware(['auth', EnforceActivityWindow::class])->group(function () {
+Route::middleware('auth')->group(function () {
     Route::get('/certificates/{certificate}/download', [CertificateController::class, 'download'])
         ->name('certificates.download');
     Route::get('/certificates/{certificate}/print', [CertificateController::class, 'print'])

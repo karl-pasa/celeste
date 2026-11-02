@@ -94,11 +94,11 @@
                             </td>
                             <td>
                                 @if (! $row->login_id)
-                                    <span class="badge text-bg-secondary">No login</span>
+                                    <span class="badge text-bg-secondary">No account</span>
                                 @elseif (! $row->login_active)
-                                    <span class="badge text-bg-danger">Switched off</span>
+                                    <span class="badge text-bg-danger">Disabled</span>
                                 @elseif ($row->login_pw_changed === null)
-                                    <span class="badge text-bg-warning">First password</span>
+                                    <span class="badge text-bg-warning">Must change password</span>
                                 @else
                                     <span class="badge text-bg-success">Active</span>
                                 @endif

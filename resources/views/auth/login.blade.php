@@ -24,12 +24,6 @@
     </div>
 
     <div class="auth-body">
-        @if (request()->boolean('timeout'))
-            <div class="alert alert-warning py-2 px-3 small mb-3">
-                You were signed out because the website was left for more than 30 seconds. Please sign in again.
-            </div>
-        @endif
-
         @if (session('status'))
             <div class="alert alert-success py-2 px-3 small mb-3">{{ session('status') }}</div>
         @endif

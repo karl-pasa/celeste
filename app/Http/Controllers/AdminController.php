@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Certificate;
 use App\Models\StudentRecord;
 use App\Models\User;
+use App\Models\VerificationLog;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
 
@@ -26,6 +27,8 @@ class AdminController extends Controller
             'withoutLogin' => $withoutLogin,
             'registrars'   => User::where('role', User::ROLE_REGISTRAR)->count(),
             'certificates' => Certificate::count(),
+            'switchedOff'  => User::where('role', User::ROLE_STUDENT)->where('is_active', false)->count(),
+            'verifications' => VerificationLog::where('created_at', '>=', now()->subDays(30))->count(),
         ]);
     }
 

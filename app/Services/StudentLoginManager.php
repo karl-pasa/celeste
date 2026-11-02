@@ -96,6 +96,20 @@ class StudentLoginManager
         return self::CREATED;
     }
 
+    /**
+     * The administrator types the new password. The student is still asked to
+     * choose their own at the next sign-in, because the administrator now
+     * knows this one.
+     */
+    public function setPassword(User $user, string $password): void
+    {
+        $user->forceFill([
+            'password'            => $password,   // hashed by the model's cast
+            'password_changed_at' => null,
+            'remember_token'      => null,
+        ])->save();
+    }
+
     /** Back to the first password, and the student must choose a new one again. */
     public function resetPassword(User $user): void
     {

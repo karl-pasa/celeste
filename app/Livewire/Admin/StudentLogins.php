@@ -39,6 +39,10 @@ class StudentLogins extends Component
     #[Url]
     public string $status = '';
 
+    /** The login whose password is being changed, and the password typed for it. */
+    public ?int $resetId = null;
+    public string $newPassword = '';
+
     public ?string $notice = null;
     public string $noticeType = 'success';
 
@@ -117,22 +121,40 @@ class StudentLogins extends Component
         $this->say($text, $made > 0 ? 'success' : 'warning');
     }
 
-    public function resetPassword(int $loginId, StudentLoginManager $logins): void
+    /** Opens the box where the administrator types the new password. */
+    public function openReset(int $loginId): void
     {
-        $user = User::where('role', User::ROLE_STUDENT)->findOrFail($loginId);
-        $logins->resetPassword($user);
+        User::where('role', User::ROLE_STUDENT)->findOrFail($loginId);
 
-        $this->audit('admin.password_reset', ['student_number' => $user->student_number]);
-        $this->say("Password reset for {$user->name}. It is their student number again, and they will be asked to choose a new one when they sign in.");
+        $this->resetId = $loginId;
+        $this->newPassword = '';
+        $this->resetValidation();
     }
 
-    public function toggleActive(int $loginId): void
+    public function cancelReset(): void
     {
-        $user = User::where('role', User::ROLE_STUDENT)->findOrFail($loginId);
-        $user->forceFill(['is_active' => ! $user->is_active])->save();
+        $this->resetId = null;
+        $this->newPassword = '';
+        $this->resetValidation();
+    }
 
-        $this->audit($user->is_active ? 'admin.login_enabled' : 'admin.login_disabled', ['student_number' => $user->student_number]);
-        $this->say($user->is_active ? "{$user->name} can sign in again." : "{$user->name} can no longer sign in.", $user->is_active ? 'success' : 'warning');
+    public function savePassword(StudentLoginManager $logins): void
+    {
+        $this->validate([
+            'newPassword' => ['required', 'string', 'min:8', 'max:100'],
+        ], [
+            'newPassword.required' => 'Type the new password.',
+            'newPassword.min'      => 'Use at least 8 characters.',
+            'newPassword.max'      => 'Use 100 characters or fewer.',
+        ]);
+
+        $user = User::where('role', User::ROLE_STUDENT)->findOrFail($this->resetId);
+        $logins->setPassword($user, $this->newPassword);
+
+        $this->audit('admin.password_reset', ['student_number' => $user->student_number]);
+        $this->say("Password changed for {$user->name}. Give them the new password; they will be asked to choose their own when they sign in.");
+
+        $this->cancelReset();
     }
 
     // ------------------------------------------------------------------
@@ -204,6 +226,7 @@ class StudentLogins extends Component
             'programs'     => $programs,
             'batch'        => self::BATCH,
             'logins'       => $logins,
+            'resetUser'    => $this->resetId ? User::find($this->resetId) : null,
         ]);
     }
 }

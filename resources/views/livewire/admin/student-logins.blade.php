@@ -111,14 +111,8 @@
                                     </button>
                                 @else
                                     <button type="button" class="btn btn-sm btn-psu-outline"
-                                            wire:click="resetPassword({{ $row->login_id }})"
-                                            wire:confirm="Reset the password of {{ $row->first_name }} {{ $row->last_name }} to their student number?">
+                                            wire:click="openReset({{ $row->login_id }})">
                                         Reset password
-                                    </button>
-                                    <button type="button" class="btn btn-sm {{ $row->login_active ? 'btn-outline-danger' : 'btn-outline-success' }}"
-                                            wire:click="toggleActive({{ $row->login_id }})"
-                                            wire:confirm="{{ $row->login_active ? 'Switch off this login? The student will not be able to sign in.' : 'Switch this login back on?' }}">
-                                        {{ $row->login_active ? 'Switch off' : 'Switch on' }}
                                     </button>
                                 @endif
                             </td>
@@ -136,4 +130,37 @@
     <div class="mt-3">
         {{ $rows->links() }}
     </div>
+
+    @if ($resetUser)
+        <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true" style="background:rgba(10,20,50,.55)">
+            <div class="modal-dialog modal-dialog-centered">
+                <form class="modal-content" wire:submit="savePassword">
+                    <div class="modal-header">
+                        <h6 class="modal-title">Reset password</h6>
+                        <button type="button" class="btn-close" aria-label="Close" wire:click="cancelReset"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="small mb-3">
+                            New password for <strong>{{ $resetUser->name }}</strong>
+                            <span class="text-muted-celeste">({{ $resetUser->student_number }})</span>
+                        </p>
+                        <label for="newPassword" class="form-label small mb-1">New password</label>
+                        <input type="text" id="newPassword" wire:model="newPassword" autocomplete="off" autofocus
+                               class="form-control @error('newPassword') is-invalid @enderror"
+                               placeholder="At least 8 characters">
+                        @error('newPassword')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                        <p class="small text-muted-celeste mt-2 mb-0">
+                            The student is asked to choose their own password the next time they sign in.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-psu-outline" wire:click="cancelReset">Cancel</button>
+                        <button type="submit" class="btn btn-psu" wire:loading.attr="disabled" wire:target="savePassword">Save password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
 </div>

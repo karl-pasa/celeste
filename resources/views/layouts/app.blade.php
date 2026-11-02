@@ -14,6 +14,14 @@
     <link rel="icon" href="{{ asset('favicon.ico') }}?v=2" sizes="any">
     <link rel="icon" type="image/png" sizes="any" href="{{ asset('favicon-96x96.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
+    <style>
+        /* The menu scrolls by itself, so the profile and Sign out button at the
+           bottom of the sidebar stay on screen however many links there are. */
+        .sidebar { display: flex; flex-direction: column; height: 100vh; height: 100dvh; max-height: 100dvh; overflow: hidden; }
+        .sidebar .brand { flex: 0 0 auto; }
+        .sidebar nav { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+        .sidebar .sidebar-foot { flex: 0 0 auto; margin-top: 0; }
+    </style>
     @livewireStyles
 </head>
 <body>

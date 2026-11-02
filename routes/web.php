@@ -68,7 +68,9 @@ Route::middleware(['auth', 'role:student'])->prefix('my')->name('student.')->gro
     Route::get('/documents', [DashboardController::class, 'documents'])->name('documents');
 });
 
-Route::middleware('auth')->group(function () {
+// Only the Registrar can download or print a document. A student sees what has
+// been issued to them, but copies are released by the office.
+Route::middleware(['auth', 'role:registrar'])->group(function () {
     Route::get('/certificates/{certificate}/download', [CertificateController::class, 'download'])
         ->name('certificates.download');
     Route::get('/certificates/{certificate}/print', [CertificateController::class, 'print'])

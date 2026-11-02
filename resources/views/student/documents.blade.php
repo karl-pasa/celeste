@@ -55,14 +55,14 @@
         </div>
         <div class="col-lg-4">
             <div class="card-celeste h-100">
-                <div class="card-header">Sharing a document</div>
+                <div class="card-header">Getting a copy</div>
                 <div class="p-3">
                     <p class="text-muted-celeste mb-2" style="font-size:.875rem">
-                        Send the PDF as it is. The QR code on it lets an employer or school confirm it is real
-                        without contacting the Registrar.
+                        Copies of your documents are released by the Office of the University Registrar.
+                        This page lists what has been issued to you and whether each one is still valid.
                     </p>
                     <p class="text-muted-celeste mb-0" style="font-size:.875rem">
-                        A printed copy works the same way — the code survives photocopying.
+                        To request a copy, visit the Registrar's office.
                     </p>
                 </div>
             </div>
@@ -74,7 +74,7 @@
         <div class="table-responsive">
             <table class="table table-celeste">
                 <thead>
-                    <tr><th>Document</th><th>Serial</th><th>Issued</th><th>Status</th><th class="text-end">Actions</th></tr>
+                    <tr><th>Document</th><th>Serial</th><th>Issued</th><th>Status</th></tr>
                 </thead>
                 <tbody>
                     @forelse ($certificates as $certificate)
@@ -87,21 +87,9 @@
                                     'issued' => 'badge-issued', 'revoked' => 'badge-revoked', default => 'badge-superseded',
                                 } }}">{{ ucfirst($certificate->status) }}</span>
                             </td>
-                            <td class="text-end">
-                                @if ($certificate->status === 'issued')
-                                    <a href="{{ route('certificates.download', $certificate) }}" class="btn btn-sm btn-psu">
-                                        <i class="bi bi-download"></i> Download
-                                    </a>
-                                    <a href="{{ route('certificates.print', $certificate) }}" target="_blank" class="btn btn-sm btn-psu-outline">
-                                        <i class="bi bi-printer"></i>
-                                    </a>
-                                @else
-                                    <span class="text-muted-celeste" style="font-size:.8125rem">Not available</span>
-                                @endif
-                            </td>
                         </tr>
                     @empty
-                        <tr><td colspan="5">
+                        <tr><td colspan="4">
                             <div class="empty">
                                 <div class="empty-icon"><i class="bi bi-file-earmark"></i></div>
                                 <h6>No documents yet</h6>

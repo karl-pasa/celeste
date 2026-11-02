@@ -213,6 +213,60 @@
             </div>
         @endif
 
+        @if (count($picked) > 0)
+            {{-- Appears once students are ticked. Only the boxes that are
+                 filled in are changed; a blank box leaves that field alone. --}}
+            <div class="card-celeste mb-3 p-3" style="position:sticky;top:.5rem;z-index:5">
+                <div class="d-flex flex-wrap align-items-end gap-2">
+                    <div class="me-2">
+                        <div class="fw-semibold">{{ count($picked) }} {{ Str::plural('student', count($picked)) }} selected</div>
+                        <div class="small text-muted-celeste">Fill in only what should change.</div>
+                    </div>
+
+                    <div>
+                        <label class="form-label small mb-1">Year level</label>
+                        <select class="form-select form-select-sm @error('bulkYear') is-invalid @enderror" wire:model="bulkYear">
+                            <option value="">No change</option>
+                            @foreach ($this->yearLevels() as $level)
+                                <option value="{{ $level }}">{{ $level }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label small mb-1">Section</label>
+                        <select class="form-select form-select-sm @error('bulkSection') is-invalid @enderror" wire:model="bulkSection">
+                            <option value="">No change</option>
+                            @foreach ($this->sections() as $sectionOption)
+                                <option value="{{ $sectionOption }}">{{ $sectionOption }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label small mb-1">Status</label>
+                        <select class="form-select form-select-sm @error('bulkStatus') is-invalid @enderror" wire:model="bulkStatus">
+                            <option value="">No change</option>
+                            @foreach ($this->statuses() as $value => $label)
+                                <option value="{{ $value }}">{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div style="max-width:130px">
+                        <label class="form-label small mb-1">Academic year</label>
+                        <input type="text" class="form-control form-control-sm @error('bulkAcademicYear') is-invalid @enderror"
+                               wire:model="bulkAcademicYear" placeholder="2027-2028" maxlength="9">
+                    </div>
+
+                    <div class="d-flex gap-2 ms-auto">
+                        <button type="button" class="btn btn-sm btn-psu" wire:click="applyBulk"
+                                wire:confirm="Change {{ count($picked) }} {{ Str::plural('student', count($picked)) }}?"
+                                wire:loading.attr="disabled" wire:target="applyBulk">Apply</button>
+                        <button type="button" class="btn btn-sm btn-light" wire:click="clearPicked">Clear</button>
+                    </div>
+                </div>
+                @error('bulkAcademicYear') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+            </div>
+        @endif
+
         @forelse ($groups as $college)
             @php $collegeOpen = ! in_array($college['key'], $closedColleges, true); @endphp
 
@@ -259,7 +313,17 @@
                                             <div class="table-responsive">
                                                 <table class="table table-celeste mb-0">
                                                     <thead>
+                                                        @php
+                                                            $sectionIds = $section['students']->pluck('id')->map(fn ($i) => (string) $i);
+                                                            $allPicked  = $sectionIds->isNotEmpty() && $sectionIds->every(fn ($i) => in_array($i, $picked, true));
+                                                        @endphp
                                                         <tr>
+                                                            <th style="width:2.25rem">
+                                                                <input type="checkbox" class="form-check-input" title="Select the whole section"
+                                                                       wire:key="pickall-{{ $section['key'] }}-{{ $allPicked ? 1 : 0 }}"
+                                                                       wire:click="pickSection('{{ $section['key'] }}')"
+                                                                       @checked($allPicked)>
+                                                            </th>
                                                             <th>Student</th>
                                                             <th>Number</th>
                                                             <th>Status</th>
@@ -273,7 +337,13 @@
                                                             $budget -= $visible->count();
                                                         @endphp
                                                         @foreach ($visible as $record)
+                                                            @php $isPicked = in_array((string) $record->id, $picked, true); @endphp
                                                             <tr wire:key="student-{{ $record->id }}">
+                                                                <td>
+                                                                    <input type="checkbox" class="form-check-input" value="{{ $record->id }}"
+                                                                           wire:key="pick-{{ $record->id }}-{{ $isPicked ? 1 : 0 }}"
+                                                                           wire:model.live="picked" @checked($isPicked)>
+                                                                </td>
                                                                 <td>{{ $record->full_name }}</td>
                                                                 <td class="serial">{{ $record->student_number }}</td>
                                                                 <td>

@@ -31,6 +31,16 @@ class StudentRecords extends Component
     public ?int $pendingDeleteId = null;
 
     /**
+     * Students ticked for a change to several at once. Ids are kept as
+     * strings, which is how the checkboxes send them back.
+     */
+    public array $picked = [];
+    public string $bulkYear = '';
+    public string $bulkSection = '';
+    public string $bulkStatus = '';
+    public string $bulkAcademicYear = '';
+
+    /**
      * Messages are plain properties rendered by Blade, not browser-side
      * state. Livewire 3 ships its own Alpine; a page that also loads Alpine
      * from a CDN ends up with two copies, the second refuses to start, and
@@ -476,6 +486,12 @@ class StudentRecords extends Component
      */
     public function updated(string $name): void
     {
+        // A new search or filter shows different students, so ticks from the
+        // previous list are dropped rather than carried along unseen.
+        if (in_array($name, ['search', 'statusFilter'], true)) {
+            $this->picked = [];
+        }
+
         if ($name === 'form.college') {
             $this->form['program'] = '';
         }
@@ -739,7 +755,8 @@ class StudentRecords extends Component
         $data['address'] = $this->composedAddress() ?: null;
 
         if ($this->editingId) {
-            StudentRecord::findOrFail($this->editingId)->update($data);
+            $record = StudentRecord::findOrFail($this->editingId);
+            $record->update($data);
             $message = 'Record updated.';
         } else {
             $record = StudentRecord::create($data);
@@ -841,6 +858,83 @@ class StudentRecords extends Component
     public function cancelDelete(): void
     {
         $this->pendingDeleteId = null;
+    }
+
+    // ------------------------------------------------------------------
+    // Changing several students at once
+    // ------------------------------------------------------------------
+
+    /** Ticks every student in a section, or unticks them if all are ticked. */
+    public function pickSection(string $key): void
+    {
+        foreach ($this->groups as $college) {
+            foreach ($college['programs'] as $program) {
+                foreach ($program['sections'] as $section) {
+                    if ($section['key'] !== $key) {
+                        continue;
+                    }
+
+                    $ids = $section['students']->pluck('id')->map(fn ($id) => (string) $id)->all();
+                    $allPicked = $ids !== [] && count(array_diff($ids, $this->picked)) === 0;
+
+                    $this->picked = $allPicked
+                        ? array_values(array_diff($this->picked, $ids))
+                        : array_values(array_unique(array_merge($this->picked, $ids)));
+
+                    return;
+                }
+            }
+        }
+    }
+
+    public function clearPicked(): void
+    {
+        $this->picked = [];
+        $this->resetValidation();
+    }
+
+    /**
+     * Writes only the boxes that were filled in. A blank box means "leave
+     * this as it is", so a section can be changed without touching status.
+     */
+    public function applyBulk(): void
+    {
+        $ids = array_values(array_unique(array_map('intval', $this->picked)));
+
+        if ($ids === []) {
+            return;
+        }
+
+        $this->validate([
+            'bulkYear'         => ['nullable', Rule::in(array_values($this->yearLevels()))],
+            'bulkSection'      => ['nullable', Rule::in(array_values($this->sections()))],
+            'bulkStatus'       => ['nullable', Rule::in(array_keys($this->statuses()))],
+            'bulkAcademicYear' => ['nullable', 'regex:/^\d{4}-\d{4}$/'],
+        ], [
+            'bulkAcademicYear.regex' => 'Write the academic year like 2027-2028.',
+        ]);
+
+        $changes = array_filter([
+            'year_level'    => $this->bulkYear,
+            'section'       => $this->bulkSection,
+            'status'        => $this->bulkStatus,
+            'academic_year' => $this->bulkAcademicYear,
+        ], fn ($value) => $value !== '');
+
+        if ($changes === []) {
+            $this->flash = null;
+            $this->blocked = 'Choose at least one thing to change: year level, section, status or academic year.';
+            return;
+        }
+
+        $count = StudentRecord::whereIn('id', $ids)->update($changes);
+
+        $this->picked = [];
+        $this->reset('bulkYear', 'bulkSection', 'bulkStatus', 'bulkAcademicYear');
+        unset($this->groups);
+
+        $this->blocked = null;
+        $this->flash = "{$count} " . ($count === 1 ? 'student' : 'students') . ' updated.';
     }
 
     public function clearMessages(): void

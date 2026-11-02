@@ -161,7 +161,6 @@
                         Sign out
                     </button>
                     <button type="button" class="btn" data-bs-dismiss="modal"
-                            style="background:var(--psu-green, #22a94a);border-color:var(--psu-green, #22a94a);color:#fff">
                         Cancel
                     </button>
                 </form>

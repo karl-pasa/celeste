@@ -54,19 +54,16 @@
                     $tabs = [
                         'student'   => ['Student', 'bi-mortarboard'],
                         'registrar' => ['Registrar', 'bi-shield-lock'],
+                        'admin'     => ['Administrator', 'bi-person-gear'],
                     ];
-                    // The administrator tab is not advertised. It appears only
-                    // at /login?as=admin (and again after a failed attempt there).
-                    if ($role === 'admin' || old('role') === 'admin') {
-                        $tabs['admin'] = ['Administrator', 'bi-person-gear'];
-                    }
                 @endphp
                 @foreach ($tabs as $value => [$label, $icon])
                     <button type="button" role="tab"
                             class="role-tab" :class="{ 'active': role === '{{ $value }}' }"
                             :aria-selected="role === '{{ $value }}'"
-                            @click="switchTo('{{ $value }}')">
-                        <i class="bi {{ $icon }}"></i>{{ $label }}
+                            @click="switchTo('{{ $value }}')"
+                            title="{{ $label }}" aria-label="{{ $label }}">
+                        <i class="bi {{ $icon }}"></i>
                     </button>
                 @endforeach
             </div>
@@ -130,18 +127,6 @@
         <a href="{{ route('verify') }}" class="btn btn-psu-outline w-100">
             <i class="bi bi-patch-check"></i> Verify a document without signing in
         </a>
-
-        <div class="text-center mt-3 small">
-            @if ($role === 'admin' || old('role') === 'admin')
-                <a href="{{ route('login') }}" class="text-muted-celeste text-decoration-none">
-                    <i class="bi bi-arrow-left"></i> Student and Registrar sign-in
-                </a>
-            @else
-                <a href="{{ route('login', ['as' => 'admin']) }}" class="text-muted-celeste text-decoration-none">
-                    <i class="bi bi-person-gear"></i> Administrator sign-in
-                </a>
-            @endif
-        </div>
     </div>
 
     <div class="auth-foot">

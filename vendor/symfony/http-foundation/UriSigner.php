@@ -179,7 +179,7 @@ class UriSigner
         $params = [];
 
         if (isset($url['query'])) {
-            parse_str($url['query'], $params);
+            @parse_str($url['query'], $params);
         }
 
         if (!\is_string($hash = $params[$this->hashParameter] ?? null) || '' === $hash) {
@@ -192,7 +192,7 @@ class UriSigner
             return self::STATUS_INVALID;
         }
 
-        if (!$expiration = $params[$this->expirationParameter] ?? false) {
+        if (null === $expiration = $params[$this->expirationParameter] ?? null) {
             return self::STATUS_VALID;
         }
 

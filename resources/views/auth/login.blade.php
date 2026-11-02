@@ -50,10 +50,18 @@
             @csrf
 
             <div class="role-tabs mb-3" role="tablist" aria-label="Account type">
-                @foreach ([
-                    'student'   => ['Student', 'bi-mortarboard'],
-                    'registrar' => ['Registrar', 'bi-shield-lock'],
-                ] as $value => [$label, $icon])
+                @php
+                    $tabs = [
+                        'student'   => ['Student', 'bi-mortarboard'],
+                        'registrar' => ['Registrar', 'bi-shield-lock'],
+                    ];
+                    // The administrator tab is not advertised. It appears only
+                    // at /login?as=admin (and again after a failed attempt there).
+                    if ($role === 'admin' || old('role') === 'admin') {
+                        $tabs['admin'] = ['Administrator', 'bi-person-gear'];
+                    }
+                @endphp
+                @foreach ($tabs as $value => [$label, $icon])
                     <button type="button" role="tab"
                             class="role-tab" :class="{ 'active': role === '{{ $value }}' }"
                             :aria-selected="role === '{{ $value }}'"
@@ -73,7 +81,9 @@
                        class="form-control @error('email') is-invalid @enderror"
                        :placeholder="role === 'student'
                             ? 'jdelacruz922.pbox@{{ config('celeste.institution.email_domain', 'parsu.edu.ph') }}'
-                            : 'registrar@{{ config('celeste.institution.email_domain', 'parsu.edu.ph') }}'"
+                            : (role === 'admin'
+                                ? 'admin@{{ config('celeste.institution.email_domain', 'parsu.edu.ph') }}'
+                                : 'registrar@{{ config('celeste.institution.email_domain', 'parsu.edu.ph') }}')"
                        autocomplete="username" autofocus required>
                 @error('email')
                     <div class="invalid-feedback d-block">{{ $message }}</div>

@@ -31,7 +31,23 @@
         </div>
 
         <nav class="mt-1">
-            @if (auth()->user()->isRegistrar())
+            @if (auth()->user()->isAdmin())
+                <div class="nav-section">Administration</div>
+                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <i class="bi bi-grid-1x2"></i> Overview
+                </a>
+                <a href="{{ route('admin.logins') }}" class="nav-link {{ request()->routeIs('admin.logins') ? 'active' : '' }}">
+                    <i class="bi bi-person-lock"></i> Student logins
+                </a>
+                <a href="{{ route('admin.students') }}" class="nav-link {{ request()->routeIs('admin.students') ? 'active' : '' }}">
+                    <i class="bi bi-people"></i> Student records
+                </a>
+
+                <div class="nav-section">Public</div>
+                <a href="{{ route('verify') }}" class="nav-link" target="_blank">
+                    <i class="bi bi-box-arrow-up-right"></i> Public portal
+                </a>
+            @elseif (auth()->user()->isRegistrar())
                 <div class="nav-section">Overview</div>
                 <a href="{{ route('registrar.dashboard') }}" class="nav-link {{ request()->routeIs('registrar.dashboard') ? 'active' : '' }}">
                     <i class="bi bi-grid-1x2"></i> Dashboard

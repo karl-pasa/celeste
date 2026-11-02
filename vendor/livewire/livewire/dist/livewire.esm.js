@@ -7859,6 +7859,10 @@ var require_module_cjs8 = __commonJS({
             }
             let updater = el._x_forceModelUpdate;
             el._x_forceModelUpdate = (value2) => {
+              if (value2 === void 0) {
+                lastInputValue = "";
+                return updater(value2);
+              }
               value2 = String(value2);
               let template = templateFn(value2);
               if (template && template !== "false") {
@@ -8082,15 +8086,17 @@ function diff(left, right, diffs = {}, path = "") {
   let leftKeys = Object.keys(left);
   let rightKeys = Object.keys(right);
   if (isObject(left) && leftKeys.length === rightKeys.length && leftKeys.some((key, i) => key !== rightKeys[i])) {
-    diffs[path] = right;
-    return diffs;
+    if (path !== "") {
+      diffs[path] = right;
+      return diffs;
+    }
   }
   Object.entries(right).forEach(([key, value]) => {
     diffs = { ...diffs, ...diff(left[key], right[key], diffs, path === "" ? key : `${path}.${key}`) };
     leftKeys = leftKeys.filter((i) => i !== key);
   });
   leftKeys.forEach((key) => {
-    diffs[`${path}.${key}`] = "__rm__";
+    diffs[path === "" ? key : `${path}.${key}`] = "__rm__";
   });
   return diffs;
 }
@@ -8855,6 +8861,8 @@ async function sendRequest(pool) {
   }
   if (response.redirected) {
     window.location.href = response.url;
+    finishProfile({ content, failed: false });
+    return;
   }
   if (contentIsFromDump(content)) {
     let dump;
@@ -8912,9 +8920,9 @@ function generateWireObject(component, state) {
     get(target, property) {
       if (property === "__instance")
         return component;
-      if (property in aliases) {
+      if (Object.hasOwn(aliases, property)) {
         return getProperty(component, aliases[property]);
-      } else if (property in properties) {
+      } else if (Object.hasOwn(properties, property)) {
         return getProperty(component, property);
       } else if (property in state) {
         return state[property];
@@ -9105,13 +9113,13 @@ var Component = class {
   mergeQueuedUpdates(diff2) {
     Object.entries(this.queuedUpdates).forEach(([updateKey, updateValue]) => {
       Object.entries(diff2).forEach(([diffKey, diffValue]) => {
-        if (diffKey.startsWith(updateValue)) {
+        if (diffKey === updateKey || diffKey.startsWith(updateKey + ".")) {
           delete diff2[diffKey];
         }
       });
       diff2[updateKey] = updateValue;
     });
-    this.queuedUpdates = [];
+    this.queuedUpdates = {};
     return diff2;
   }
   applyUpdates(object, updates) {
@@ -9680,6 +9688,12 @@ function extractDestinationFromLink(linkEl) {
 function createUrlObjectFromString(urlString) {
   return urlString !== null && new URL(urlString, document.baseURI);
 }
+function isSameOrigin(destination) {
+  return !!destination && destination.origin === window.location.origin;
+}
+function visitNatively(destination) {
+  window.location.href = destination.href;
+}
 function getUriStringFromUrlObject(urlObject) {
   return urlObject.pathname + urlObject.search + urlObject.hash;
 }
@@ -9805,10 +9819,27 @@ function restoreScrollPositionOrScrollToTop() {
   };
   queueMicrotask(() => {
     queueMicrotask(() => {
+      let shouldScrollToFragment = !document.body.hasAttribute("data-scroll-x");
       scroll(document.body);
       document.querySelectorAll(["[x-navigate\\:scroll]", "[wire\\:scroll]"]).forEach(scroll);
+      if (shouldScrollToFragment) {
+        getFragmentTarget()?.scrollIntoView({ behavior: "instant" });
+      }
     });
   });
+}
+function getFragmentTarget() {
+  let fragment = window.location.hash.substring(1);
+  if (!fragment)
+    return;
+  let target = document.getElementById(fragment);
+  if (target)
+    return target;
+  try {
+    fragment = decodeURIComponent(fragment);
+  } catch (e) {
+  }
+  return document.getElementById(fragment) || Array.from(document.getElementsByName(fragment)).find((el) => el.tagName === "A");
 }
 
 // js/plugins/navigate/persist.js
@@ -9826,17 +9857,19 @@ function storePersistantElementsForLater(callback) {
 }
 function putPersistantElementsBack(callback) {
   let usedPersists = [];
+  let putBacks = [];
   document.querySelectorAll("[x-persist]").forEach((i) => {
     let old = els[i.getAttribute("x-persist")];
     if (!old)
       return;
     usedPersists.push(i.getAttribute("x-persist"));
     old._x_wasPersisted = true;
-    callback(old, i);
     import_alpinejs5.default.mutateDom(() => {
       i.replaceWith(old);
     });
+    putBacks.push([old, i]);
   });
+  putBacks.forEach(([old, i]) => callback(old, i));
   Object.entries(els).forEach(([key, el]) => {
     if (usedPersists.includes(key))
       return;
@@ -9879,6 +9912,10 @@ function injectStyles() {
 
     #nprogress {
       pointer-events: none;
+
+      /* NProgress fades out by setting opacity here, which creates a stacking context... */
+      position: relative;
+      z-index: 1031;
     }
 
     #nprogress .bar {
@@ -10178,7 +10215,7 @@ function navigate_default(Alpine24) {
     let preserveScroll = modifiers.includes("preserve-scroll");
     shouldPrefetchOnHover && whenThisLinkIsHoveredFor(el, 60, () => {
       let destination = extractDestinationFromLink(el);
-      if (!destination)
+      if (!isSameOrigin(destination))
         return;
       prefetchHtml(destination, (html, finalDestination) => {
         storeThePrefetchedHtmlForWhenALinkIsClicked(html, destination, finalDestination);
@@ -10188,7 +10225,7 @@ function navigate_default(Alpine24) {
       let destination = extractDestinationFromLink(el);
       if (!destination)
         return;
-      prefetchHtml(destination, (html, finalDestination) => {
+      isSameOrigin(destination) && prefetchHtml(destination, (html, finalDestination) => {
         storeThePrefetchedHtmlForWhenALinkIsClicked(html, destination, finalDestination);
       });
       whenItIsReleased(() => {
@@ -10204,8 +10241,12 @@ function navigate_default(Alpine24) {
     });
   });
   function navigateTo(destination, { preserveScroll = false, shouldPushToHistoryState = true }) {
+    if (!isSameOrigin(destination))
+      return visitNatively(destination);
     showProgressBar && showAndStartProgressBar();
     fetchHtmlOrUsePrefetchedHtml(destination, (html, finalDestination) => {
+      if (!isSameOrigin(finalDestination))
+        return visitNatively(finalDestination);
       let swapCallbacks = [];
       fireEventForOtherLibrariesToHookInto("alpine:navigating", {
         onSwap: (callback) => swapCallbacks.push(callback)
@@ -10739,7 +10780,8 @@ async function onlyIfAssetsHaventBeenLoadedAlreadyOnThisPage(key, callback) {
 async function addAssetsToHeadTagOfPage(rawHtml) {
   let newDocument = new DOMParser().parseFromString(rawHtml, "text/html");
   let newHead = document.adoptNode(newDocument.head);
-  for (let child of newHead.children) {
+  let children = [...newHead.children];
+  for (let child of children) {
     try {
       await runAssetSynchronously(child);
     } catch (error2) {
@@ -11549,13 +11591,39 @@ directive("offline", ({ el, directive: directive2, cleanup }) => {
 directive("loading", ({ el, directive: directive2, component, cleanup }) => {
   let { targets, inverted } = getTargets(el);
   let [delay, abortDelay] = applyDelay(directive2);
+  let restoreLoadingState = () => toggleBooleanStateDirective(el, directive2, false);
+  let activeLoadingCount = 0;
+  let startLoading = () => {
+    if (activeLoadingCount === 0) {
+      if (directive2.modifiers.includes("class")) {
+        let classes = directive2.expression.split(" ").filter(String);
+        let classStates = classes.map((className) => [className, el.classList.contains(className)]);
+        restoreLoadingState = () => classStates.forEach(([className, wasPresent]) => {
+          el.classList.toggle(className, wasPresent);
+        });
+      } else if (directive2.modifiers.includes("attr")) {
+        let attribute = directive2.expression;
+        let value = el.getAttribute(attribute);
+        restoreLoadingState = value === null ? () => el.removeAttribute(attribute) : () => el.setAttribute(attribute, value);
+      }
+      delay(() => toggleBooleanStateDirective(el, directive2, true));
+    }
+    activeLoadingCount++;
+  };
+  let endLoading = () => {
+    if (activeLoadingCount === 0)
+      return;
+    activeLoadingCount--;
+    if (activeLoadingCount === 0)
+      abortDelay(restoreLoadingState);
+  };
   let cleanupA = whenTargetsArePartOfRequest(component, targets, inverted, [
-    () => delay(() => toggleBooleanStateDirective(el, directive2, true)),
-    () => abortDelay(() => toggleBooleanStateDirective(el, directive2, false))
+    startLoading,
+    endLoading
   ]);
   let cleanupB = whenTargetsArePartOfFileUpload(component, targets, [
-    () => delay(() => toggleBooleanStateDirective(el, directive2, true)),
-    () => abortDelay(() => toggleBooleanStateDirective(el, directive2, false))
+    startLoading,
+    endLoading
   ]);
   cleanup(() => {
     cleanupA();
@@ -11804,10 +11872,12 @@ directive("dirty", ({ el, directive: directive2, component }) => {
       isDirty = JSON.stringify(component.canonical) !== JSON.stringify(component.reactive);
     } else {
       for (let i = 0; i < targets.length; i++) {
-        if (isDirty)
-          break;
         let target = targets[i];
-        isDirty = JSON.stringify(dataGet(component.canonical, target)) !== JSON.stringify(dataGet(component.reactive, target));
+        let canonical = JSON.stringify(dataGet(component.canonical, target));
+        let reactive = JSON.stringify(dataGet(component.reactive, target));
+        if (canonical !== reactive) {
+          isDirty = true;
+        }
       }
     }
     if (oldIsDirty !== isDirty) {
@@ -12005,10 +12075,13 @@ function extractDurationFrom(modifiers, defaultDuration) {
   let durationInMilliSeconds;
   let durationInMilliSecondsString = modifiers.find((mod) => mod.match(/([0-9]+)ms/));
   let durationInSecondsString = modifiers.find((mod) => mod.match(/([0-9]+)s/));
+  let durationInMinutesString = modifiers.find((mod) => mod.match(/([0-9]+)m/));
   if (durationInMilliSecondsString) {
     durationInMilliSeconds = Number(durationInMilliSecondsString.replace("ms", ""));
   } else if (durationInSecondsString) {
     durationInMilliSeconds = Number(durationInSecondsString.replace("s", "")) * 1e3;
+  } else if (durationInMinutesString) {
+    durationInMilliSeconds = Number(durationInMinutesString.replace("m", "")) * 60 * 1e3;
   }
   return durationInMilliSeconds || defaultDuration;
 }

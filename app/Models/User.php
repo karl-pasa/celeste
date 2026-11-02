@@ -14,6 +14,7 @@ class User extends Authenticatable
 
     public const ROLE_STUDENT   = 'student';
     public const ROLE_REGISTRAR = 'registrar';
+    public const ROLE_ADMIN     = 'admin';
 
     protected $fillable = [
         'name', 'username', 'email', 'password', 'role',
@@ -54,6 +55,11 @@ class User extends Authenticatable
         return $this->role === self::ROLE_REGISTRAR;
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->role === self::ROLE_ADMIN;
+    }
+
     /**
      * True while the account is still on its provisioned credential. For a
      * student that is their student number, which is printed on every
@@ -72,6 +78,7 @@ class User extends Authenticatable
     public function roleLabel(): string
     {
         return match ($this->role) {
+            self::ROLE_ADMIN     => 'Administrator',
             self::ROLE_REGISTRAR => 'Registrar',
             default              => 'Student',
         };

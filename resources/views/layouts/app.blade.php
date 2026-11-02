@@ -144,28 +144,26 @@
 </div>
 
 <div class="modal fade" id="signOutModal" tabindex="-1" aria-labelledby="signOutTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-        <div class="modal-content" style="border-top:4px solid var(--psu-red, #c9354a)">
-            <div class="modal-body text-center p-4">
-                <div class="mx-auto d-flex align-items-center justify-content-center mb-2"
-                     style="width:52px;height:52px;border-radius:50%;background:var(--psu-red-soft, #fbe9ec)">
-                    <i class="bi bi-box-arrow-right" style="font-size:1.5rem;color:var(--psu-red, #c9354a)"></i>
+    <div class="modal-dialog modal-dialog-centered" style="max-width:380px">
+        <div class="modal-content">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <div class="modal-body" style="padding:1.25rem 1.5rem .75rem">
+                    <h6 class="fw-semibold mb-2" id="signOutTitle">Sign out</h6>
+                    <p class="small mb-0">Do you want to sign out of CELESTE?</p>
                 </div>
-                <h6 class="mt-2 mb-1" id="signOutTitle">Sign out?</h6>
-                <p class="small text-muted-celeste mb-3">You will need to sign in again to continue.</p>
-                <form method="POST" action="{{ route('logout') }}" class="d-flex gap-2 justify-content-center">
-                    @csrf
+                <div class="modal-footer border-0 justify-content-start gap-2" style="padding:.75rem 1.5rem 1.25rem">
                     {{-- Red Sign out on the left; plain Cancel on the right. --}}
-                    <button type="submit" class="btn"
+                    <button type="submit" class="btn btn-sm px-3"
                             style="background:var(--psu-red, #c9354a);border-color:var(--psu-red, #c9354a);color:#fff">
                         Sign out
                     </button>
-                    <button type="button" class="btn" data-bs-dismiss="modal"
+                    <button type="button" class="btn btn-sm px-3" data-bs-dismiss="modal"
                             style="background:transparent;border:0;box-shadow:none;color:inherit">
                         Cancel
                     </button>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -192,6 +190,52 @@
         }
         tick();
         setInterval(tick, 1000);
+    })();
+</script>
+<script>
+    // Leaving the website for more than 30 seconds signs the user out.
+    // While this page is in front it tells the server every 10 seconds that
+    // someone is still here. When the page is hidden (another tab, minimised,
+    // closed) it stops, and the server ends the session once 30 seconds pass.
+    (function () {
+        const LIMIT = 30000, BEAT = 10000;
+        const token = document.querySelector('meta[name="csrf-token"]')?.content || '';
+        const pingUrl = @json(route('session.ping'));
+        const logoutUrl = @json(route('logout'));
+        const loginUrl = @json(route('login', ['timeout' => 1]));
+        let beat = null, awayTimer = null, gone = false;
+
+        const body = () => { const f = new FormData(); f.append('_token', token); return f; };
+        const toLogin = () => { if (!gone) { gone = true; window.location.replace(loginUrl); } };
+
+        async function ping() {
+            try {
+                const res = await fetch(pingUrl, {
+                    method: 'POST', body: body(), credentials: 'same-origin', cache: 'no-store',
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                });
+                if (res.status === 401 || res.status === 419) toLogin();
+            } catch (e) { /* offline for a moment: the next one tries again */ }
+        }
+
+        function away() {
+            clearInterval(beat); beat = null;
+            try { navigator.sendBeacon(pingUrl, body()); } catch (e) {}   // marks the moment of leaving
+            clearTimeout(awayTimer);
+            awayTimer = setTimeout(() => {
+                fetch(logoutUrl, { method: 'POST', body: body(), credentials: 'same-origin', keepalive: true }).catch(() => {});
+            }, LIMIT);
+        }
+
+        function back() {
+            clearTimeout(awayTimer);
+            ping();
+            if (!beat) beat = setInterval(() => { if (!document.hidden) ping(); }, BEAT);
+        }
+
+        document.addEventListener('visibilitychange', () => (document.hidden ? away() : back()));
+        window.addEventListener('pagehide', () => { try { navigator.sendBeacon(pingUrl, body()); } catch (e) {} });
+        if (!document.hidden) back();
     })();
 </script>
 @stack('scripts')

@@ -72,6 +72,9 @@
                 <a href="{{ route('registrar.logins') }}" class="nav-link {{ request()->routeIs('registrar.logins') ? 'active' : '' }}">
                     <i class="bi bi-person-lock"></i> Student accounts
                 </a>
+                <a href="{{ route('registrar.promote') }}" class="nav-link {{ request()->routeIs('registrar.promote') ? 'active' : '' }}">
+                    <i class="bi bi-arrow-up-circle"></i> Move up year level
+                </a>
 
                 <div class="nav-section">Verification</div>
                 <a href="{{ route('registrar.analytics') }}" class="nav-link {{ request()->routeIs('registrar.analytics') ? 'active' : '' }}">

@@ -130,6 +130,18 @@
         <a href="{{ route('verify') }}" class="btn btn-psu-outline w-100">
             <i class="bi bi-patch-check"></i> Verify a document without signing in
         </a>
+
+        <div class="text-center mt-3 small">
+            @if ($role === 'admin' || old('role') === 'admin')
+                <a href="{{ route('login') }}" class="text-muted-celeste text-decoration-none">
+                    <i class="bi bi-arrow-left"></i> Student and Registrar sign-in
+                </a>
+            @else
+                <a href="{{ route('login', ['as' => 'admin']) }}" class="text-muted-celeste text-decoration-none">
+                    <i class="bi bi-person-gear"></i> Administrator sign-in
+                </a>
+            @endif
+        </div>
     </div>
 
     <div class="auth-foot">

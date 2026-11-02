@@ -145,15 +145,25 @@
 
 <div class="modal fade" id="signOutModal" tabindex="-1" aria-labelledby="signOutTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm">
-        <div class="modal-content">
+        <div class="modal-content" style="border-top:4px solid var(--psu-red, #c9354a)">
             <div class="modal-body text-center p-4">
-                <i class="bi bi-box-arrow-right" style="font-size:2rem;color:var(--psu-navy-600, #12224f)"></i>
+                <div class="mx-auto d-flex align-items-center justify-content-center mb-2"
+                     style="width:52px;height:52px;border-radius:50%;background:var(--psu-red-soft, #fbe9ec)">
+                    <i class="bi bi-box-arrow-right" style="font-size:1.5rem;color:var(--psu-red, #c9354a)"></i>
+                </div>
                 <h6 class="mt-2 mb-1" id="signOutTitle">Sign out?</h6>
                 <p class="small text-muted-celeste mb-3">You will need to sign in again to continue.</p>
                 <form method="POST" action="{{ route('logout') }}" class="d-flex gap-2 justify-content-center">
                     @csrf
-                    <button type="button" class="btn btn-psu-outline" data-bs-dismiss="modal">Stay signed in</button>
-                    <button type="submit" class="btn btn-psu">Sign out</button>
+                    {{-- Green = stay and carry on. Red = the action that ends the session. --}}
+                    <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background:var(--psu-green, #22a94a);border-color:var(--psu-green, #22a94a);color:#fff">
+                        Stay signed in
+                    </button>
+                    <button type="submit" class="btn"
+                            style="background:var(--psu-red, #c9354a);border-color:var(--psu-red, #c9354a);color:#fff">
+                        Sign out
+                    </button>
                 </form>
             </div>
         </div>

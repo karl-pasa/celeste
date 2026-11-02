@@ -155,14 +155,14 @@
                 <p class="small text-muted-celeste mb-3">You will need to sign in again to continue.</p>
                 <form method="POST" action="{{ route('logout') }}" class="d-flex gap-2 justify-content-center">
                     @csrf
-                    {{-- Green = stay and carry on. Red = the action that ends the session. --}}
-                    <button type="button" class="btn" data-bs-dismiss="modal"
-                            style="background:var(--psu-green, #22a94a);border-color:var(--psu-green, #22a94a);color:#fff">
-                        Stay signed in
-                    </button>
+                    {{-- Red = the action that ends the session (left). Green = cancel and carry on (right). --}}
                     <button type="submit" class="btn"
                             style="background:var(--psu-red, #c9354a);border-color:var(--psu-red, #c9354a);color:#fff">
                         Sign out
+                    </button>
+                    <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background:var(--psu-green, #22a94a);border-color:var(--psu-green, #22a94a);color:#fff">
+                        Cancel
                     </button>
                 </form>
             </div>

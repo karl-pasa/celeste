@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Student logins')
-@section('subtitle', 'Create student sign-ins and reset their passwords')
+@section('title', 'Student accounts')
+@section('subtitle', 'Create student accounts and reset their passwords')
 
 @section('content')
     @livewire('registrar.student-logins')

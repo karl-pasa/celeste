@@ -70,7 +70,7 @@
                     <i class="bi bi-people"></i> Student records
                 </a>
                 <a href="{{ route('registrar.logins') }}" class="nav-link {{ request()->routeIs('registrar.logins') ? 'active' : '' }}">
-                    <i class="bi bi-person-lock"></i> Student logins
+                    <i class="bi bi-person-lock"></i> Student accounts
                 </a>
 
                 <div class="nav-section">Verification</div>

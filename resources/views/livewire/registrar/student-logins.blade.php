@@ -33,11 +33,11 @@
                     </select>
                 </div>
                 <div class="col-8 col-lg-2">
-                    <label class="form-label small mb-1">Login</label>
+                    <label class="form-label small mb-1">Account</label>
                     <select class="form-select" wire:model.live="status">
                         <option value="">All</option>
-                        <option value="none">No login yet</option>
-                        <option value="has">Has a login</option>
+                        <option value="none">No account yet</option>
+                        <option value="has">Has an account</option>
                     </select>
                 </div>
                 <div class="col-4 col-lg-1">
@@ -50,15 +50,15 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
         <div class="small text-muted-celeste">
             {{ number_format($rows->total()) }} {{ $rows->total() === 1 ? 'student' : 'students' }} in this list ·
-            {{ number_format($withoutLogin) }} without a login
+            {{ number_format($withoutLogin) }} without an account
         </div>
         <button type="button" class="btn btn-psu btn-sm"
                 wire:click="createBatch" wire:loading.attr="disabled" wire:target="createBatch"
                 @disabled($withoutLogin === 0)>
             <span wire:loading.remove wire:target="createBatch">
-                <i class="bi bi-person-plus"></i> Create the next {{ min($batch, $withoutLogin) }} {{ min($batch, $withoutLogin) === 1 ? 'login' : 'logins' }}
+                <i class="bi bi-person-plus"></i> Create the next {{ min($batch, $withoutLogin) }} {{ min($batch, $withoutLogin) === 1 ? 'account' : 'accounts' }}
             </span>
-            <span wire:loading wire:target="createBatch">Creating logins…</span>
+            <span wire:loading wire:target="createBatch">Creating accounts…</span>
         </button>
     </div>
 
@@ -69,7 +69,7 @@
                     <tr>
                         <th>Student</th>
                         <th>Program</th>
-                        <th>Login email</th>
+                        <th>Email</th>
                         <th>Status</th>
                         <th class="text-end">Actions</th>
                     </tr>
@@ -94,20 +94,20 @@
                             </td>
                             <td>
                                 @if (! $row->login_id)
-                                    <span class="badge text-bg-secondary">No account</span>
+                                    <span class="text-muted-celeste">No account</span>
                                 @elseif (! $row->login_active)
-                                    <span class="badge text-bg-danger">Disabled</span>
-                                @elseif ($row->login_pw_changed === null)
-                                    <span class="badge text-bg-warning">Must change password</span>
+                                    <span class="text-danger">Disabled</span>
+                                @elseif ($row->login_last_at === null)
+                                    <span class="text-warning-emphasis">Not yet signed in</span>
                                 @else
-                                    <span class="badge text-bg-success">Active</span>
+                                    <span class="text-success">Active</span>
                                 @endif
                             </td>
                             <td class="text-end text-nowrap">
                                 @if (! $row->login_id)
                                     <button type="button" class="btn btn-sm btn-psu" wire:click="create({{ $row->id }})"
                                             wire:loading.attr="disabled" wire:target="create({{ $row->id }})">
-                                        Create login
+                                        Create account
                                     </button>
                                 @else
                                     <button type="button" class="btn btn-sm btn-psu-outline"
@@ -152,7 +152,7 @@
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                         <p class="small text-muted-celeste mt-2 mb-0">
-                            The student is asked to choose their own password the next time they sign in.
+                            Tell the student the new password after saving.
                         </p>
                     </div>
                     <div class="modal-footer">

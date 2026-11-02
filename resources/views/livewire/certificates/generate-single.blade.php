@@ -95,13 +95,17 @@
                 @else
                     <input type="text" wire:model.live.debounce.300ms="search"
                            class="form-control @error('studentId') is-invalid @enderror"
-                           placeholder="Search by name or student number" autocomplete="off">
+                           placeholder="Student number, for example 2026-00123" autocomplete="off">
                     @error('studentId') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
 
                     @if ($this->results->isNotEmpty())
+                        {{-- Each result has its own key, and is chosen on mouse press, so a
+                             re-draw of the list between press and release cannot lose the click. --}}
                         <div class="list-group mt-2 mb-3">
                             @foreach ($this->results as $record)
-                                <button type="button" wire:click="selectStudent({{ $record->id }})"
+                                <button type="button" wire:key="result-{{ $record->id }}"
+                                        wire:mousedown.prevent="selectStudent({{ $record->id }})"
+                                        wire:click="selectStudent({{ $record->id }})"
                                         class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                                     <span>
                                         <span class="d-block">{{ $record->full_name }}</span>
@@ -113,13 +117,17 @@
                                 </button>
                             @endforeach
                         </div>
-                    @elseif (strlen($search) >= 2)
+                    @elseif ($this->searchFoundNothing)
                         <p class="text-muted-celeste mt-2 mb-3" style="font-size:.8125rem">
-                            No records match “{{ $search }}”. Check the spelling or the student number.
+                            No student number starts with “{{ $search }}”. Type the number from its beginning, as printed.
+                        </p>
+                    @elseif ($this->searchTooShort)
+                        <p class="text-muted-celeste mt-2 mb-3" style="font-size:.8125rem">
+                            Keep typing. At least 4 characters of the student number are needed.
                         </p>
                     @else
                         <p class="text-muted-celeste mt-2 mb-3" style="font-size:.8125rem">
-                            Type at least two characters to search.
+                            Type the first characters of the student number, for example 2026.
                         </p>
                     @endif
                 @endif

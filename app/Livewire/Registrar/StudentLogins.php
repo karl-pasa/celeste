@@ -80,16 +80,16 @@ class StudentLogins extends Component
         switch ($logins->create($record)) {
             case StudentLoginManager::CREATED:
                 $this->audit('student_login.created', ['student_number' => $record->student_number]);
-                $this->say("Login created for {$name}. Email: {$logins->emailFor($record)}. First password: {$record->student_number}");
+                $this->say("Account created for {$name}. Email: {$logins->emailFor($record)}. Password: {$record->student_number}");
                 break;
             case StudentLoginManager::EXISTS:
-                $this->say("{$name} already has a login.", 'warning');
+                $this->say("{$name} already has an account.", 'warning');
                 break;
             case StudentLoginManager::TAKEN:
-                $this->say("No login was created for {$name}: that email address is already used by another account.", 'danger');
+                $this->say("No account was created for {$name}: that email address is already used by another account.", 'danger');
                 break;
             default:
-                $this->say("No login was created for {$name}: the record needs a first name, last name and a student number with at least 3 digits.", 'danger');
+                $this->say("No account was created for {$name}: the record needs a first name, last name and a student number with at least 3 digits.", 'danger');
         }
     }
 
@@ -112,11 +112,11 @@ class StudentLogins extends Component
 
         $left = $this->query()->whereNull('users.id')->count();
 
-        $text = "{$made} " . ($made === 1 ? 'login' : 'logins') . ' created.';
+        $text = "{$made} " . ($made === 1 ? 'account' : 'accounts') . ' created.';
         if ($skipped) {
             $text .= " {$skipped} skipped (email already used or record incomplete).";
         }
-        $text .= $left > 0 ? " {$left} more without a login in this list." : ' Everyone in this list now has a login.';
+        $text .= $left > 0 ? " {$left} more without an account in this list." : ' Everyone in this list now has an account.';
 
         $this->say($text, $made > 0 ? 'success' : 'warning');
     }
@@ -152,7 +152,7 @@ class StudentLogins extends Component
         $logins->setPassword($user, $this->newPassword);
 
         $this->audit('student_login.password_reset', ['student_number' => $user->student_number]);
-        $this->say("Password changed for {$user->name}. Give them the new password; they will be asked to choose their own when they sign in.");
+        $this->say("Password changed for {$user->name}. Tell them the new password.");
 
         $this->cancelReset();
     }
@@ -192,7 +192,7 @@ class StudentLogins extends Component
                 'users.id as login_id',
                 'users.email as login_email',
                 'users.is_active as login_active',
-                'users.password_changed_at as login_pw_changed',
+                'users.last_login_at as login_last_at',
             )
             ->when($this->college !== '', fn ($q) => $q->where('student_records.college', $this->college))
             ->when($this->program !== '', fn ($q) => $q->where('student_records.program', $this->program))

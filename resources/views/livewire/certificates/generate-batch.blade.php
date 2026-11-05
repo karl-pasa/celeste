@@ -2,6 +2,7 @@
 <style>
     /* A ticked box must always show: blue fill and a white tick. Declared
        here so a site-wide .form-check-input rule cannot hide the tick. */
+    .batch-select select option:disabled { color: #9aa3b5; }
     .batch-select .form-check-input { width: 1.1rem; height: 1.1rem; cursor: pointer; }
     .batch-select .form-check-input:checked {
         background-color: #12306B !important;
@@ -96,12 +97,23 @@
                     </select>
 
                     <label for="yearLevel" class="form-label">Year level</label>
-                    <select id="yearLevel" wire:model.live="yearLevel" class="form-select mb-2" @disabled($program === '')>
-                        <option value="">{{ $program === '' ? 'Choose a program first' : 'All year levels' }}</option>
-                        @foreach ($yearLevels as $option)
-                            <option value="{{ $option }}">{{ $option }}</option>
-                        @endforeach
+                    <select id="yearLevel" wire:model.live="yearLevel" class="form-select {{ $this->diplomaOnly ? 'mb-1' : 'mb-2' }}"
+                            @disabled($program === '' && ! $this->diplomaOnly)>
+                        @if ($this->diplomaOnly)
+                            {{-- Diploma: only the final year can be chosen; the rest are greyed out. --}}
+                            @foreach ($yearLevels as $option)
+                                <option value="{{ $option }}" @disabled($option !== $finalYear)>{{ $option }}</option>
+                            @endforeach
+                        @else
+                            <option value="">{{ $program === '' ? 'Choose a program first' : 'All year levels' }}</option>
+                            @foreach ($yearLevels as $option)
+                                <option value="{{ $option }}">{{ $option }}</option>
+                            @endforeach
+                        @endif
                     </select>
+                    @if ($this->diplomaOnly)
+                        <div class="text-muted-celeste mb-2" style="font-size:.75rem">A University Diploma is only for {{ $finalYear }} students.</div>
+                    @endif
 
                     <label for="section" class="form-label">Section</label>
                     <select id="section" wire:model.live="section" class="form-select" @disabled($yearLevel === '')>
@@ -135,6 +147,10 @@
                         <span class="badge-celeste badge-type">{{ count($selected) }} selected</span>
                     </div>
                 </div>
+
+                @error('selected')
+                    <div class="alert alert-danger mx-3 mt-3 mb-0 py-2" style="font-size:.8125rem">{{ $message }}</div>
+                @enderror
 
                 <div class="table-responsive">
                     <table class="table table-celeste">
@@ -177,7 +193,7 @@
                 </div>
 
                 <div class="p-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <div>{{ $this->students->links() }}</div>
+                    <div>{{ $this->students->links('pagination::bootstrap-5') }}</div>
                     <button wire:click="generate" class="btn btn-psu" wire:loading.attr="disabled" wire:target="generate"
                             @disabled(count($selected) === 0)>
                         <span wire:loading.remove wire:target="generate">
@@ -252,7 +268,7 @@
                 </table>
             </div>
 
-            <div class="p-3 border-top">{{ $this->history->links() }}</div>
+            <div class="p-3 border-top">{{ $this->history->links('pagination::bootstrap-5') }}</div>
         </div>
 
     </div>

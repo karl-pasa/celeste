@@ -41,6 +41,51 @@ class GenerateBatch extends Component
      */
     public bool $labelEdited = false;
 
+    /**
+     * A University Diploma goes only to graduating students, so choosing it
+     * locks the list to 4th year. Other year levels are greyed out.
+     */
+    public const DIPLOMA_YEAR_NUMBER = 4;
+
+    public function getDiplomaOnlyProperty(): bool
+    {
+        return $this->documentType === Certificate::TYPE_DIPLOMA;
+    }
+
+    /** The configured year level that means "4th year", e.g. "4th Year". */
+    protected function finalYearLevel(): string
+    {
+        foreach (config('celeste.academics.year_levels', []) as $level) {
+            if (preg_match('/\d+/', (string) $level, $m) && (int) $m[0] === self::DIPLOMA_YEAR_NUMBER) {
+                return (string) $level;
+            }
+        }
+
+        return '4th Year';
+    }
+
+    /** Year level a filter reset should fall back to: 4th year for a diploma, otherwise none. */
+    protected function lockedYear(): string
+    {
+        return $this->diplomaOnly ? $this->finalYearLevel() : '';
+    }
+
+    public function mount(): void
+    {
+        // The page opens on University Diploma, so it starts locked to 4th year.
+        $this->yearLevel = $this->lockedYear();
+    }
+
+    public function updatedDocumentType(): void
+    {
+        // Switching to a diploma sets the year level to 4th year; switching
+        // away from it lifts the lock. Either way the old ticks are dropped,
+        // because they may belong to students who no longer qualify.
+        $this->yearLevel = $this->lockedYear();
+        $this->section = '';
+        $this->afterFilterChange();
+    }
+
     public function updatedSelectPage(bool $value): void
     {
         $ids = $this->students->pluck('id')->map(fn ($id) => (string) $id)->all();
@@ -75,20 +120,24 @@ class GenerateBatch extends Component
     public function updatedCollege(): void
     {
         $this->program = '';
-        $this->yearLevel = '';
+        $this->yearLevel = $this->lockedYear();
         $this->section = '';
         $this->afterFilterChange();
     }
 
     public function updatedProgram(): void
     {
-        $this->yearLevel = '';
+        $this->yearLevel = $this->lockedYear();
         $this->section = '';
         $this->afterFilterChange();
     }
 
     public function updatedYearLevel(): void
     {
+        if ($this->diplomaOnly) {
+            $this->yearLevel = $this->finalYearLevel();
+        }
+
         $this->section = '';
         $this->afterFilterChange();
     }
@@ -110,7 +159,8 @@ class GenerateBatch extends Component
         return StudentRecord::query()
             ->when($this->college, fn ($q) => $q->where('college', $this->college))
             ->when($this->program, fn ($q) => $q->where('program', $this->program))
-            ->when($this->yearLevel !== '', fn ($q) => $q->where('year_level', $this->yearLevel))
+            ->when($this->diplomaOnly, fn ($q) => $q->where('year_level', $this->finalYearLevel()))
+            ->when(! $this->diplomaOnly && $this->yearLevel !== '', fn ($q) => $q->where('year_level', $this->yearLevel))
             ->when($this->section !== '', fn ($q) => $q->where('section', $this->section))
             ->when($this->search, function ($q) {
                 $q->where(function ($s) {
@@ -145,6 +195,25 @@ class GenerateBatch extends Component
             $this->dispatch('scroll-to-error');
 
             throw $e;
+        }
+
+        // Never trust the ticks alone: a diploma batch may only contain 4th
+        // year students, even if the page was left open from another filter.
+        if ($this->diplomaOnly) {
+            $eligible = StudentRecord::query()
+                ->whereIn('id', array_map('intval', $this->selected))
+                ->where('year_level', $this->finalYearLevel())
+                ->pluck('id')
+                ->map(fn ($id) => (string) $id)
+                ->all();
+
+            if (count($eligible) !== count($this->selected)) {
+                $this->selected = array_values(array_intersect(array_map('strval', $this->selected), $eligible));
+                $this->addError('selected', 'A University Diploma can only be generated for 4th year students. Students who are not in 4th year were unticked. Review the list and generate again.');
+                $this->dispatch('scroll-to-error');
+
+                return;
+            }
         }
 
         $batch = $generator->issueBatch(
@@ -216,6 +285,7 @@ class GenerateBatch extends Component
             'colleges'   => $this->collegeOptions(),
             'programs'   => $this->programOptions(),
             'yearLevels' => config('celeste.academics.year_levels', []),
+            'finalYear'  => $this->finalYearLevel(),
             'sections'   => config('celeste.academics.sections', []),
         ]);
     }

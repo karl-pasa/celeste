@@ -15,18 +15,16 @@
     <link rel="icon" type="image/png" sizes="any" href="{{ asset('favicon-96x96.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
     <style>
-        /* The profile and Sign out block sits directly under the last menu
-           link, with no empty gap, and always stays on screen. If a very short
-           screen cannot hold everything, the menu scrolls by wheel or touch
-           with no scroll bar drawn. */
+        /* The profile name and Sign out button are always pinned to the bottom
+           of the sidebar, at any browser zoom or window height. The menu takes
+           the space in between; if it does not fit (zoomed in, or a short
+           window) it scrolls by wheel or touch with no scroll bar drawn, and
+           the name and Sign out stay in view. */
         .sidebar { display: flex; flex-direction: column; height: 100vh; height: 100dvh; max-height: 100dvh; overflow: hidden; }
         .sidebar .brand { flex: 0 0 auto; }
-        .sidebar nav { flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; -ms-overflow-style: none; }
+        .sidebar nav { flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; -ms-overflow-style: none; }
         .sidebar nav::-webkit-scrollbar { display: none; }
-        .sidebar .sidebar-foot { flex: 0 0 auto; margin-top: 0; }
-        /* Student menu is short: the name and Sign out block sits at the bottom
-           of the sidebar instead of floating under the one link. */
-        .sidebar.sidebar-pinned nav { flex: 1 1 auto; }
+        .sidebar .sidebar-foot { flex: 0 0 auto; margin-top: auto; }
 
         /* A little tighter only when the screen is short. */
         @media (max-height: 760px) {
@@ -41,7 +39,7 @@
 <body>
 <div class="app-shell" x-data="{ nav: false }">
 
-    <aside class="sidebar {{ auth()->user()->isRegistrar() ? '' : 'sidebar-pinned' }}" :class="{ 'open': nav }">
+    <aside class="sidebar" :class="{ 'open': nav }">
         <div class="brand" style="gap:.75rem;padding-top:1.25rem;padding-bottom:1.25rem">
             <img src="{{ asset('images/psu-seal-white.png') }}" alt="Partido State University seal"
                  style="width:60px;height:60px;flex:0 0 60px;object-fit:contain"

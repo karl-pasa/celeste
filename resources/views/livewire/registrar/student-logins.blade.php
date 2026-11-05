@@ -52,14 +52,6 @@
             {{ number_format($rows->total()) }} {{ $rows->total() === 1 ? 'student' : 'students' }} in this list ·
             {{ number_format($withoutLogin) }} without an account
         </div>
-        <button type="button" class="btn btn-psu btn-sm"
-                wire:click="createBatch" wire:loading.attr="disabled" wire:target="createBatch"
-                @disabled($withoutLogin === 0)>
-            <span wire:loading.remove wire:target="createBatch">
-                <i class="bi bi-person-plus"></i> Create the next {{ min($batch, $withoutLogin) }} {{ min($batch, $withoutLogin) === 1 ? 'account' : 'accounts' }}
-            </span>
-            <span wire:loading wire:target="createBatch">Creating accounts…</span>
-        </button>
     </div>
 
     <div class="card">

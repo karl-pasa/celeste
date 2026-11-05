@@ -22,7 +22,6 @@ class StudentLogins extends Component
      * time stays inside the host's time limit; the button is pressed again
      * for the next ten.
      */
-    private const BATCH = 10;
 
     protected string $paginationTheme = 'bootstrap';
 
@@ -91,34 +90,6 @@ class StudentLogins extends Component
             default:
                 $this->say("No account was created for {$name}: the record needs a first name, last name and a student number with at least 3 digits.", 'danger');
         }
-    }
-
-    public function createBatch(StudentLoginManager $logins): void
-    {
-        @set_time_limit(120);
-
-        $ids = $this->query()->whereNull('users.id')->limit(self::BATCH)->pluck('student_records.id');
-
-        $made = 0;
-        $skipped = 0;
-
-        StudentRecord::whereIn('id', $ids)->get()->each(function ($record) use ($logins, &$made, &$skipped) {
-            $logins->create($record) === StudentLoginManager::CREATED ? $made++ : $skipped++;
-        });
-
-        if ($made > 0) {
-            $this->audit('student_login.batch_created', ['count' => $made]);
-        }
-
-        $left = $this->query()->whereNull('users.id')->count();
-
-        $text = "{$made} " . ($made === 1 ? 'account' : 'accounts') . ' created.';
-        if ($skipped) {
-            $text .= " {$skipped} skipped (email already used or record incomplete).";
-        }
-        $text .= $left > 0 ? " {$left} more without an account in this list." : ' Everyone in this list now has an account.';
-
-        $this->say($text, $made > 0 ? 'success' : 'warning');
     }
 
     /** Opens the box where the Registrar types the new password. */
@@ -224,7 +195,6 @@ class StudentLogins extends Component
             'withoutLogin' => $this->query()->whereNull('users.id')->count(),
             'colleges'     => $colleges,
             'programs'     => $programs,
-            'batch'        => self::BATCH,
             'logins'       => $logins,
             'resetUser'    => $this->resetId ? User::find($this->resetId) : null,
         ]);
